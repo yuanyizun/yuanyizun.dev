@@ -42,3 +42,8 @@ next-env.d.ts
 
 # AI builder
 /vibe-coder
+
+# taste-skill working files
+.taste-skill/
+/assets/
+.agents/

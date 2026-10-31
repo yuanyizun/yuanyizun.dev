@@ -12,6 +12,7 @@ export type Post = {
 
 export type Project = Post & {
   url?: string;
+  period?: string;
 };
 
 const postsDirectory = path.join(process.cwd(), "content", "posts");
@@ -55,10 +56,24 @@ function readEntries(directory: string): Entry[] {
 
 function requireText(data: Record<string, unknown>, key: string, slug: string) {
   const value = data[key];
+  if (typeof value === "number") {
+    return String(value);
+  }
   if (typeof value !== "string" || value.length === 0) {
     throw new Error(`${slug}.md is missing frontmatter field "${key}"`);
   }
   return value;
+}
+
+function optionalText(data: Record<string, unknown>, key: string) {
+  const value = data[key];
+  if (typeof value === "number") {
+    return String(value);
+  }
+  if (typeof value === "string" && value.length > 0) {
+    return value;
+  }
+  return undefined;
 }
 
 function toPost(entry: Entry): Post {
@@ -81,6 +96,7 @@ function toProject(entry: Entry): Project {
   return {
     ...toPost(entry),
     url: typeof url === "string" && url.length > 0 ? url : undefined,
+    period: optionalText(entry.data, "period"),
   };
 }
 

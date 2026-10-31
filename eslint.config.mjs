@@ -13,6 +13,9 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
     "vibe-coder/**",
+    ".agents/**",
+    ".taste-skill/**",
+    "assets/**",
   ]),
 ]);
 

@@ -6,6 +6,13 @@ import { usePathname } from "next/navigation";
 import { Dialog } from "radix-ui";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ButtonLink } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 import type { NavKey } from "@/theme/contracts";
 
 const links = [
@@ -15,6 +22,8 @@ const links = [
   { href: "/projects", label: "Projects", key: "projects" },
 ] as const;
 
+const avatarSrc = "/images/yuanyizun-avatar.png";
+
 function isActive(pathname: string, href: string) {
   if (href === "/") {
     return pathname === "/";
@@ -22,26 +31,46 @@ function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
+function HeaderAvatar({ className }: { className?: string }) {
+  return (
+    <Avatar size="lg" className={cn("bg-background", className)}>
+      <AvatarImage src={avatarSrc} alt="Yizun Yuan" className="grayscale" />
+      <AvatarFallback className="bg-background text-foreground">
+        YY
+      </AvatarFallback>
+    </Avatar>
+  );
+}
+
 export function SiteHeader({ active }: { active?: NavKey }) {
   const pathname = usePathname();
 
   return (
     <header className="theme-container flex items-center justify-between gap-4 py-5">
-      <Link
-        href="/"
-        className="inline-flex items-center gap-3 font-heading text-xl tracking-[-0.03em] no-underline"
-      >
-        <Avatar size="lg" className="bg-background">
-          <AvatarImage
-            src="/images/yuanyizun-avatar.png"
-            alt="Yizun Yuan"
-          />
-          <AvatarFallback className="bg-background text-foreground">
-            YY
-          </AvatarFallback>
-        </Avatar>
-        Yizun Yuan
-      </Link>
+      <div className="inline-flex items-center gap-3">
+        <TooltipProvider delayDuration={150}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link
+                href="/about"
+                aria-label="Learn more about me!"
+                className="group rounded-full no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+              >
+                <HeaderAvatar className="motion-safe:group-hover:animate-[spin_3s_linear_infinite]" />
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" sideOffset={8}>
+              Learn more about me!
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        <Link
+          href="/"
+          className="font-heading text-xl tracking-[-0.03em] no-underline"
+        >
+          Yizun Yuan
+        </Link>
+      </div>
       <nav className="hidden items-center gap-6 text-sm md:flex">
         {links.map((link) => {
           const current = active

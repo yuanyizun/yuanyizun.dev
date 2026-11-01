@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { Markdown } from "@/components/markdown";
-import { getProject, getProjects } from "@/lib/content";
+import { extractHeadings } from "@/lib/headings";
+import { getProject, getProjects, type Project } from "@/lib/content";
+import type { Placement, RelatedItem } from "@/theme/contracts";
+import { PageFrame } from "@/theme/PageFrame";
 
 export async function generateStaticParams() {
   const projects = await getProjects();
@@ -16,12 +18,24 @@ export async function generateMetadata({
   const { slug } = await params;
   const project = await getProject(slug);
   if (!project) {
-    return { title: "Work" };
+    return { title: "Projects" };
   }
   return {
     title: project.title,
     description: project.summary,
   };
+}
+
+function relatedProjects(projects: Project[], current: Project): RelatedItem[] {
+  const others = projects.filter((project) => project.slug !== current.slug);
+  const sameKind = others.filter((project) => project.kind && project.kind === current.kind);
+  const rest = others.filter((project) => project.kind !== current.kind);
+  return [...sameKind, ...rest].slice(0, 2).map((project) => ({
+    href: `/projects/${project.slug}`,
+    title: project.title,
+    summary: project.summary,
+    meta: [project.kind, project.period].filter(Boolean).join(" · "),
+  }));
 }
 
 async function ProjectArticle({
@@ -30,43 +44,99 @@ async function ProjectArticle({
   params: PageProps<"/projects/[slug]">["params"];
 }) {
   const { slug } = await params;
-  const project = await getProject(slug);
+  const [project, projects] = await Promise.all([
+    getProject(slug),
+    getProjects(),
+  ]);
   if (!project) {
     notFound();
   }
 
+  const headings = extractHeadings(project.content);
+  const related = relatedProjects(projects, project);
+  const positions: Placement = {
+    "after-header": [
+      {
+        id: "project-breadcrumbs",
+        type: "Breadcrumbs",
+        props: {
+          items: [
+            { label: "Projects", href: "/projects" },
+            { label: project.title },
+          ],
+        },
+      },
+    ],
+    "main-before": [
+      {
+        id: "project-header",
+        type: "CaseStudyHeader",
+        props: {
+          study: {
+            title: project.title,
+            summary: project.summary,
+            period: project.period,
+            context: project.context,
+            role: project.role,
+            stack: project.stack,
+          },
+        },
+      },
+    ],
+    "main-middle": project.stages?.length
+      ? [
+          {
+            id: "project-figure",
+            type: "ArchitectureFigure",
+            props: { stages: project.stages, title: project.title },
+          },
+        ]
+      : [],
+    sidebar: headings.length
+      ? [
+          {
+            id: "project-contents",
+            type: "CaseStudyNavigation",
+            props: { headings, label: "On this page" },
+          },
+        ]
+      : [],
+    "main-after": related.length
+      ? [
+          {
+            id: "project-related",
+            type: "RelatedProjects",
+            props: { items: related },
+          },
+        ]
+      : [],
+  };
+
   return (
-    <article className="page-shell flex max-w-3xl flex-col gap-6 py-12 sm:py-20">
-      <Link
-        href="/projects"
-        className="w-fit text-[0.9375rem] font-semibold text-muted-foreground no-underline hover:text-accent"
-      >
-        Work
-      </Link>
-      {project.period ? (
-        <p className="text-[0.9375rem] font-semibold text-muted-foreground tabular-nums">
-          {project.period}
-        </p>
-      ) : null}
-      <h1 className="font-heading text-[clamp(2.4rem,6vw,4.25rem)] tracking-[-0.05em]">
-        {project.title}
-      </h1>
-      <p className="text-[1.15rem] text-muted-foreground">{project.summary}</p>
-      {project.url ? (
-        <p>
-          <a href={project.url}>{project.url}</a>
-        </p>
-      ) : null}
-      <div className="prose-site flex flex-col gap-4 text-[1.05rem] leading-relaxed">
-        <Markdown>{project.content}</Markdown>
+    <PageFrame template="project" positions={positions}>
+      <div className="reading-column flex flex-col gap-6">
+        {project.url ? (
+          <p>
+            <a href={project.url}>View source</a>
+          </p>
+        ) : null}
+        <article id="article-body" className="article-body">
+          <Markdown>{project.content}</Markdown>
+        </article>
       </div>
-    </article>
+    </PageFrame>
   );
 }
 
 export default function ProjectPage(props: PageProps<"/projects/[slug]">) {
   return (
-    <Suspense fallback={<p className="page-shell py-12">Loading…</p>}>
+    <Suspense
+      fallback={
+        <main id="main-content" className="theme-container py-16">
+          <p>Loading project…</p>
+        </main>
+      }
+    >
       <ProjectArticle params={props.params} />
     </Suspense>
   );

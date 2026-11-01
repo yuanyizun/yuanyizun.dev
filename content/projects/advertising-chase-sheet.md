@@ -2,6 +2,8 @@
 title: Advertising Operations Chase Sheet
 date: 2021-01-01
 period: 2018–2021
+kind: Applications
+context: Momentum Media
 summary: Custom PHP MVC chase sheet using Salesforce SOAP APIs for advertising operations follow-up.
 ---
 

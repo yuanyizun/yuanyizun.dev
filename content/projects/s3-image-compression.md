@@ -2,6 +2,13 @@
 title: S3 Image Compression
 date: 2024-06-01
 period: circa 2024
+kind: Infrastructure
+context: Momentum Media
+role: Independent delivery
+stack:
+  - Node.js
+  - AWS Lambda
+  - S3
 summary: Node.js AWS Lambda workflow that compressed batch image uploads for website delivery.
 ---
 

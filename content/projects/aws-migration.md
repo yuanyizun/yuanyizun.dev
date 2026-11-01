@@ -2,6 +2,8 @@
 title: AWS Migration and Deployment Modernisation
 date: 2020-01-01
 period: circa 2019–2020
+kind: Infrastructure
+context: Momentum Media
 summary: Migrated brand and event websites to AWS and replaced FTP releases with GitHub CI/CD.
 ---
 

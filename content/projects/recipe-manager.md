@@ -2,6 +2,13 @@
 title: Recipe Manager
 date: 2018-01-01
 period: Personal project
+kind: Personal
+context: Personal project
+group: personal
+stack:
+  - React
+  - TypeScript
+  - Redux
 summary: Local React recipe-management application with search, meal planning, and theme switching.
 ---
 

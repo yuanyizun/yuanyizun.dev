@@ -1,8 +1,26 @@
 import type { Metadata } from "next";
-import { SiteFooter } from "@/components/site-footer";
-import { SiteHeader } from "@/components/site-header";
-import { SiteMotion } from "@/components/site-motion";
+import { Geist, Geist_Mono, Newsreader } from "next/font/google";
+import { SiteShell } from "@/theme/SiteShell";
 import "./globals.css";
+
+const geist = Geist({
+  subsets: ["latin"],
+  variable: "--font-geist",
+  display: "swap",
+});
+
+const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-geist-mono",
+  display: "swap",
+});
+
+const newsreader = Newsreader({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-newsreader",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: {
@@ -10,17 +28,18 @@ export const metadata: Metadata = {
     template: "%s · Yizun Yuan",
   },
   description:
-    "Senior full stack engineer in Sydney. Production systems for a digital media business.",
+    "Senior full stack and platform engineer in Sydney. Production systems for a digital media business.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className="h-full antialiased">
-      <body className="flex min-h-full flex-col font-sans">
-        <SiteMotion />
-        <SiteHeader />
-        <main className="flex-1">{children}</main>
-        <SiteFooter />
+    <html
+      lang="en"
+      className={`${geist.variable} ${geistMono.variable} ${newsreader.variable} h-full antialiased`}
+      data-positions={process.env.THEME_POSITIONS === "1" ? "true" : undefined}
+    >
+      <body className="flex min-h-full flex-col bg-background font-sans text-foreground">
+        <SiteShell>{children}</SiteShell>
       </body>
     </html>
   );

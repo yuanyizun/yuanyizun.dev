@@ -1,6 +1,8 @@
 ---
 title: Historical CSV Data Loading into BigQuery
 date: 2019-05-01
+kind: Data
+context: Momentum Media
 summary: Python pipeline that validated and streamed historical CSV records into BigQuery.
 ---
 

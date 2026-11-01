@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { Markdown } from "@/components/markdown";
+import { formatDisplayDate, extractHeadings, readingMinutes } from "@/lib/headings";
 import { getPost, getPosts } from "@/lib/content";
+import type { Placement, RelatedItem } from "@/theme/contracts";
+import { PageFrame } from "@/theme/PageFrame";
 
 export async function generateStaticParams() {
   const posts = await getPosts();
@@ -16,7 +18,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const post = await getPost(slug);
   if (!post) {
-    return { title: "Notes" };
+    return { title: "Posts" };
   }
   return {
     title: post.title,
@@ -30,36 +32,93 @@ async function PostArticle({
   params: PageProps<"/posts/[slug]">["params"];
 }) {
   const { slug } = await params;
-  const post = await getPost(slug);
+  const [post, posts] = await Promise.all([getPost(slug), getPosts()]);
   if (!post) {
     notFound();
   }
 
+  const headings = extractHeadings(post.content);
+  const related: RelatedItem[] = posts
+    .filter((item) => item.slug !== post.slug)
+    .slice(0, 2)
+    .map((item) => ({
+      href: `/posts/${item.slug}`,
+      title: item.title,
+      summary: item.summary,
+      meta: formatDisplayDate(item.date),
+    }));
+
+  const positions: Placement = {
+    "after-header": [
+      {
+        id: "post-breadcrumbs",
+        type: "Breadcrumbs",
+        props: {
+          items: [
+            { label: "Posts", href: "/posts" },
+            { label: post.title },
+          ],
+        },
+      },
+    ],
+    "main-before": [
+      {
+        id: "post-title",
+        type: "ArticleHeader",
+        props: {
+          article: {
+            title: post.title,
+            date: post.date,
+            summary: post.summary,
+            minutes: readingMinutes(post.content),
+          },
+        },
+      },
+    ],
+    "main-middle": [
+      { id: "post-cover", type: "ArticleCover", props: { title: post.title } },
+    ],
+    sidebar: headings.length
+      ? [
+          {
+            id: "post-contents",
+            type: "ArticleNavigation",
+            props: { headings, label: "Contents" },
+          },
+        ]
+      : [],
+    "main-after": [
+      { id: "post-author", type: "AuthorBio", props: {} },
+      ...(related.length
+        ? [
+            {
+              id: "post-related" as const,
+              type: "RelatedPosts" as const,
+              props: { items: related },
+            },
+          ]
+        : []),
+    ],
+  };
+
   return (
-    <article className="page-shell flex max-w-3xl flex-col gap-6 py-12 sm:py-20">
-      <Link
-        href="/posts"
-        className="w-fit text-[0.9375rem] font-semibold text-muted-foreground no-underline hover:text-accent"
-      >
-        Notes
-      </Link>
-      <h1 className="font-heading text-[clamp(2.4rem,6vw,4.25rem)] tracking-[-0.05em]">
-        {post.title}
-      </h1>
-      <p className="text-[0.9375rem] text-muted-foreground">
-        <time dateTime={post.date}>{post.date}</time>
-      </p>
-      <p className="text-[1.15rem] text-muted-foreground">{post.summary}</p>
-      <div className="flex flex-col gap-4 text-[1.05rem] leading-relaxed">
+    <PageFrame template="post" positions={positions}>
+      <article id="article-body" className="reading-column">
         <Markdown>{post.content}</Markdown>
-      </div>
-    </article>
+      </article>
+    </PageFrame>
   );
 }
 
 export default function PostPage(props: PageProps<"/posts/[slug]">) {
   return (
-    <Suspense fallback={<p className="page-shell py-12">Loading…</p>}>
+    <Suspense
+      fallback={
+        <main id="main-content" className="theme-container py-16">
+          <p>Loading note…</p>
+        </main>
+      }
+    >
       <PostArticle params={props.params} />
     </Suspense>
   );

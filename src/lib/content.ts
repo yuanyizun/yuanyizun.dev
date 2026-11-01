@@ -13,6 +13,12 @@ export type Post = {
 export type Project = Post & {
   url?: string;
   period?: string;
+  kind?: string;
+  context?: string;
+  role?: string;
+  stack?: string[];
+  stages?: string[];
+  group?: "work" | "personal";
 };
 
 const postsDirectory = path.join(process.cwd(), "content", "posts");
@@ -76,6 +82,17 @@ function optionalText(data: Record<string, unknown>, key: string) {
   return undefined;
 }
 
+function optionalList(data: Record<string, unknown>, key: string) {
+  const value = data[key];
+  if (!Array.isArray(value)) {
+    return undefined;
+  }
+  const items = value.filter(
+    (item): item is string => typeof item === "string" && item.length > 0,
+  );
+  return items.length > 0 ? items : undefined;
+}
+
 function toPost(entry: Entry): Post {
   const date = formatDate(entry.data.date);
   if (!date) {
@@ -93,10 +110,17 @@ function toPost(entry: Entry): Post {
 
 function toProject(entry: Entry): Project {
   const url = entry.data.url;
+  const group = entry.data.group;
   return {
     ...toPost(entry),
     url: typeof url === "string" && url.length > 0 ? url : undefined,
     period: optionalText(entry.data, "period"),
+    kind: optionalText(entry.data, "kind"),
+    context: optionalText(entry.data, "context"),
+    role: optionalText(entry.data, "role"),
+    stack: optionalList(entry.data, "stack"),
+    stages: optionalList(entry.data, "stages"),
+    group: group === "personal" ? "personal" : "work",
   };
 }
 

@@ -1,6 +1,8 @@
 ---
 title: Python Job Board Data Preparation
 date: 2019-06-01
+kind: Data
+context: Momentum Media
 summary: Python scripts that prepared employer and third-party job listings for WordPress job-board import.
 ---
 

@@ -97,21 +97,6 @@ function TechNodeMarker({
               }
             : undefined
         }
-        onPointerOver={
-          interactive
-            ? (event: ThreeEvent<PointerEvent>) => {
-                event.stopPropagation();
-                document.body.style.cursor = "pointer";
-              }
-            : undefined
-        }
-        onPointerOut={
-          interactive
-            ? () => {
-                document.body.style.cursor = "auto";
-              }
-            : undefined
-        }
       >
         <sphereGeometry args={[selected ? 0.078 : 0.06, 20, 20]} />
         <meshStandardMaterial

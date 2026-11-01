@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { NosyPointer } from "@/modules/nosy-pointer";
 import type { ModuleAssignment } from "./contracts";
 import { sitePlacement } from "./placements/site";
 import { Position } from "./Position";
@@ -30,6 +31,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
       <a href="#main-content" className="skip-link">
         Skip to content
       </a>
+      <NosyPointer />
       <Position name="before-header" assignments={sitePlacement["before-header"] ?? []} />
       <Position name="header" assignments={header} />
       {children}

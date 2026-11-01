@@ -98,7 +98,7 @@ function TechNodeMarker({
             : undefined
         }
       >
-        <sphereGeometry args={[selected ? 0.078 : 0.06, 20, 20]} />
+        <sphereGeometry args={[selected ? 0.048 : 0.036, 18, 18]} />
         <meshStandardMaterial
           color={selected ? ACTION : INK}
           emissive={selected ? ACTION : "#000000"}
@@ -107,14 +107,14 @@ function TechNodeMarker({
           metalness={0.12}
         />
       </mesh>
-      <Billboard position={[0, 0.14, 0]}>
+      <Billboard position={[0, 0.1, 0]}>
         <Text
-          fontSize={0.11}
+          fontSize={0.095}
           letterSpacing={0.02}
           color={selected ? ACTION : INK}
           anchorX="center"
           anchorY="bottom"
-          outlineWidth={0.014}
+          outlineWidth={0.012}
           outlineColor={PAPER}
           maxWidth={1.4}
         >

@@ -179,6 +179,56 @@
       transform: translateX(-100%);
     }
   }
+
+}
+
+/* Pencil-sketch hover underline for header menu links */
+.nav-link-sketch {
+  position: relative;
+  display: inline-block;
+}
+
+.nav-link-sketch::after {
+  content: "";
+  position: absolute;
+  left: -6%;
+  right: -6%;
+  bottom: -0.28em;
+  height: 0.48em;
+  pointer-events: none;
+  background-color: currentColor;
+  opacity: 0;
+  transform: scaleX(0.88) translateY(0.12em);
+  transform-origin: left center;
+  transition:
+    opacity 180ms ease,
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  -webkit-mask-image: url("/images/sketch-underline.svg");
+  mask-image: url("/images/sketch-underline.svg");
+  -webkit-mask-mode: alpha;
+  mask-mode: alpha;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+
+.nav-link-sketch:hover::after,
+.nav-link-sketch:focus-visible::after {
+  opacity: 0.92;
+  transform: scaleX(1) translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-link-sketch::after {
+    transition: opacity 120ms ease;
+    transform: none;
+  }
+
+  .nav-link-sketch:hover::after,
+  .nav-link-sketch:focus-visible::after {
+    transform: none;
+  }
 }
 
 @media (min-width: 1200px) {

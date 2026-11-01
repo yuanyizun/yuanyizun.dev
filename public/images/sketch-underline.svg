@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 12" fill="none" preserveAspectRatio="none">
+  <!-- Filled rough band reads clearly as a CSS luminance/alpha mask -->
+  <path
+    fill="#000"
+    d="M1.5 4.2
+      C 12 2.1 24 6.8 36 4.6
+      C 48 2.5 58 7.1 72 4.9
+      C 86 2.6 98 6.4 118.5 3.8
+      L 118.8 7.6
+      C 104 9.4 90 5.2 76 8.1
+      C 62 10.9 50 5.9 38 8.4
+      C 26 10.8 14 6.2 1.8 8.6
+      Z"
+  />
+  <path
+    fill="#000"
+    opacity="0.45"
+    d="M3 3.4
+      C 20 5.8 38 1.9 55 4.7
+      C 72 7.4 90 2.8 116 5.1
+      L 116.2 6.6
+      C 92 4.2 74 8.9 56 6.1
+      C 38 3.4 22 7.2 3.2 4.9
+      Z"
+  />
+</svg>

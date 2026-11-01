@@ -84,7 +84,10 @@ export function SiteHeader({ active }: { active?: NavKey }) {
                 key={link.href}
                 href={link.href}
                 aria-current={current ? "page" : undefined}
-                className={`no-underline ${current ? "text-primary" : "text-foreground"}`}
+                className={cn(
+                  "nav-link-sketch no-underline",
+                  current ? "text-primary" : "text-foreground",
+                )}
               >
                 {link.label}
               </Link>
@@ -120,7 +123,10 @@ export function SiteHeader({ active }: { active?: NavKey }) {
                       key={link.href}
                       href={link.href}
                       aria-current={current ? "page" : undefined}
-                      className={`py-2 no-underline ${current ? "text-primary" : ""}`}
+                      className={cn(
+                        "nav-link-sketch w-fit py-2 no-underline",
+                        current ? "text-primary" : "",
+                      )}
                     >
                       {link.label}
                     </Link>

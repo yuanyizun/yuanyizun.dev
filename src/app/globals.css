@@ -149,6 +149,36 @@
     display: grid;
     gap: 0.15rem;
   }
+
+  .header-ticker-track {
+    display: flex;
+    width: max-content;
+    animation: header-ticker-marquee 28s linear infinite;
+  }
+
+  .header-ticker-dragging .header-ticker-track {
+    animation-play-state: paused;
+  }
+
+  .header-ticker-static {
+    display: none;
+    margin: 0;
+    padding: 0.5rem 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  @keyframes header-ticker-marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
 }
 
 @media (min-width: 1200px) {
@@ -237,5 +267,14 @@ html[data-positions="true"] [data-position] {
 
   .reading-progress span {
     transition: none;
+  }
+
+  .header-ticker-track {
+    display: none;
+    animation: none;
+  }
+
+  .header-ticker-static {
+    display: block;
   }
 }

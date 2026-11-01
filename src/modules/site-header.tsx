@@ -4,6 +4,7 @@ import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Dialog } from "radix-ui";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ButtonLink } from "@/components/ui/button";
 import type { NavKey } from "@/theme/contracts";
 
@@ -28,8 +29,17 @@ export function SiteHeader({ active }: { active?: NavKey }) {
     <header className="theme-container flex items-center justify-between gap-4 py-5">
       <Link
         href="/"
-        className="font-heading text-xl tracking-[-0.03em] no-underline"
+        className="inline-flex items-center gap-3 font-heading text-xl tracking-[-0.03em] no-underline"
       >
+        <Avatar size="lg" className="bg-background">
+          <AvatarImage
+            src="/images/yuanyizun-avatar.png"
+            alt="Yizun Yuan"
+          />
+          <AvatarFallback className="bg-background text-foreground">
+            YY
+          </AvatarFallback>
+        </Avatar>
         Yizun Yuan
       </Link>
       <nav className="hidden items-center gap-6 text-sm md:flex">

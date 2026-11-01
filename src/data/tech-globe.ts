@@ -1,3 +1,5 @@
+import raw from "../../content/tech-globe.json";
+
 export type TechGlobeCategory =
   | "backend"
   | "laravel"
@@ -16,159 +18,166 @@ export type TechGlobeNode = {
   position: [number, number, number];
 };
 
-/** Default selected node when the hero graph first loads. */
-export const TECH_GLOBE_DEFAULT_SELECTED_ID = "typescript" satisfies TechGlobeNode["id"];
-
 export type TechGlobeEdge = {
   from: string;
   to: string;
 };
 
-export const TECH_GLOBE_CATEGORIES: Record<TechGlobeCategory, string> = {
-  backend: "Backend and full stack",
-  laravel: "Laravel applications",
-  frontend: "Frontend",
-  python: "Python and data",
-  cloud: "Cloud and delivery",
-  crm: "CRM and advertising",
-  workflow: "Workflow",
+export type TechGlobeContent = {
+  defaultSelectedId: string;
+  categories: Record<TechGlobeCategory, string>;
+  nodes: TechGlobeNode[];
+  edges: TechGlobeEdge[];
 };
 
+const TECH_GLOBE_CATEGORY_KEYS = [
+  "backend",
+  "laravel",
+  "frontend",
+  "python",
+  "cloud",
+  "crm",
+  "workflow",
+] as const satisfies readonly TechGlobeCategory[];
+
+function isTechGlobeCategory(value: unknown): value is TechGlobeCategory {
+  return (
+    typeof value === "string" &&
+    (TECH_GLOBE_CATEGORY_KEYS as readonly string[]).includes(value)
+  );
+}
+
+function isPosition(value: unknown): value is [number, number, number] {
+  return (
+    Array.isArray(value) &&
+    value.length === 3 &&
+    value.every((coordinate) => typeof coordinate === "number" && Number.isFinite(coordinate))
+  );
+}
+
+function isTechGlobeNode(value: unknown): value is TechGlobeNode {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  const entry = value as Record<string, unknown>;
+  return (
+    typeof entry.id === "string" &&
+    entry.id.length > 0 &&
+    typeof entry.label === "string" &&
+    entry.label.length > 0 &&
+    isTechGlobeCategory(entry.category) &&
+    typeof entry.detail === "string" &&
+    entry.detail.length > 0 &&
+    isPosition(entry.position)
+  );
+}
+
+function isTechGlobeEdge(value: unknown): value is TechGlobeEdge {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  const entry = value as Record<string, unknown>;
+  return (
+    typeof entry.from === "string" &&
+    entry.from.length > 0 &&
+    typeof entry.to === "string" &&
+    entry.to.length > 0
+  );
+}
+
+function loadTechGlobe(data: unknown): TechGlobeContent {
+  if (typeof data !== "object" || data === null) {
+    throw new Error("tech-globe.json must be an object");
+  }
+
+  const record = data as Record<string, unknown>;
+
+  if (
+    typeof record.defaultSelectedId !== "string" ||
+    record.defaultSelectedId.length === 0
+  ) {
+    throw new Error('tech-globe.json must define a non-empty "defaultSelectedId"');
+  }
+
+  if (typeof record.categories !== "object" || record.categories === null) {
+    throw new Error('tech-globe.json must define a "categories" object');
+  }
+
+  const categoriesRaw = record.categories as Record<string, unknown>;
+  const categories = {} as Record<TechGlobeCategory, string>;
+  for (const key of TECH_GLOBE_CATEGORY_KEYS) {
+    const label = categoriesRaw[key];
+    if (typeof label !== "string" || label.length === 0) {
+      throw new Error(
+        `tech-globe.json "categories" must include a non-empty string for "${key}"`,
+      );
+    }
+    categories[key] = label;
+  }
+
+  if (!Array.isArray(record.nodes) || record.nodes.length === 0) {
+    throw new Error('tech-globe.json must define a non-empty "nodes" array');
+  }
+
+  if (!record.nodes.every(isTechGlobeNode)) {
+    throw new Error(
+      'tech-globe.json "nodes" must be objects with id, label, category, detail, and position [x, y, z]',
+    );
+  }
+
+  const nodes = record.nodes as TechGlobeNode[];
+  const nodeIds = new Set(nodes.map((node) => node.id));
+  if (nodeIds.size !== nodes.length) {
+    throw new Error('tech-globe.json "nodes" must have unique ids');
+  }
+
+  if (!nodeIds.has(record.defaultSelectedId)) {
+    throw new Error(
+      `tech-globe.json "defaultSelectedId" "${record.defaultSelectedId}" must match a node id`,
+    );
+  }
+
+  if (!Array.isArray(record.edges) || record.edges.length === 0) {
+    throw new Error('tech-globe.json must define a non-empty "edges" array');
+  }
+
+  if (!record.edges.every(isTechGlobeEdge)) {
+    throw new Error(
+      'tech-globe.json "edges" must be objects with non-empty "from" and "to" strings',
+    );
+  }
+
+  const edges = record.edges as TechGlobeEdge[];
+  for (const edge of edges) {
+    if (!nodeIds.has(edge.from) || !nodeIds.has(edge.to)) {
+      throw new Error(
+        `tech-globe.json edge "${edge.from}" -> "${edge.to}" must reference known node ids`,
+      );
+    }
+  }
+
+  return {
+    defaultSelectedId: record.defaultSelectedId,
+    categories,
+    nodes,
+    edges,
+  };
+}
+
+const TECH_GLOBE = loadTechGlobe(raw);
+
+/** Default selected node when the hero graph first loads. */
+export const TECH_GLOBE_DEFAULT_SELECTED_ID = TECH_GLOBE.defaultSelectedId;
+
+export const TECH_GLOBE_CATEGORIES = TECH_GLOBE.categories;
+
 /** Curated resume stack — copy stays within about/resume facts. */
-export const TECH_GLOBE_NODES: TechGlobeNode[] = [
-  {
-    id: "php",
-    label: "PHP",
-    category: "backend",
-    detail:
-      "Production PHP across CMS platforms and custom applications in a multi-brand digital media environment.",
-    position: [-0.7, 0.28, 0.15],
-  },
-  {
-    id: "laravel",
-    label: "Laravel",
-    category: "laravel",
-    detail:
-      "Independently built Laravel CRM, comment-management, and Salesforce integration platforms with Blade, Eloquent, Redis, and Horizon.",
-    position: [-0.1, 0.15, 0.05],
-  },
-  {
-    id: "nodejs",
-    label: "Node.js",
-    category: "backend",
-    detail:
-      "Delivered Node.js/Express services, including a proxy that served advertising-provider assets to about twelve brand websites.",
-    position: [-0.45, -0.28, 0.45],
-  },
-  {
-    id: "typescript",
-    label: "TypeScript",
-    category: "frontend",
-    detail:
-      "Production JavaScript/TypeScript experience, including an Angular/TypeScript ad component via the Kevel Decision API.",
-    position: [0.45, 0.12, 0.52],
-  },
-  {
-    id: "react",
-    label: "React",
-    category: "frontend",
-    detail:
-      "Personal React/TypeScript recipe manager with Vite, Redux, RTK Query, hooks, Context API, and Jest tests.",
-    position: [0.78, -0.12, 0.2],
-  },
-  {
-    id: "mysql",
-    label: "MySQL",
-    category: "backend",
-    detail:
-      "SQL and MySQL for Laravel applications, CMS sites, and data workflows across brand platforms.",
-    position: [-0.28, -0.45, -0.12],
-  },
-  {
-    id: "aws",
-    label: "AWS",
-    category: "cloud",
-    detail:
-      "Modernised AWS hosting for brand and event sites — EC2, RDS, S3, Lambda, VPC, load balancers, and CloudWatch.",
-    position: [0.15, 0.58, -0.35],
-  },
-  {
-    id: "cloudflare",
-    label: "Cloudflare",
-    category: "cloud",
-    detail:
-      "Introduced Cloudflare Zero Trust with company email verification and removed inbound SSH from the bastion server.",
-    position: [-0.2, 0.68, -0.1],
-  },
-  {
-    id: "python",
-    label: "Python",
-    category: "python",
-    detail:
-      "Python data pipelines with Requests, Beautiful Soup, validation, and Google Cloud BigQuery resumable uploads.",
-    position: [0.58, -0.52, -0.28],
-  },
-  {
-    id: "salesforce",
-    label: "Salesforce",
-    category: "crm",
-    detail:
-      "Salesforce Marketing Cloud and CRM API work — CloudPages, SSJS, AMPscript, SOAP, SOQL, OAuth 2.0, and JWT.",
-    position: [0.28, 0.35, 0.12],
-  },
-  {
-    id: "joomla",
-    label: "Joomla",
-    category: "backend",
-    detail:
-      "Built and modernised Joomla brand sites, modules, plugins, and shared Tailwind templates across roughly twelve brands.",
-    position: [-0.78, -0.12, -0.35],
-  },
-  {
-    id: "cicd",
-    label: "CI/CD",
-    category: "workflow",
-    detail:
-      "Replaced FTP with GitHub, pull-request review, Jenkins, webhooks, and GitHub Actions for staged deployments.",
-    position: [0.45, 0.42, -0.68],
-  },
-  {
-    id: "docker",
-    label: "Docker",
-    category: "cloud",
-    detail:
-      "Docker and Docker Compose in cloud and delivery workflows alongside Linux, Apache, and Varnish hosting stacks.",
-    position: [0.05, 0.28, -0.75],
-  },
-  {
-    id: "tailwind",
-    label: "Tailwind",
-    category: "frontend",
-    detail:
-      "Built the first site and shared Tailwind CSS template for a rollout that cut typical special-page work from days to hours.",
-    position: [0.12, -0.2, 0.68],
-  },
-];
+export const TECH_GLOBE_NODES = TECH_GLOBE.nodes;
 
 /** Edges mirror real stack relationships from the resume/about copy. */
-export const TECH_GLOBE_EDGES: TechGlobeEdge[] = [
-  { from: "php", to: "laravel" },
-  { from: "php", to: "joomla" },
-  { from: "laravel", to: "mysql" },
-  { from: "laravel", to: "salesforce" },
-  { from: "laravel", to: "tailwind" },
-  { from: "joomla", to: "tailwind" },
-  { from: "nodejs", to: "typescript" },
-  { from: "typescript", to: "react" },
-  { from: "react", to: "tailwind" },
-  { from: "aws", to: "docker" },
-  { from: "aws", to: "cloudflare" },
-  { from: "aws", to: "cicd" },
-  { from: "docker", to: "cicd" },
-  { from: "python", to: "aws" },
-  { from: "laravel", to: "aws" },
-  { from: "nodejs", to: "laravel" },
-];
+export const TECH_GLOBE_EDGES = TECH_GLOBE.edges;
 
 export function techGlobeNodeMap() {
   return new Map(TECH_GLOBE_NODES.map((node) => [node.id, node]));

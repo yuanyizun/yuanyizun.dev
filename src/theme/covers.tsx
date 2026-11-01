@@ -52,12 +52,18 @@ export function OrbitalCover({ title }: { title: string }) {
   );
 }
 
-export function Monogram() {
+const PROFILE_SRC = "/images/yuanyizun-avatar.png";
+
+export function ProfileImage() {
   return (
-    <div className="grid aspect-square w-full place-items-center bg-card text-foreground">
-      <p className="font-heading text-[clamp(4.5rem,8vw,6.5rem)] leading-none tracking-[-0.04em]">
-        Yy.
-      </p>
+    <div className="aspect-square w-full overflow-hidden bg-card">
+      <img
+        src={PROFILE_SRC}
+        alt="Yizun Yuan"
+        width={577}
+        height={577}
+        className="size-full object-cover grayscale"
+      />
     </div>
   );
 }

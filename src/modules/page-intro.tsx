@@ -1,4 +1,4 @@
-import { Monogram } from "@/theme/covers";
+import { ProfileImage } from "@/theme/covers";
 
 export function PageIntro({
   title,
@@ -7,12 +7,12 @@ export function PageIntro({
 }: {
   title: string;
   summary?: string;
-  mark?: "monogram";
+  mark?: "profile";
 }) {
   return (
     <div
       className={
-        mark === "monogram"
+        mark === "profile"
           ? "grid items-end gap-10 lg:grid-cols-[minmax(0,1.3fr)_minmax(14rem,18rem)]"
           : "flex max-w-3xl flex-col gap-5"
       }
@@ -25,9 +25,9 @@ export function PageIntro({
           <p className="max-w-2xl text-lg leading-relaxed">{summary}</p>
         ) : null}
       </div>
-      {mark === "monogram" ? (
+      {mark === "profile" ? (
         <div className="max-w-xs overflow-hidden rounded-xl">
-          <Monogram />
+          <ProfileImage />
         </div>
       ) : null}
     </div>

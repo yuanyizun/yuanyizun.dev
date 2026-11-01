@@ -25,7 +25,7 @@ export const templatePlacements: Record<TemplateKey, Placement> = {
           title: "Full-stack ownership. Systems that last.",
           summary:
             "Full stack engineer with 11 years delivering and maintaining production applications for a digital media business.",
-          mark: "monogram",
+          mark: "profile",
         },
       },
     ],

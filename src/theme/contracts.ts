@@ -70,7 +70,7 @@ export type ModuleAssignment =
   | {
       id: string;
       type: "PageIntro";
-      props: { title: string; summary?: string; mark?: "monogram" };
+      props: { title: string; summary?: string; mark?: "profile" };
     }
   | { id: string; type: "ResumeLink"; props: { href: string; label: string } }
   | { id: string; type: "Breadcrumbs"; props: { items: Crumb[] } }

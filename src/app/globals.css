@@ -153,7 +153,7 @@
   .header-ticker-track {
     display: flex;
     width: max-content;
-    animation: header-ticker-marquee 28s linear infinite;
+    animation: header-ticker-scroll-rtl 28s linear infinite;
   }
 
   .header-ticker-dragging .header-ticker-track {
@@ -171,12 +171,12 @@
     text-align: center;
   }
 
-  @keyframes header-ticker-marquee {
+  @keyframes header-ticker-scroll-rtl {
     from {
-      transform: translateX(0);
+      transform: translateX(100vw);
     }
     to {
-      transform: translateX(-50%);
+      transform: translateX(-100%);
     }
   }
 }

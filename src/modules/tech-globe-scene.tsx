@@ -1,8 +1,8 @@
 "use client";
 
-import { Billboard, Line, OrbitControls, Text } from "@react-three/drei";
+import { Billboard, Line, OrbitControls, Text, useProgress } from "@react-three/drei";
 import { Canvas, type ThreeEvent, useFrame } from "@react-three/fiber";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useMemo, useRef } from "react";
 import type { Group, PerspectiveCamera as ThreePerspectiveCamera } from "three";
 import {
   TECH_GLOBE_EDGES,
@@ -20,6 +20,8 @@ type SceneProps = {
   selectedId: string | null;
   onSelect: (id: string | null) => void;
   reduceMotion: boolean;
+  interactive: boolean;
+  onReady: () => void;
 };
 
 function NetworkEdges({ selectedId }: { selectedId: string | null }) {
@@ -54,11 +56,13 @@ function TechNodeMarker({
   selected,
   onSelect,
   reduceMotion,
+  interactive,
 }: {
   node: TechGlobeNode;
   selected: boolean;
   onSelect: (id: string) => void;
   reduceMotion: boolean;
+  interactive: boolean;
 }) {
   const groupRef = useRef<Group>(null);
 
@@ -77,17 +81,29 @@ function TechNodeMarker({
   return (
     <group ref={groupRef} position={node.position}>
       <mesh
-        onClick={(event: ThreeEvent<MouseEvent>) => {
-          event.stopPropagation();
-          onSelect(node.id);
-        }}
-        onPointerOver={(event: ThreeEvent<PointerEvent>) => {
-          event.stopPropagation();
-          document.body.style.cursor = "pointer";
-        }}
-        onPointerOut={() => {
-          document.body.style.cursor = "auto";
-        }}
+        onClick={
+          interactive
+            ? (event: ThreeEvent<MouseEvent>) => {
+                event.stopPropagation();
+                onSelect(node.id);
+              }
+            : undefined
+        }
+        onPointerOver={
+          interactive
+            ? (event: ThreeEvent<PointerEvent>) => {
+                event.stopPropagation();
+                document.body.style.cursor = "pointer";
+              }
+            : undefined
+        }
+        onPointerOut={
+          interactive
+            ? () => {
+                document.body.style.cursor = "auto";
+              }
+            : undefined
+        }
       >
         <sphereGeometry args={[selected ? 0.078 : 0.06, 20, 20]} />
         <meshStandardMaterial
@@ -116,7 +132,34 @@ function TechNodeMarker({
   );
 }
 
-function SceneContent({ selectedId, onSelect, reduceMotion }: SceneProps) {
+function SceneReadySignal({ onReady }: { onReady: () => void }) {
+  const { active } = useProgress();
+  const frames = useRef(0);
+  const signaled = useRef(false);
+
+  useFrame(() => {
+    if (signaled.current) return;
+    if (active) {
+      frames.current = 0;
+      return;
+    }
+    frames.current += 1;
+    // Wait a few settled frames after assets/fonts finish so the first paint is stable.
+    if (frames.current < 4) return;
+    signaled.current = true;
+    onReady();
+  });
+
+  return null;
+}
+
+function SceneContent({
+  selectedId,
+  onSelect,
+  reduceMotion,
+  interactive,
+  onReady,
+}: SceneProps) {
   return (
     <>
       <color attach="background" args={[PAPER]} />
@@ -136,20 +179,23 @@ function SceneContent({ selectedId, onSelect, reduceMotion }: SceneProps) {
             selected={node.id === selectedId}
             onSelect={onSelect}
             reduceMotion={reduceMotion}
+            interactive={interactive}
           />
         ))}
       </group>
       <OrbitControls
+        enabled={interactive}
         enablePan={false}
-        enableZoom
+        enableZoom={interactive}
         minDistance={1.7}
         maxDistance={3.8}
-        autoRotate={!reduceMotion}
+        autoRotate={interactive && !reduceMotion}
         autoRotateSpeed={0.35}
         rotateSpeed={0.7}
         target={[0, 0.05, 0]}
         makeDefault
       />
+      <SceneReadySignal onReady={onReady} />
     </>
   );
 }
@@ -158,20 +204,12 @@ export default function TechGlobeScene({
   selectedId,
   onSelect,
   reduceMotion,
+  interactive,
+  onReady,
 }: SceneProps) {
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    setReady(true);
-  }, []);
-
-  if (!ready) {
-    return <div className="h-full w-full bg-[var(--card)]" aria-hidden />;
-  }
-
   return (
     <Canvas
-      className="h-full w-full touch-none"
+      className={`h-full w-full ${interactive ? "touch-none" : "pointer-events-none touch-none"}`}
       dpr={[1, 1.5]}
       camera={{ position: [1.1, 0.75, 2.1], fov: 46, near: 0.1, far: 40 }}
       gl={{ antialias: true, alpha: false, powerPreference: "default" }}
@@ -179,13 +217,23 @@ export default function TechGlobeScene({
         (camera as ThreePerspectiveCamera).lookAt(0, 0.05, 0);
         gl.setClearColor(PAPER, 1);
       }}
-      onPointerMissed={() => onSelect(null)}
+      onPointerMissed={
+        interactive
+          ? () => {
+              onSelect(null);
+            }
+          : undefined
+      }
     >
-      <SceneContent
-        selectedId={selectedId}
-        onSelect={onSelect}
-        reduceMotion={reduceMotion}
-      />
+      <Suspense fallback={null}>
+        <SceneContent
+          selectedId={selectedId}
+          onSelect={onSelect}
+          reduceMotion={reduceMotion}
+          interactive={interactive}
+          onReady={onReady}
+        />
+      </Suspense>
     </Canvas>
   );
 }

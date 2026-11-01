@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useId, useState } from "react";
+import { useCallback, useEffect, useId, useState } from "react";
 import {
   TECH_GLOBE_CATEGORIES,
   TECH_GLOBE_NODES,
@@ -9,26 +9,26 @@ import {
 
 const TechGlobeScene = dynamic(() => import("./tech-globe-scene"), {
   ssr: false,
-  loading: () => <NetworkPlaceholder />,
 });
 
-function NetworkPlaceholder() {
+function GraphLoading({ labelId }: { labelId: string }) {
   return (
     <div
-      className="flex h-full w-full items-center justify-center bg-card"
-      aria-hidden
+      className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-card"
+      role="status"
+      aria-labelledby={labelId}
+      aria-busy="true"
     >
-      <svg viewBox="0 0 240 180" className="h-full w-full text-foreground">
-        <line x1="48" y1="96" x2="110" y2="72" stroke="#646B60" strokeWidth="1.2" />
-        <line x1="110" y1="72" x2="168" y2="88" stroke="#646B60" strokeWidth="1.2" />
-        <line x1="110" y1="72" x2="120" y2="130" stroke="#646B60" strokeWidth="1.2" />
-        <line x1="168" y1="88" x2="190" y2="48" stroke="#646B60" strokeWidth="1.2" />
-        <circle cx="48" cy="96" r="5" fill="#242823" />
-        <circle cx="110" cy="72" r="6" fill="#BB4B2C" />
-        <circle cx="168" cy="88" r="5" fill="#242823" />
-        <circle cx="120" cy="130" r="5" fill="#242823" />
-        <circle cx="190" cy="48" r="5" fill="#242823" />
-      </svg>
+      <div
+        className="size-8 animate-spin rounded-full border-2 border-border border-t-primary"
+        aria-hidden
+      />
+      <p
+        id={labelId}
+        className="font-mono text-xs tracking-[0.04em] text-muted-foreground"
+      >
+        Loading stack map…
+      </p>
     </div>
   );
 }
@@ -82,9 +82,11 @@ function supportsWebGL() {
 
 export function TechGlobe() {
   const labelId = useId();
+  const loadingLabelId = useId();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [reduceMotion, setReduceMotion] = useState(false);
   const [webgl, setWebgl] = useState<boolean | null>(null);
+  const [sceneReady, setSceneReady] = useState(false);
 
   useEffect(() => {
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -104,13 +106,20 @@ export function TechGlobe() {
     return () => window.removeEventListener("keydown", onKey);
   }, [selectedId]);
 
+  const handleReady = useCallback(() => {
+    setSceneReady(true);
+  }, []);
+
   const selected = TECH_GLOBE_NODES.find((node) => node.id === selectedId);
+  const interactive = sceneReady;
+  const showLoader = webgl !== false && !sceneReady;
 
   return (
     <div
       className="relative aspect-square min-h-[24rem] w-full overflow-hidden bg-card sm:min-h-[28rem] lg:aspect-auto lg:h-full lg:min-h-[32rem]"
       role="region"
       aria-labelledby={labelId}
+      aria-busy={showLoader}
     >
       <p id={labelId} className="sr-only">
         Interactive tech stack network map. Drag to rotate. Tagged technologies:{" "}
@@ -121,20 +130,31 @@ export function TechGlobe() {
       <div className="absolute inset-0">
         {webgl === false ? (
           <StaticFallback selectedId={selectedId} onSelect={setSelectedId} />
-        ) : webgl === null ? (
-          <NetworkPlaceholder />
-        ) : (
-          <TechGlobeScene
-            selectedId={selectedId}
-            onSelect={setSelectedId}
-            reduceMotion={reduceMotion}
-          />
-        )}
+        ) : webgl === true ? (
+          <div
+            className={
+              sceneReady
+                ? "h-full w-full opacity-100 transition-opacity duration-300"
+                : "h-full w-full opacity-0"
+            }
+            aria-hidden={!sceneReady}
+          >
+            <TechGlobeScene
+              selectedId={selectedId}
+              onSelect={setSelectedId}
+              reduceMotion={reduceMotion}
+              interactive={interactive}
+              onReady={handleReady}
+            />
+          </div>
+        ) : null}
       </div>
 
-      {selected ? (
+      {showLoader ? <GraphLoading labelId={loadingLabelId} /> : null}
+
+      {interactive && selected ? (
         <aside
-          className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-background via-background/90 to-transparent p-4 pt-16 sm:p-5 sm:pt-20"
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-background via-background/90 to-transparent p-4 pt-16 sm:p-5 sm:pt-20"
           aria-live="polite"
         >
           <div className="pointer-events-auto max-w-md rounded-lg border border-border/70 bg-background/95 p-4 shadow-sm backdrop-blur-[2px]">
@@ -156,11 +176,13 @@ export function TechGlobe() {
             </button>
           </div>
         </aside>
-      ) : (
-        <p className="pointer-events-none absolute bottom-3 left-3 font-mono text-[0.7rem] text-muted-foreground">
+      ) : null}
+
+      {interactive && !selected ? (
+        <p className="pointer-events-none absolute bottom-3 left-3 z-20 font-mono text-[0.7rem] text-muted-foreground">
           Drag to rotate · click a tagged node
         </p>
-      )}
+      ) : null}
     </div>
   );
 }

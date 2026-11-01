@@ -16,6 +16,14 @@ const MUTED = "#646B60";
 const ACTION = "#BB4B2C";
 const PAPER = "#F7F5F0";
 
+/** Closest / farthest camera distance (larger distance = smaller on-screen graph). */
+const ORBIT_MIN_DISTANCE = 1.7;
+const ORBIT_MAX_DISTANCE = 3.8;
+
+/** Camera start — same view direction as before, parked at max zoom-out. */
+const INITIAL_CAMERA_POSITION: [number, number, number] = [1.691, 1.126, 3.228];
+const CONTROLS_TARGET: [number, number, number] = [0, 0.05, 0];
+
 type SceneProps = {
   selectedId: string | null;
   onSelect: (id: string | null) => void;
@@ -187,12 +195,12 @@ function SceneContent({
         enabled={interactive}
         enablePan={false}
         enableZoom={interactive}
-        minDistance={1.7}
-        maxDistance={3.8}
+        minDistance={ORBIT_MIN_DISTANCE}
+        maxDistance={ORBIT_MAX_DISTANCE}
         autoRotate={interactive && !reduceMotion}
         autoRotateSpeed={0.35}
         rotateSpeed={0.7}
-        target={[0, 0.05, 0]}
+        target={CONTROLS_TARGET}
         makeDefault
       />
       <SceneReadySignal onReady={onReady} />
@@ -211,10 +219,15 @@ export default function TechGlobeScene({
     <Canvas
       className={`h-full w-full ${interactive ? "touch-none" : "pointer-events-none touch-none"}`}
       dpr={[1, 1.5]}
-      camera={{ position: [1.1, 0.75, 2.1], fov: 46, near: 0.1, far: 40 }}
+      camera={{
+        position: INITIAL_CAMERA_POSITION,
+        fov: 46,
+        near: 0.1,
+        far: 40,
+      }}
       gl={{ antialias: true, alpha: false, powerPreference: "default" }}
       onCreated={({ camera, gl }) => {
-        (camera as ThreePerspectiveCamera).lookAt(0, 0.05, 0);
+        (camera as ThreePerspectiveCamera).lookAt(...CONTROLS_TARGET);
         gl.setClearColor(PAPER, 1);
       }}
       onPointerMissed={

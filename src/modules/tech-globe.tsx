@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { useCallback, useEffect, useId, useState } from "react";
 import {
   TECH_GLOBE_CATEGORIES,
+  TECH_GLOBE_DEFAULT_SELECTED_ID,
   TECH_GLOBE_NODES,
 } from "@/data/tech-globe";
 
@@ -83,7 +84,9 @@ function supportsWebGL() {
 export function TechGlobe() {
   const labelId = useId();
   const loadingLabelId = useId();
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(
+    TECH_GLOBE_DEFAULT_SELECTED_ID,
+  );
   const [reduceMotion, setReduceMotion] = useState(false);
   const [webgl, setWebgl] = useState<boolean | null>(null);
   const [sceneReady, setSceneReady] = useState(false);

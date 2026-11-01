@@ -16,6 +16,9 @@ export type TechGlobeNode = {
   position: [number, number, number];
 };
 
+/** Default selected node when the hero graph first loads. */
+export const TECH_GLOBE_DEFAULT_SELECTED_ID = "typescript" satisfies TechGlobeNode["id"];
+
 export type TechGlobeEdge = {
   from: string;
   to: string;

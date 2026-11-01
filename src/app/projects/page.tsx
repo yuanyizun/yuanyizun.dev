@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { ProjectsArchiveFallback } from "@/features/loading-fallbacks";
 import { ProjectArchive } from "@/features/project-archive";
 import { getProjects } from "@/lib/content";
 import { PageFrame } from "@/theme/PageFrame";
@@ -26,7 +27,7 @@ async function ProjectsResults({
 export default function ProjectsPage({ searchParams }: PageProps<"/projects">) {
   return (
     <PageFrame template="projects">
-      <Suspense fallback={<p>Loading projects…</p>}>
+      <Suspense fallback={<ProjectsArchiveFallback />}>
         <ProjectsResults searchParams={searchParams} />
       </Suspense>
     </PageFrame>

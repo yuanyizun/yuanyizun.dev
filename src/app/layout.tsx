@@ -36,6 +36,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       className={`${geist.variable} ${geistMono.variable} ${newsreader.variable} h-full antialiased`}
+      data-scroll-behavior="smooth"
       data-positions={process.env.THEME_POSITIONS === "1" ? "true" : undefined}
     >
       <body className="flex min-h-full flex-col bg-background font-sans text-foreground">

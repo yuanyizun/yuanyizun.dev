@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { Markdown } from "@/components/markdown";
+import { ArticleBodyFallback } from "@/features/loading-fallbacks";
 import { extractHeadings } from "@/lib/headings";
 import { getProject, getProjects, type Project } from "@/lib/content";
 import type { Placement, RelatedItem } from "@/theme/contracts";
@@ -132,9 +133,9 @@ export default function ProjectPage(props: PageProps<"/projects/[slug]">) {
   return (
     <Suspense
       fallback={
-        <main id="main-content" className="theme-container py-16">
-          <p>Loading project…</p>
-        </main>
+        <PageFrame template="project">
+          <ArticleBodyFallback label="Loading project…" />
+        </PageFrame>
       }
     >
       <ProjectArticle params={props.params} />

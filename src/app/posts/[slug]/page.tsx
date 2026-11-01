@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { Markdown } from "@/components/markdown";
+import { ArticleBodyFallback } from "@/features/loading-fallbacks";
 import { formatDisplayDate, extractHeadings, readingMinutes } from "@/lib/headings";
 import { getPost, getPosts } from "@/lib/content";
 import type { Placement, RelatedItem } from "@/theme/contracts";
@@ -114,9 +115,9 @@ export default function PostPage(props: PageProps<"/posts/[slug]">) {
   return (
     <Suspense
       fallback={
-        <main id="main-content" className="theme-container py-16">
-          <p>Loading note…</p>
-        </main>
+        <PageFrame template="post">
+          <ArticleBodyFallback label="Loading note…" />
+        </PageFrame>
       }
     >
       <PostArticle params={props.params} />

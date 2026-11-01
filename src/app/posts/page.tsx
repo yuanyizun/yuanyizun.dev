@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { PostsArchiveFallback } from "@/features/loading-fallbacks";
 import { PostArchive } from "@/features/post-archive";
 import { getPosts } from "@/lib/content";
 import { PageFrame } from "@/theme/PageFrame";
@@ -27,7 +28,7 @@ async function PostsResults({
 export default function PostsPage({ searchParams }: PageProps<"/posts">) {
   return (
     <PageFrame template="posts">
-      <Suspense fallback={<p>Loading notes…</p>}>
+      <Suspense fallback={<PostsArchiveFallback />}>
         <PostsResults searchParams={searchParams} />
       </Suspense>
     </PageFrame>

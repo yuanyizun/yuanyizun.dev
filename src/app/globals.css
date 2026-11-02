@@ -347,6 +347,11 @@ html[data-positions="true"] [data-position] {
   }
 }
 
+.selected-work-timeline__item {
+  transition: filter 180ms ease, opacity 180ms ease;
+  will-change: filter, opacity;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -363,5 +368,12 @@ html[data-positions="true"] [data-position] {
 
   .header-ticker-static {
     display: block;
+  }
+
+  .selected-work-timeline__item {
+    filter: none !important;
+    opacity: 1 !important;
+    transition: none;
+    will-change: auto;
   }
 }

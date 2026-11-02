@@ -85,26 +85,36 @@ export function ProjectsArchiveFallback() {
 export function HomeContentFallback() {
   return (
     <div
-      className="flex min-h-[42rem] flex-col gap-16"
+      className="flex min-h-[48rem] flex-col gap-16"
       role="status"
       aria-live="polite"
       aria-busy="true"
     >
       <span className="sr-only">Loading selected work…</span>
-      <section className="flex flex-col gap-6">
+      <section className="flex flex-col gap-8">
         <Bone className="h-10 w-56" />
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
-          <Bone className="min-h-64 rounded-xl" />
-          <Bone className="min-h-64 rounded-xl" />
-        </div>
-        <ul className="grid gap-4 md:grid-cols-2">
-          <li>
-            <Bone className="min-h-40 w-full rounded-xl" />
-          </li>
-          <li>
-            <Bone className="min-h-40 w-full rounded-xl" />
-          </li>
+        <ul className="relative m-0 flex list-none flex-col p-0">
+          <span
+            className="pointer-events-none absolute top-2 bottom-2 left-[2.35rem] w-px bg-border sm:left-[3.1rem]"
+            aria-hidden
+          />
+          {Array.from({ length: 5 }, (_, index) => (
+            <li
+              key={index}
+              className="grid grid-cols-[4.5rem_minmax(0,1fr)] gap-4 py-5 sm:grid-cols-[6rem_minmax(0,1fr)] sm:gap-6 sm:py-6"
+            >
+              <div className="flex justify-end pt-1">
+                <Bone className="h-3 w-8" />
+              </div>
+              <div className="flex flex-col gap-2">
+                <Bone className="h-3 w-28" />
+                <Bone className="h-7 w-3/4 max-w-md" />
+                <Bone className="h-4 w-full max-w-xl" />
+              </div>
+            </li>
+          ))}
         </ul>
+        <Bone className="h-11 w-40" />
       </section>
       <section className="flex flex-col gap-5">
         <Bone className="h-10 w-52" />

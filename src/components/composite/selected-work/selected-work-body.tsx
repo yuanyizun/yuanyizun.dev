@@ -66,16 +66,16 @@ export function SelectedWorkBody({
   return (
     <>
       <div className="flex flex-col gap-6">
+        <TypeFilter
+          types={facets.types}
+          selected={displayed.types}
+          onChange={(types) => schedule({ ...draftRef.current, types })}
+        />
         <YearFromFilter
           min={facets.minYear}
           max={facets.maxYear}
           value={displayed.fromYear}
           onChange={(fromYear) => schedule({ ...draftRef.current, fromYear })}
-        />
-        <TypeFilter
-          types={facets.types}
-          selected={displayed.types}
-          onChange={(types) => schedule({ ...draftRef.current, types })}
         />
       </div>
       <div

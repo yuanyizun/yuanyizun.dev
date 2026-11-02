@@ -1,0 +1,71 @@
+.timelineRail {
+  position: absolute;
+  left: 50%;
+  /* Row padding 22px + half of the 38px year pill, so the line meets the next year. */
+  top: 19px;
+  bottom: -41px;
+  width: 1px;
+  margin-left: -0.5px;
+  background: var(--border);
+  transform-origin: top center;
+  transform: scaleY(0);
+  animation: timelineRailDraw 500ms ease-in-out forwards;
+  pointer-events: none;
+}
+
+.timelineEnter {
+  animation-duration: 500ms;
+  animation-timing-function: cubic-bezier(0.2, 0.7, 0.25, 1);
+  animation-fill-mode: backwards;
+}
+
+.timelineYear {
+  animation-name: timelineYearIn;
+}
+
+.timelineCard {
+  animation-name: timelineCardIn;
+}
+
+@keyframes timelineRailDraw {
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes timelineYearIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes timelineCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .timelineRail,
+  .timelineYear,
+  .timelineCard {
+    animation: none !important;
+    opacity: 1;
+    transform: none !important;
+    translate: none !important;
+  }
+
+  .timelineCard {
+    transition: none !important;
+  }
+}

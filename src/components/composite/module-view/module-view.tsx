@@ -1,4 +1,3 @@
-import { Suspense, ViewTransition } from "react";
 import { ArchitectureFigure } from "@/components/composite/architecture-figure/architecture-figure";
 import { ArticleCover } from "@/components/composite/article-cover/article-cover";
 import { ArticleHeader } from "@/components/composite/article-header/article-header";
@@ -12,28 +11,9 @@ import { ProofPoints } from "@/components/composite/proof-points/proof-points";
 import { RelatedList } from "@/components/composite/related-list/related-list";
 import { SectionNav } from "@/components/composite/section-nav/section-nav";
 import { SiteFooter } from "@/components/composite/site-footer/site-footer";
-import {
-  HeaderAccount,
-  HeaderSignIn,
-} from "@/components/composite/site-header/header-account";
+import { HeaderAccountSection } from "@/components/composite/site-header/header-account";
 import { SiteHeader } from "@/components/composite/site-header/site-header";
 import type { ModuleAssignment } from "@/theme/contracts";
-
-function HeaderAccountSlot({ className }: { className?: string }) {
-  return (
-    <Suspense
-      fallback={
-        <ViewTransition exit="header-account-exit" default="none">
-          <HeaderSignIn className={className} />
-        </ViewTransition>
-      }
-    >
-      <ViewTransition enter="header-account-enter" default="none">
-        <HeaderAccount className={className} />
-      </ViewTransition>
-    </Suspense>
-  );
-}
 
 export function ModuleView({ assignment }: { assignment: ModuleAssignment }) {
   switch (assignment.type) {
@@ -41,8 +21,8 @@ export function ModuleView({ assignment }: { assignment: ModuleAssignment }) {
       return (
         <SiteHeader
           {...assignment.props}
-          accountDesktop={<HeaderAccountSlot />}
-          accountMobile={<HeaderAccountSlot className="w-fit" />}
+          accountDesktop={<HeaderAccountSection />}
+          accountMobile={<HeaderAccountSection className="w-fit" />}
         />
       );
     case "SiteFooter":

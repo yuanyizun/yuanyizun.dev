@@ -1,5 +1,6 @@
 "use client";
 
+import { Loader2 } from "lucide-react";
 import { useActionState } from "react";
 import { Button } from "@/components/primitive/button";
 import {
@@ -28,18 +29,22 @@ export function UsernameForm({
   const [state, formAction, pending] = useActionState(action, initialState);
 
   return (
-    <Card className="w-full max-w-sm">
-      <CardHeader>
-        <CardTitle>Choose a username</CardTitle>
-        <CardDescription>
+    <Card className="w-full max-w-lg gap-6 py-8 text-base [--card-spacing:--spacing(6)]">
+      <CardHeader className="gap-2">
+        <CardTitle className="font-heading text-3xl font-medium tracking-tight sm:text-4xl">
+          Choose a username
+        </CardTitle>
+        <CardDescription className="text-base">
           Pick a username to finish setting up your account.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form action={formAction}>
-          <FieldGroup>
+          <FieldGroup className="gap-6">
             <Field data-invalid={state.errors?.username ? true : undefined}>
-              <FieldLabel htmlFor="username">Username</FieldLabel>
+              <FieldLabel htmlFor="username" className="text-base">
+                Username
+              </FieldLabel>
               <Input
                 id="username"
                 name="username"
@@ -47,6 +52,7 @@ export function UsernameForm({
                 required
                 maxLength={32}
                 aria-invalid={state.errors?.username ? true : undefined}
+                className="h-11 px-3 text-base md:text-base"
               />
               <FieldError>{state.errors?.username}</FieldError>
             </Field>
@@ -54,8 +60,21 @@ export function UsernameForm({
               <FieldError role="alert">{state.message}</FieldError>
             ) : null}
             <Field>
-              <Button type="submit" disabled={pending}>
-                {pending ? "Saving…" : "Continue"}
+              <Button
+                type="submit"
+                size="lg"
+                disabled={pending}
+                aria-busy={pending || undefined}
+                className="h-11 w-full gap-2 text-base"
+              >
+                {pending ? (
+                  <>
+                    <Loader2 className="size-4 animate-spin" aria-hidden />
+                    Saving…
+                  </>
+                ) : (
+                  "Continue"
+                )}
               </Button>
             </Field>
           </FieldGroup>

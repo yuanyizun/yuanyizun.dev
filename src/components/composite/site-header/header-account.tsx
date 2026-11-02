@@ -1,9 +1,8 @@
 import { Suspense, ViewTransition } from "react";
-import { Loader2 } from "lucide-react";
 import { ButtonLink } from "@/components/primitive/button/button";
-import { HeaderLogout } from "@/components/composite/site-header/header-logout";
 import { getSessionFromCookie } from "@/services/session";
 import { cn } from "@/utils/class-names";
+import { HeaderLogout } from "./header-logout";
 
 export function HeaderSignIn({ className }: { className?: string }) {
   return (
@@ -18,18 +17,12 @@ export function HeaderAccountFallback({ className }: { className?: string }) {
     <div
       role="status"
       aria-live="polite"
-      className={cn("inline-flex min-h-11 items-center gap-2", className)}
+      className={cn("inline-flex min-h-11 items-center", className)}
     >
       <span
-        className="h-4 w-28 rounded-md bg-muted motion-safe:animate-pulse"
+        className="h-11 w-28 rounded-md bg-card"
         aria-hidden
       />
-      <span
-        className="inline-flex min-h-11 min-w-[5.75rem] items-center justify-center rounded-md border border-foreground/15"
-        aria-hidden
-      >
-        <Loader2 className="size-4 animate-spin text-muted-foreground" />
-      </span>
       <span className="sr-only">Loading account</span>
     </div>
   );

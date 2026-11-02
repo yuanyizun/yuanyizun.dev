@@ -1,5 +1,6 @@
 "use client";
 
+import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useActionState } from "react";
 import { Button } from "@/components/primitive/button";
@@ -31,13 +32,20 @@ export function RegisterForm({
 
   if (state.ok) {
     return (
-      <Card className="w-full max-w-sm">
-        <CardHeader>
-          <CardTitle>Check your email</CardTitle>
-          <CardDescription>{state.message}</CardDescription>
+      <Card className="w-full max-w-lg gap-6 py-8 text-base [--card-spacing:--spacing(6)]">
+        <CardHeader className="gap-2">
+          <CardTitle className="font-heading text-3xl font-medium tracking-tight sm:text-4xl">
+            Check your email
+          </CardTitle>
+          <CardDescription className="text-base">{state.message}</CardDescription>
         </CardHeader>
         <CardContent>
-          <Button variant="outline" asChild>
+          <Button
+            variant="outline"
+            size="lg"
+            asChild
+            className="h-11 w-full text-base"
+          >
             <Link href="/login">Back to sign in</Link>
           </Button>
         </CardContent>
@@ -46,18 +54,22 @@ export function RegisterForm({
   }
 
   return (
-    <Card className="w-full max-w-sm">
-      <CardHeader>
-        <CardTitle>Create an account</CardTitle>
-        <CardDescription>
+    <Card className="w-full max-w-lg gap-6 py-8 text-base [--card-spacing:--spacing(6)]">
+      <CardHeader className="gap-2">
+        <CardTitle className="font-heading text-3xl font-medium tracking-tight sm:text-4xl">
+          Create an account
+        </CardTitle>
+        <CardDescription className="text-base">
           Username, email, and a password of at least 8 characters.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form action={formAction}>
-          <FieldGroup>
+          <FieldGroup className="gap-6">
             <Field data-invalid={state.errors?.username ? true : undefined}>
-              <FieldLabel htmlFor="username">Username</FieldLabel>
+              <FieldLabel htmlFor="username" className="text-base">
+                Username
+              </FieldLabel>
               <Input
                 id="username"
                 name="username"
@@ -65,11 +77,14 @@ export function RegisterForm({
                 required
                 maxLength={32}
                 aria-invalid={state.errors?.username ? true : undefined}
+                className="h-11 px-3 text-base md:text-base"
               />
               <FieldError>{state.errors?.username}</FieldError>
             </Field>
             <Field data-invalid={state.errors?.email ? true : undefined}>
-              <FieldLabel htmlFor="email">Email</FieldLabel>
+              <FieldLabel htmlFor="email" className="text-base">
+                Email
+              </FieldLabel>
               <Input
                 id="email"
                 name="email"
@@ -78,11 +93,14 @@ export function RegisterForm({
                 placeholder="m@example.com"
                 required
                 aria-invalid={state.errors?.email ? true : undefined}
+                className="h-11 px-3 text-base md:text-base"
               />
               <FieldError>{state.errors?.email}</FieldError>
             </Field>
             <Field data-invalid={state.errors?.password ? true : undefined}>
-              <FieldLabel htmlFor="password">Password</FieldLabel>
+              <FieldLabel htmlFor="password" className="text-base">
+                Password
+              </FieldLabel>
               <Input
                 id="password"
                 name="password"
@@ -91,8 +109,9 @@ export function RegisterForm({
                 required
                 minLength={8}
                 aria-invalid={state.errors?.password ? true : undefined}
+                className="h-11 px-3 text-base md:text-base"
               />
-              <FieldDescription>
+              <FieldDescription className="text-base">
                 Must be at least 8 characters long.
               </FieldDescription>
               <FieldError>{state.errors?.password}</FieldError>
@@ -101,13 +120,31 @@ export function RegisterForm({
               <FieldError role="alert">{state.message}</FieldError>
             ) : null}
             <Field>
-              <Button type="submit" disabled={pending}>
-                {pending ? "Creating account…" : "Create account"}
+              <Button
+                type="submit"
+                size="lg"
+                disabled={pending}
+                aria-busy={pending || undefined}
+                className="h-11 w-full gap-2 text-base"
+              >
+                {pending ? (
+                  <>
+                    <Loader2 className="size-4 animate-spin" aria-hidden />
+                    Creating account…
+                  </>
+                ) : (
+                  "Create account"
+                )}
               </Button>
-              <Button variant="outline" asChild>
+              <Button
+                variant="outline"
+                size="lg"
+                asChild
+                className="h-11 w-full text-base"
+              >
                 <Link href="/auth/google">Sign up with Google</Link>
               </Button>
-              <FieldDescription className="text-center">
+              <FieldDescription className="text-center text-base">
                 Already have an account? <Link href="/login">Sign in</Link>
               </FieldDescription>
             </Field>

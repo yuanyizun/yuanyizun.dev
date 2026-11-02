@@ -1,5 +1,6 @@
 "use client";
 
+import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useActionState } from "react";
 import { Button } from "@/components/primitive/button";
@@ -30,18 +31,22 @@ export function LoginForm({
   const [state, formAction, pending] = useActionState(action, initialState);
 
   return (
-    <Card className="w-full max-w-sm">
-      <CardHeader>
-        <CardTitle>Sign in</CardTitle>
-        <CardDescription>
+    <Card className="w-full max-w-lg gap-6 py-8 text-base [--card-spacing:--spacing(6)]">
+      <CardHeader className="gap-2">
+        <CardTitle className="font-heading text-3xl font-medium tracking-tight sm:text-4xl">
+          Sign in
+        </CardTitle>
+        <CardDescription className="text-base">
           Use your email and password, or continue with Google.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form action={formAction}>
-          <FieldGroup>
+          <FieldGroup className="gap-6">
             <Field data-invalid={state.errors?.email ? true : undefined}>
-              <FieldLabel htmlFor="email">Email</FieldLabel>
+              <FieldLabel htmlFor="email" className="text-base">
+                Email
+              </FieldLabel>
               <Input
                 id="email"
                 name="email"
@@ -50,11 +55,14 @@ export function LoginForm({
                 placeholder="m@example.com"
                 required
                 aria-invalid={state.errors?.email ? true : undefined}
+                className="h-11 px-3 text-base md:text-base"
               />
               <FieldError>{state.errors?.email}</FieldError>
             </Field>
             <Field data-invalid={state.errors?.password ? true : undefined}>
-              <FieldLabel htmlFor="password">Password</FieldLabel>
+              <FieldLabel htmlFor="password" className="text-base">
+                Password
+              </FieldLabel>
               <Input
                 id="password"
                 name="password"
@@ -63,6 +71,7 @@ export function LoginForm({
                 required
                 minLength={8}
                 aria-invalid={state.errors?.password ? true : undefined}
+                className="h-11 px-3 text-base md:text-base"
               />
               <FieldError>{state.errors?.password}</FieldError>
             </Field>
@@ -70,13 +79,31 @@ export function LoginForm({
               <FieldError role="alert">{state.message}</FieldError>
             ) : null}
             <Field>
-              <Button type="submit" disabled={pending}>
-                {pending ? "Signing in…" : "Sign in"}
+              <Button
+                type="submit"
+                size="lg"
+                disabled={pending}
+                aria-busy={pending || undefined}
+                className="h-11 w-full gap-2 text-base"
+              >
+                {pending ? (
+                  <>
+                    <Loader2 className="size-4 animate-spin" aria-hidden />
+                    Signing in…
+                  </>
+                ) : (
+                  "Sign in"
+                )}
               </Button>
-              <Button variant="outline" asChild>
+              <Button
+                variant="outline"
+                size="lg"
+                asChild
+                className="h-11 w-full text-base"
+              >
                 <Link href="/auth/google">Continue with Google</Link>
               </Button>
-              <FieldDescription className="text-center">
+              <FieldDescription className="text-center text-base">
                 Need an account? <Link href="/register">Register</Link>
               </FieldDescription>
             </Field>

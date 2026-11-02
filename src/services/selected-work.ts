@@ -87,7 +87,7 @@ function filterSelectedProjects(
 ) {
   return projects.filter((project) => {
     const year = yearOf(project.date);
-    if (year === null || year < selection.fromYear || year > selection.toYear) {
+    if (year === null || year < selection.fromYear) {
       return false;
     }
     if (selection.types.length === 0) return true;

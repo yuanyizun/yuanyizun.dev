@@ -11,15 +11,9 @@ export function SelectedWorkFilterFallback() {
       aria-busy="true"
     >
       <span className="sr-only">Loading filters…</span>
-      <div className="grid gap-6 sm:grid-cols-2">
-        <div className="flex flex-col gap-3">
-          <Bone className="h-3 w-16" />
-          <Bone className="h-6 w-full" />
-        </div>
-        <div className="flex flex-col gap-3">
-          <Bone className="h-3 w-12" />
-          <Bone className="h-6 w-full" />
-        </div>
+      <div className="flex max-w-xs flex-col gap-3">
+        <Bone className="h-3 w-16" />
+        <Bone className="h-11 w-full" />
       </div>
       <div className="flex flex-wrap gap-2">
         <Bone className="min-h-11 w-16" />

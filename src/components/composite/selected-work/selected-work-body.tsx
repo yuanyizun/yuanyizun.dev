@@ -12,12 +12,12 @@ import {
 } from "@/utils/selected-work-query";
 import { SelectedWorkTimeline, type TimelineProject } from "./selected-work-timeline";
 import { TypeFilter } from "./type-filter";
-import { YearRangeFilter } from "./year-range-filter";
+import { YearFromFilter } from "./year-from-filter";
 
 const throttleMs = 200;
 
 function selectionKey(selection: SelectedWorkSelection) {
-  return `${selection.fromYear}\0${selection.toYear}\0${selection.types.join("\0")}`;
+  return `${selection.fromYear}\0${selection.types.join("\0")}`;
 }
 
 export function SelectedWorkBody({
@@ -66,14 +66,11 @@ export function SelectedWorkBody({
   return (
     <>
       <div className="flex flex-col gap-6">
-        <YearRangeFilter
+        <YearFromFilter
           min={facets.minYear}
           max={facets.maxYear}
-          from={displayed.fromYear}
-          to={displayed.toYear}
-          onChange={(fromYear, toYear) =>
-            schedule({ ...draftRef.current, fromYear, toYear })
-          }
+          value={displayed.fromYear}
+          onChange={(fromYear) => schedule({ ...draftRef.current, fromYear })}
         />
         <TypeFilter
           types={facets.types}

@@ -14,7 +14,6 @@ export const selectedWorkParams = {
 
 export type SelectedWorkSelection = {
   fromYear: number;
-  toYear: number;
   types: string[];
 };
 
@@ -58,15 +57,7 @@ export function parseSelectedWorkQuery(
     parseYear(readValues(source, selectedWorkParams.from)[0]),
     facets,
   );
-  const to = yearInSpan(parseYear(readValues(source, selectedWorkParams.to)[0]), facets);
-  let fromYear = from === undefined ? facets.minYear : from;
-  let toYear = to === undefined ? facets.maxYear : to;
-
-  if (fromYear > toYear) {
-    const swap = fromYear;
-    fromYear = toYear;
-    toYear = swap;
-  }
+  const fromYear = from === undefined ? facets.minYear : from;
 
   const known = new Set(facets.types);
   const requested = readValues(source, selectedWorkParams.type).filter((type) =>
@@ -75,20 +66,14 @@ export function parseSelectedWorkQuery(
   const unique = facets.types.filter((type) => requested.includes(type));
   const types = unique.length === facets.types.length ? [] : unique;
 
-  return { fromYear, toYear, types };
+  return { fromYear, types };
 }
 
 export function selectedWorkFilterPatch(
   selection: SelectedWorkSelection,
   facets: SelectedWorkFacets,
 ): QueryFilterPatch {
-  let fromYear = clampYear(selection.fromYear, facets);
-  let toYear = clampYear(selection.toYear, facets);
-  if (fromYear > toYear) {
-    const swap = fromYear;
-    fromYear = toYear;
-    toYear = swap;
-  }
+  const fromYear = clampYear(selection.fromYear, facets);
 
   const chosen = new Set(selection.types);
   const types = facets.types.filter((type) => chosen.has(type));
@@ -97,7 +82,7 @@ export function selectedWorkFilterPatch(
   return {
     [selectedWorkParams.from]:
       fromYear !== facets.minYear ? String(fromYear) : null,
-    [selectedWorkParams.to]: toYear !== facets.maxYear ? String(toYear) : null,
+    [selectedWorkParams.to]: null,
     [selectedWorkParams.type]: includeTypes ? types : null,
   };
 }

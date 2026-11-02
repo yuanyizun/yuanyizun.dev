@@ -1,0 +1,15 @@
+.selectedWorkItem {
+  transition:
+    filter 180ms ease,
+    opacity 180ms ease;
+  will-change: filter, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .selectedWorkItem {
+    filter: none !important;
+    opacity: 1 !important;
+    transition: none;
+    will-change: auto;
+  }
+}

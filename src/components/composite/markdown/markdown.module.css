@@ -1,0 +1,41 @@
+.articleProse {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  font-size: 1.0625rem;
+  line-height: 1.65;
+}
+
+.articleProse h2 {
+  margin-top: 1.25rem;
+  font-size: clamp(1.5rem, 2vw, 1.85rem);
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.articleProse p,
+.articleProse li {
+  max-width: 65ch;
+}
+
+.articleProse ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+}
+
+.articleProse ol {
+  list-style: decimal;
+  padding-left: 1.25rem;
+}
+
+.articleProse pre,
+.articleProse code {
+  font-family: var(--font-mono);
+}
+
+.articleProse :not(pre) > code {
+  border-radius: 0.25rem;
+  background: var(--card);
+  padding: 0.1em 0.35em;
+  font-size: 0.92em;
+}

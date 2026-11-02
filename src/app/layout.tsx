@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Newsreader } from "next/font/google";
-import { SiteShell } from "@/theme/SiteShell";
+import { SiteShell } from "@/components/composite/site-shell/site-shell";
 import "./globals.css";
 
 const geist = Geist({

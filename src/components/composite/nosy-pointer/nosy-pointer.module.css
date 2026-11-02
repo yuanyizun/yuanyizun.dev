@@ -1,0 +1,36 @@
+.nosyPointer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 52px;
+  height: 64px;
+  z-index: 70;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.nosyPointer svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .nosyPointerActive,
+  .nosyPointerActive * {
+    cursor: none !important;
+  }
+
+  .nosyPointerActive input,
+  .nosyPointerActive textarea,
+  .nosyPointerActive [contenteditable]:not([contenteditable="false"]) {
+    cursor: text !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .nosyPointer {
+    display: none;
+  }
+}

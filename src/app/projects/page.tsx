@@ -1,35 +1,23 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
-import { ProjectsArchiveFallback } from "@/features/loading-fallbacks";
-import { ProjectArchive } from "@/features/project-archive";
-import { getProjects } from "@/lib/content";
-import { PageFrame } from "@/theme/PageFrame";
+import { PageFrame } from "@/components/composite/page-frame/page-frame";
+import { ProjectArchive } from "@/components/composite/project-archive/project-archive";
+import { getProjects } from "@/data/projects";
+import { firstSearchParam } from "@/utils/search-params";
+
+export const instant = false;
 
 export const metadata: Metadata = {
   title: "Projects",
 };
 
-function firstParam(value: string | string[] | undefined) {
-  return Array.isArray(value) ? value[0] : value;
-}
-
-async function ProjectsResults({
-  searchParams,
-}: {
-  searchParams: PageProps<"/projects">["searchParams"];
-}) {
+export default async function ProjectsPage({ searchParams }: PageProps<"/projects">) {
   const params = await searchParams;
-  const kind = firstParam(params.kind) ?? "";
+  const kind = firstSearchParam(params.kind) ?? "";
   const projects = await getProjects();
-  return <ProjectArchive projects={projects} kind={kind} />;
-}
 
-export default function ProjectsPage({ searchParams }: PageProps<"/projects">) {
   return (
     <PageFrame template="projects">
-      <Suspense fallback={<ProjectsArchiveFallback />}>
-        <ProjectsResults searchParams={searchParams} />
-      </Suspense>
+      <ProjectArchive projects={projects} kind={kind} />
     </PageFrame>
   );
 }

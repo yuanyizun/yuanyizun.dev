@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
-import { RouteErrorContent } from "@/features/fallbacks";
+import { Container } from "@/components/primitive/container/container";
+import { RouteErrorContent } from "@/components/composite/route-error-content/route-error-content";
 
 export default function Error({
   error,
@@ -15,8 +16,8 @@ export default function Error({
   }, [error]);
 
   return (
-    <main id="main-content" className="theme-container py-16">
+    <Container as="main" id="main-content" className="py-16">
       <RouteErrorContent onRetry={retry} />
-    </main>
+    </Container>
   );
 }

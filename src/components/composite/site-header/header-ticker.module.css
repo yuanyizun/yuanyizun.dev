@@ -1,0 +1,40 @@
+.headerTickerTrack {
+  display: flex;
+  width: max-content;
+  animation: headerTickerScrollRtl 28s linear infinite;
+}
+
+.headerTickerDragging .headerTickerTrack {
+  animation-play-state: paused;
+}
+
+.headerTickerStatic {
+  display: none;
+  margin: 0;
+  padding: 0.5rem 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+@keyframes headerTickerScrollRtl {
+  from {
+    transform: translateX(100vw);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .headerTickerTrack {
+    display: none;
+    animation: none;
+  }
+
+  .headerTickerStatic {
+    display: block;
+  }
+}

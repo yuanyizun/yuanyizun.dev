@@ -1,36 +1,24 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
-import { PostsArchiveFallback } from "@/features/loading-fallbacks";
-import { PostArchive } from "@/features/post-archive";
-import { getPosts } from "@/lib/content";
-import { PageFrame } from "@/theme/PageFrame";
+import { PageFrame } from "@/components/composite/page-frame/page-frame";
+import { PostArchive } from "@/components/composite/post-archive/post-archive";
+import { getPosts } from "@/data/posts";
+import { firstSearchParam } from "@/utils/search-params";
+
+export const instant = false;
 
 export const metadata: Metadata = {
   title: "Posts",
 };
 
-function firstParam(value: string | string[] | undefined) {
-  return Array.isArray(value) ? value[0] : value;
-}
-
-async function PostsResults({
-  searchParams,
-}: {
-  searchParams: PageProps<"/posts">["searchParams"];
-}) {
+export default async function PostsPage({ searchParams }: PageProps<"/posts">) {
   const params = await searchParams;
-  const query = firstParam(params.q) ?? "";
-  const page = Number(firstParam(params.page) ?? "1") || 1;
+  const query = firstSearchParam(params.q) ?? "";
+  const page = Number(firstSearchParam(params.page) ?? "1") || 1;
   const posts = await getPosts();
-  return <PostArchive posts={posts} query={query} page={page} />;
-}
 
-export default function PostsPage({ searchParams }: PageProps<"/posts">) {
   return (
     <PageFrame template="posts">
-      <Suspense fallback={<PostsArchiveFallback />}>
-        <PostsResults searchParams={searchParams} />
-      </Suspense>
+      <PostArchive posts={posts} query={query} page={page} />
     </PageFrame>
   );
 }

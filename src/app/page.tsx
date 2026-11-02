@@ -1,20 +1,18 @@
-import { Suspense } from "react";
-import { HomeContent } from "@/features/home-content";
-import { HomeContentFallback } from "@/features/loading-fallbacks";
-import { getPosts, getProjects } from "@/lib/content";
-import { PageFrame } from "@/theme/PageFrame";
+import { HomeContent } from "@/components/composite/home-content/home-content";
+import { PageFrame } from "@/components/composite/page-frame/page-frame";
+import { getHomeContent } from "@/services/home";
 
-async function HomeResults() {
-  const [projects, posts] = await Promise.all([getProjects(), getPosts()]);
-  return <HomeContent projects={projects} posts={posts} />;
-}
+export const instant = false;
 
-export default function HomePage() {
+export default async function HomePage({ searchParams }: PageProps<"/">) {
+  const content = await getHomeContent(await searchParams);
   return (
     <PageFrame template="home">
-      <Suspense fallback={<HomeContentFallback />}>
-        <HomeResults />
-      </Suspense>
+      <HomeContent
+        posts={content.posts}
+        projects={content.projects}
+        facets={content.facets}
+      />
     </PageFrame>
   );
 }

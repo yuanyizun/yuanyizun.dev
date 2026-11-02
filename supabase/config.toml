@@ -3,6 +3,7 @@ project_id = "bzdonmtsxnjwucsfqaku"
 
 [auth]
 site_url = "https://yuanyizun.dev"
+minimum_password_length = 8
 additional_redirect_urls = [
   "https://yuanyizun.dev/auth/callback",
   "http://localhost:3002/auth/callback",

@@ -20,7 +20,11 @@ import {
   FieldLabel,
 } from "@/components/primitive/field";
 import { Input } from "@/components/primitive/input";
-import type { AuthFormState } from "@/utils/auth-form";
+import {
+  USERNAME_HINT,
+  USERNAME_PATTERN_ATTR,
+  type AuthFormState,
+} from "@/utils/auth-form";
 
 const initialState: AuthFormState = {};
 
@@ -78,10 +82,16 @@ export function RegisterForm({
                 name="username"
                 autoComplete="username"
                 required
+                minLength={2}
                 maxLength={32}
+                pattern={USERNAME_PATTERN_ATTR}
+                title={USERNAME_HINT}
                 aria-invalid={state.errors?.username ? true : undefined}
                 className="h-11 px-3 text-base md:text-base"
               />
+              <FieldDescription className="text-base">
+                2–32 letters, numbers, or underscores.
+              </FieldDescription>
               <FieldError>{state.errors?.username}</FieldError>
             </Field>
             <Field data-invalid={state.errors?.email ? true : undefined}>

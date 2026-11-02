@@ -1,17 +1,22 @@
 import "server-only";
 
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
-import { getCurrentUser } from "@/data/users";
+import { getCurrentUser, type CurrentUser } from "@/data/users";
 import {
   clearSessionCookie,
   setSessionCookie,
 } from "@/services/session";
-import type { AuthFieldErrors, AuthFormState } from "@/utils/auth-form";
+import {
+  USERNAME_HINT,
+  USERNAME_PATTERN,
+  type AuthFieldErrors,
+  type AuthFormState,
+} from "@/utils/auth-form";
 import { createClient } from "@/utils/supabase/server";
 
 export type { AuthFieldErrors, AuthFormState };
 
-const USERNAME_MAX = 32;
 const PASSWORD_MIN = 8;
 
 function siteUrl() {
@@ -29,8 +34,8 @@ export function validateUsername(raw: FormDataEntryValue | null): {
   if (!value) {
     return { error: "Username is required." };
   }
-  if (value.length > USERNAME_MAX) {
-    return { error: `Username must be at most ${USERNAME_MAX} characters.` };
+  if (!USERNAME_PATTERN.test(value)) {
+    return { error: USERNAME_HINT };
   }
   return { value };
 }
@@ -78,6 +83,9 @@ function mapAuthError(message: string): string {
   ) {
     return `Password must be at least ${PASSWORD_MIN} characters.`;
   }
+  if (lower.includes("users_username_format")) {
+    return USERNAME_HINT;
+  }
   if (
     lower.includes("duplicate") ||
     lower.includes("unique") ||
@@ -89,6 +97,26 @@ function mapAuthError(message: string): string {
     return "Email or password is incorrect.";
   }
   return message || "Something went wrong. Try again.";
+}
+
+async function finishAuthenticatedRedirect(user: CurrentUser): Promise<never> {
+  if (!user.username) {
+    redirect("/register/username");
+  }
+  await setSessionCookie({ sub: user.id, username: user.username });
+  redirect("/");
+}
+
+/** Send signed-in visitors away from login/register forms. */
+export async function redirectIfSignedIn(): Promise<void> {
+  const user = await getCurrentUser();
+  if (!user) {
+    return;
+  }
+  if (!user.username) {
+    redirect("/register/username");
+  }
+  redirect("/");
 }
 
 export async function registerWithPassword(
@@ -107,7 +135,7 @@ export async function registerWithPassword(
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email: email.value!,
     password: password.value!,
     options: {
@@ -128,6 +156,16 @@ export async function registerWithPassword(
       return { errors: { password: mapped } };
     }
     return { message: mapped };
+  }
+
+  if (data.session) {
+    const user = await getCurrentUser();
+    if (!user) {
+      return {
+        message: "Account created, but the profile is missing. Try signing in.",
+      };
+    }
+    return finishAuthenticatedRedirect(user);
   }
 
   return {
@@ -160,11 +198,13 @@ export async function signInWithPassword(
   }
 
   const user = await getCurrentUser();
-  if (user?.username) {
-    await setSessionCookie({ sub: user.id, username: user.username });
+  if (!user) {
+    return {
+      message: "Signed in, but the profile is missing. Try again.",
+    };
   }
 
-  redirect("/");
+  return finishAuthenticatedRedirect(user);
 }
 
 export async function signOut(): Promise<void> {
@@ -174,8 +214,9 @@ export async function signOut(): Promise<void> {
   redirect("/");
 }
 
-export async function startGoogleOAuth(): Promise<string> {
-  const supabase = await createClient();
+export async function startGoogleOAuth(
+  supabase: SupabaseClient,
+): Promise<string> {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
@@ -190,8 +231,10 @@ export async function startGoogleOAuth(): Promise<string> {
   return data.url;
 }
 
-export async function exchangeAuthCode(code: string): Promise<void> {
-  const supabase = await createClient();
+export async function exchangeAuthCode(
+  supabase: SupabaseClient,
+  code: string,
+): Promise<void> {
   const { error } = await supabase.auth.exchangeCodeForSession(code);
   if (error) {
     throw new Error(mapAuthError(error.message));

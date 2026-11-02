@@ -1,5 +1,6 @@
 import "server-only";
 
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/utils/supabase/server";
 
 export type CurrentUser = {
@@ -32,7 +33,7 @@ function toCurrentUser(profile: ProfileRow): CurrentUser | null {
 }
 
 async function loadProfile(
-  supabase: Awaited<ReturnType<typeof createClient>>,
+  supabase: SupabaseClient,
   userId: string,
 ): Promise<ProfileRow | null> {
   const { data: profile, error } = await supabase
@@ -48,8 +49,9 @@ async function loadProfile(
   return profile as ProfileRow;
 }
 
-export async function getCurrentUser(): Promise<CurrentUser | null> {
-  const supabase = await createClient();
+export async function loadCurrentUser(
+  supabase: SupabaseClient,
+): Promise<CurrentUser | null> {
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -73,4 +75,9 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
   }
 
   return toCurrentUser(profile);
+}
+
+export async function getCurrentUser(): Promise<CurrentUser | null> {
+  const supabase = await createClient();
+  return loadCurrentUser(supabase);
 }

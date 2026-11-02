@@ -6,6 +6,7 @@ import { connection, type NextResponse } from "next/server";
 
 export const SESSION_COOKIE = "yz_session";
 const SESSION_MAX_AGE = 60 * 60 * 24;
+const SESSION_REFRESH_WINDOW = 60 * 60;
 
 export type SessionClaims = {
   sub: string;
@@ -63,6 +64,30 @@ export async function verifySessionToken(
   }
 }
 
+export async function sessionCookieNeedsReissue(
+  token: string | undefined,
+  userId: string,
+): Promise<boolean> {
+  if (!token) {
+    return true;
+  }
+  try {
+    const { payload } = await jwtVerify(token, secretKey());
+    if (payload.sub !== userId) {
+      return true;
+    }
+    if (typeof payload.username !== "string" || !payload.username) {
+      return true;
+    }
+    if (typeof payload.exp !== "number") {
+      return true;
+    }
+    return payload.exp - Math.floor(Date.now() / 1000) < SESSION_REFRESH_WINDOW;
+  } catch {
+    return true;
+  }
+}
+
 export async function getSessionFromCookie(): Promise<SessionClaims | null> {
   // jose jwtVerify uses new Date() for exp; mark request-bound first.
   await connection();
@@ -77,14 +102,15 @@ export async function getSessionFromCookie(): Promise<SessionClaims | null> {
 export async function setSessionCookie(
   claims: SessionClaims,
   response?: NextResponse,
-): Promise<void> {
+): Promise<string> {
   const token = await signSessionToken(claims);
   const options = cookieOptions();
   if (response) {
     response.cookies.set(SESSION_COOKIE, token, options);
-    return;
+    return token;
   }
   (await cookies()).set(SESSION_COOKIE, token, options);
+  return token;
 }
 
 export async function clearSessionCookie(

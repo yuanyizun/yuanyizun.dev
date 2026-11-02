@@ -1,7 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { getCurrentUser } from "@/data/users";
+import { loadCurrentUser } from "@/data/users";
 import { exchangeAuthCode } from "@/services/auth";
 import { setSessionCookie } from "@/services/session";
+import { createClientForResponse } from "@/utils/supabase/server";
 
 function siteOrigin() {
   return (
@@ -13,23 +14,30 @@ function siteOrigin() {
 export async function GET(request: NextRequest) {
   const code = request.nextUrl.searchParams.get("code");
   const origin = siteOrigin();
+  const loginUrl = new URL("/login", origin);
 
   if (!code) {
-    return NextResponse.redirect(new URL("/login", origin));
+    return NextResponse.redirect(loginUrl);
   }
+
+  const response = NextResponse.redirect(loginUrl);
+  const supabase = createClientForResponse(request, response);
 
   try {
-    await exchangeAuthCode(code);
+    await exchangeAuthCode(supabase, code);
   } catch {
-    return NextResponse.redirect(new URL("/login", origin));
+    return NextResponse.redirect(loginUrl);
   }
 
-  const user = await getCurrentUser();
-  if (!user?.username) {
-    return NextResponse.redirect(new URL("/register/username", origin));
+  const user = await loadCurrentUser(supabase);
+  const destination = user?.username
+    ? new URL("/", origin)
+    : new URL("/register/username", origin);
+  response.headers.set("location", destination.toString());
+
+  if (user?.username) {
+    await setSessionCookie({ sub: user.id, username: user.username }, response);
   }
 
-  const response = NextResponse.redirect(new URL("/", origin));
-  await setSessionCookie({ sub: user.id, username: user.username }, response);
   return response;
 }

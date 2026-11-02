@@ -1,13 +1,24 @@
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { startGoogleOAuth } from "@/services/auth";
+import { createClientForResponse } from "@/utils/supabase/server";
 
-export async function GET() {
+function siteOrigin() {
+  return (
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
+    "http://localhost:3002"
+  );
+}
+
+export async function GET(request: NextRequest) {
+  const loginUrl = new URL("/login", siteOrigin());
+  const response = NextResponse.redirect(loginUrl);
+
   try {
-    const url = await startGoogleOAuth();
-    return NextResponse.redirect(url);
+    const supabase = createClientForResponse(request, response);
+    const url = await startGoogleOAuth(supabase);
+    response.headers.set("location", url);
+    return response;
   } catch {
-    return NextResponse.redirect(
-      new URL("/login", process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3002"),
-    );
+    return NextResponse.redirect(loginUrl);
   }
 }

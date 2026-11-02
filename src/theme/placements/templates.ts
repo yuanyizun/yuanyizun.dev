@@ -93,6 +93,7 @@ export const templatePlacements: Record<TemplateKey, Placement> = {
     ],
     sidebar: [],
   },
+  auth: { sidebar: [] },
   "not-found": { sidebar: [] },
   error: { sidebar: [] },
 };
@@ -105,6 +106,7 @@ export const templateVariants: Record<TemplateKey, FrameVariant> = {
   projects: "wide",
   project: "reading",
   contact: "compact",
+  auth: "compact",
   "not-found": "compact",
   error: "compact",
 };

@@ -134,6 +134,7 @@ export type TemplateKey =
   | "projects"
   | "project"
   | "contact"
+  | "auth"
   | "not-found"
   | "error";
 

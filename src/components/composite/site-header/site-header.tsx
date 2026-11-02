@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { ExternalLink, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -95,7 +96,15 @@ function SocialLinks({ className }: { className?: string }) {
   );
 }
 
-export function SiteHeader({ active }: { active?: NavKey }) {
+export function SiteHeader({
+  active,
+  accountDesktop,
+  accountMobile,
+}: {
+  active?: NavKey;
+  accountDesktop?: ReactNode;
+  accountMobile?: ReactNode;
+}) {
   const pathname = usePathname();
 
   return (
@@ -147,6 +156,7 @@ export function SiteHeader({ active }: { active?: NavKey }) {
             );
           })}
           <SocialLinks />
+          {accountDesktop}
           <ButtonLink href="/contact">Let&apos;s talk</ButtonLink>
         </nav>
         <Dialog.Root>
@@ -189,9 +199,12 @@ export function SiteHeader({ active }: { active?: NavKey }) {
                 })}
                 <SocialLinks className="mt-2" />
               </nav>
-              <ButtonLink href="/contact" className="w-fit">
-                Let&apos;s talk
-              </ButtonLink>
+              <div className="flex flex-col gap-3">
+                {accountMobile}
+                <ButtonLink href="/contact" className="w-fit">
+                  Let&apos;s talk
+                </ButtonLink>
+              </div>
             </Dialog.Content>
           </Dialog.Portal>
         </Dialog.Root>

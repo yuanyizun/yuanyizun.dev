@@ -94,8 +94,46 @@ html[data-positions="true"] [data-position] {
   outline-offset: 6px;
 }
 
+/* Header account Suspense reveal (feature-016) */
+:root {
+  --duration-header-account-exit: 150ms;
+  --duration-header-account-enter: 220ms;
+}
+
+::view-transition {
+  pointer-events: none;
+}
+
+::view-transition-old(.header-account-exit) {
+  animation: var(--duration-header-account-exit) ease-out both header-account-fade
+    reverse;
+}
+
+::view-transition-new(.header-account-enter) {
+  animation: var(--duration-header-account-enter) ease-in
+    var(--duration-header-account-exit) both header-account-fade;
+}
+
+@keyframes header-account-fade {
+  from {
+    filter: blur(2px);
+    opacity: 0;
+  }
+  to {
+    filter: blur(0);
+    opacity: 1;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
   }
 }

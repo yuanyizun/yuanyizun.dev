@@ -1,24 +1,19 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { PageFrame } from "@/components/composite/page-frame/page-frame";
-import { PostArchive } from "@/components/composite/post-archive/post-archive";
-import { getPosts } from "@/data/posts";
-import { firstSearchParam } from "@/utils/search-params";
-
-export const instant = false;
+import { PostArchiveSection } from "@/components/composite/post-archive/post-archive-section";
+import { PostArchiveSkeleton } from "@/components/composite/post-archive/post-archive-skeleton";
 
 export const metadata: Metadata = {
   title: "Posts",
 };
 
-export default async function PostsPage({ searchParams }: PageProps<"/posts">) {
-  const params = await searchParams;
-  const query = firstSearchParam(params.q) ?? "";
-  const page = Number(firstSearchParam(params.page) ?? "1") || 1;
-  const posts = await getPosts();
-
+export default function PostsPage({ searchParams }: PageProps<"/posts">) {
   return (
     <PageFrame template="posts">
-      <PostArchive posts={posts} query={query} page={page} />
+      <Suspense fallback={<PostArchiveSkeleton />}>
+        <PostArchiveSection searchParams={searchParams} />
+      </Suspense>
     </PageFrame>
   );
 }

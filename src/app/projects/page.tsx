@@ -1,23 +1,19 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { PageFrame } from "@/components/composite/page-frame/page-frame";
-import { ProjectArchive } from "@/components/composite/project-archive/project-archive";
-import { getProjects } from "@/data/projects";
-import { firstSearchParam } from "@/utils/search-params";
-
-export const instant = false;
+import { ProjectArchiveSection } from "@/components/composite/project-archive/project-archive-section";
+import { ProjectArchiveSkeleton } from "@/components/composite/project-archive/project-archive-skeleton";
 
 export const metadata: Metadata = {
   title: "Projects",
 };
 
-export default async function ProjectsPage({ searchParams }: PageProps<"/projects">) {
-  const params = await searchParams;
-  const kind = firstSearchParam(params.kind) ?? "";
-  const projects = await getProjects();
-
+export default function ProjectsPage({ searchParams }: PageProps<"/projects">) {
   return (
     <PageFrame template="projects">
-      <ProjectArchive projects={projects} kind={kind} />
+      <Suspense fallback={<ProjectArchiveSkeleton />}>
+        <ProjectArchiveSection searchParams={searchParams} />
+      </Suspense>
     </PageFrame>
   );
 }

@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { PostArticle } from "@/components/composite/post-article/post-article";
+import { Suspense } from "react";
+import { PostArticleSection } from "@/components/composite/post-article/post-article-section";
+import { PostArticleSkeleton } from "@/components/composite/post-article/post-article-skeleton";
 import { getPost, getPosts } from "@/data/posts";
-import { getPostPage } from "@/services/post-page";
-
-export const instant = false;
 
 export async function generateStaticParams() {
   const posts = await getPosts();
@@ -25,11 +23,10 @@ export async function generateMetadata({
   };
 }
 
-export default async function PostPage({ params }: PageProps<"/posts/[slug]">) {
-  const { slug } = await params;
-  const article = await getPostPage(slug);
-  if (!article) {
-    notFound();
-  }
-  return <PostArticle post={article.post} related={article.related} />;
+export default function PostPage({ params }: PageProps<"/posts/[slug]">) {
+  return (
+    <Suspense fallback={<PostArticleSkeleton />}>
+      <PostArticleSection params={params} />
+    </Suspense>
+  );
 }

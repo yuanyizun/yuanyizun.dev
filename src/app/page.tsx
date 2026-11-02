@@ -1,18 +1,21 @@
-import { HomeContent } from "@/components/composite/home-content/home-content";
+import { Suspense } from "react";
+import { LatestWritingSection } from "@/components/composite/latest-writing/latest-writing-section";
+import { LatestWritingSkeleton } from "@/components/composite/latest-writing/latest-writing-skeleton";
 import { PageFrame } from "@/components/composite/page-frame/page-frame";
-import { getHomeContent } from "@/services/home";
+import { SelectedWorkSection } from "@/components/composite/selected-work/selected-work-section";
+import { SelectedWorkSkeleton } from "@/components/composite/selected-work/selected-work-skeleton";
 
-export const instant = false;
-
-export default async function HomePage({ searchParams }: PageProps<"/">) {
-  const content = await getHomeContent(await searchParams);
+export default function HomePage({ searchParams }: PageProps<"/">) {
   return (
     <PageFrame template="home">
-      <HomeContent
-        posts={content.posts}
-        projects={content.projects}
-        facets={content.facets}
-      />
+      <div className="flex flex-col gap-16">
+        <Suspense fallback={<SelectedWorkSkeleton />}>
+          <SelectedWorkSection searchParams={searchParams} />
+        </Suspense>
+        <Suspense fallback={<LatestWritingSkeleton />}>
+          <LatestWritingSection />
+        </Suspense>
+      </div>
     </PageFrame>
   );
 }

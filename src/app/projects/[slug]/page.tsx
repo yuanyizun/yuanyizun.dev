@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { ProjectArticle } from "@/components/composite/project-article/project-article";
+import { Suspense } from "react";
+import { ProjectArticleSection } from "@/components/composite/project-article/project-article-section";
+import { ProjectArticleSkeleton } from "@/components/composite/project-article/project-article-skeleton";
 import { getProject, getProjects } from "@/data/projects";
-import { getProjectPage } from "@/services/project-page";
-
-export const instant = false;
 
 export async function generateStaticParams() {
   const projects = await getProjects();
@@ -25,11 +23,10 @@ export async function generateMetadata({
   };
 }
 
-export default async function ProjectPage({ params }: PageProps<"/projects/[slug]">) {
-  const { slug } = await params;
-  const article = await getProjectPage(slug);
-  if (!article) {
-    notFound();
-  }
-  return <ProjectArticle project={article.project} related={article.related} />;
+export default function ProjectPage({ params }: PageProps<"/projects/[slug]">) {
+  return (
+    <Suspense fallback={<ProjectArticleSkeleton />}>
+      <ProjectArticleSection params={params} />
+    </Suspense>
+  );
 }

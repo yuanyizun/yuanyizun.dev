@@ -1,5 +1,6 @@
 import "server-only";
 import path from "node:path";
+import { cacheLife, cacheTag } from "next/cache";
 import {
   byDateDescending,
   formatFrontmatterDate,
@@ -30,11 +31,15 @@ function toPost(entry: MarkdownEntry): Post {
 
 export async function getPosts(): Promise<Post[]> {
   "use cache";
+  cacheLife("days");
+  cacheTag("posts");
   return readPublishedEntries(postsDirectory).map(toPost).sort(byDateDescending);
 }
 
 export async function getPost(slug: string): Promise<Post | null> {
   "use cache";
+  cacheLife("days");
+  cacheTag("posts", `post:${slug}`);
   const posts = readPublishedEntries(postsDirectory).map(toPost);
   return posts.find((post) => post.slug === slug) ?? null;
 }

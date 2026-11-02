@@ -1,5 +1,6 @@
 import "server-only";
 import path from "node:path";
+import { cacheLife, cacheTag } from "next/cache";
 import {
   byDateDescending,
   formatFrontmatterDate,
@@ -51,11 +52,15 @@ function toProject(entry: MarkdownEntry): Project {
 
 export async function getProjects(): Promise<Project[]> {
   "use cache";
+  cacheLife("days");
+  cacheTag("projects");
   return readPublishedEntries(projectsDirectory).map(toProject).sort(byDateDescending);
 }
 
 export async function getProject(slug: string): Promise<Project | null> {
   "use cache";
+  cacheLife("days");
+  cacheTag("projects", `project:${slug}`);
   const projects = readPublishedEntries(projectsDirectory).map(toProject);
   return projects.find((project) => project.slug === slug) ?? null;
 }

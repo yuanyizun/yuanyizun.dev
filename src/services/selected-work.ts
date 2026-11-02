@@ -1,5 +1,5 @@
 import "server-only";
-import { cache } from "react";
+import { cacheLife, cacheTag } from "next/cache";
 import { getProjects, type Project } from "@/data/projects";
 import {
   parseSelectedWorkQuery,
@@ -46,7 +46,11 @@ function toSelectedProject(project: Project): SelectedProject {
   };
 }
 
-const loadSelectedProjects = cache(async (): Promise<SelectedProject[]> => {
+async function loadSelectedProjects(): Promise<SelectedProject[]> {
+  "use cache";
+  cacheLife("days");
+  cacheTag("projects", "selected-work");
+
   const projects = await getProjects();
   const bySlug = new Map(projects.map((project) => [project.slug, project]));
 
@@ -56,7 +60,7 @@ const loadSelectedProjects = cache(async (): Promise<SelectedProject[]> => {
     .filter((project) => project.group !== "personal")
     .map(toSelectedProject)
     .sort(byDateDescending);
-});
+}
 
 function facetsFor(projects: SelectedProject[]): SelectedWorkFacets {
   const years = projects

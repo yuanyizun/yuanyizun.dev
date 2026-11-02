@@ -1,3 +1,5 @@
+import type { QueryFilterPatch } from "@/utils/query-params";
+
 export type SelectedWorkFacets = {
   minYear: number;
   maxYear: number;
@@ -5,9 +7,9 @@ export type SelectedWorkFacets = {
 };
 
 export const selectedWorkParams = {
-  from: "from",
-  to: "to",
-  type: "type",
+  from: "workFrom",
+  to: "workTo",
+  type: "workType",
 } as const;
 
 export type SelectedWorkSelection = {
@@ -76,17 +78,10 @@ export function parseSelectedWorkQuery(
   return { fromYear, toYear, types };
 }
 
-export function buildSelectedWorkHref(
-  current: URLSearchParams,
+export function selectedWorkFilterPatch(
   selection: SelectedWorkSelection,
   facets: SelectedWorkFacets,
-  pathname = "/",
-) {
-  const next = new URLSearchParams(current);
-  next.delete(selectedWorkParams.from);
-  next.delete(selectedWorkParams.to);
-  next.delete(selectedWorkParams.type);
-
+): QueryFilterPatch {
   let fromYear = clampYear(selection.fromYear, facets);
   let toYear = clampYear(selection.toYear, facets);
   if (fromYear > toYear) {
@@ -95,21 +90,14 @@ export function buildSelectedWorkHref(
     toYear = swap;
   }
 
-  if (fromYear !== facets.minYear) {
-    next.set(selectedWorkParams.from, String(fromYear));
-  }
-  if (toYear !== facets.maxYear) {
-    next.set(selectedWorkParams.to, String(toYear));
-  }
-
   const chosen = new Set(selection.types);
   const types = facets.types.filter((type) => chosen.has(type));
-  if (types.length > 0 && types.length < facets.types.length) {
-    for (const type of types) {
-      next.append(selectedWorkParams.type, type);
-    }
-  }
+  const includeTypes = types.length > 0 && types.length < facets.types.length;
 
-  const query = next.toString();
-  return query ? `${pathname}?${query}` : pathname;
+  return {
+    [selectedWorkParams.from]:
+      fromYear !== facets.minYear ? String(fromYear) : null,
+    [selectedWorkParams.to]: toYear !== facets.maxYear ? String(toYear) : null,
+    [selectedWorkParams.type]: includeTypes ? types : null,
+  };
 }

@@ -2,7 +2,8 @@
 
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
+import { GoogleAuthButton } from "@/components/composite/auth-form/google-auth-button";
 import { Button } from "@/components/primitive/button";
 import {
   Card,
@@ -29,6 +30,8 @@ export function RegisterForm({
   action: (state: AuthFormState, formData: FormData) => Promise<AuthFormState>;
 }) {
   const [state, formAction, pending] = useActionState(action, initialState);
+  const [googlePending, setGooglePending] = useState(false);
+  const busy = pending || googlePending;
 
   if (state.ok) {
     return (
@@ -123,7 +126,7 @@ export function RegisterForm({
               <Button
                 type="submit"
                 size="lg"
-                disabled={pending}
+                disabled={busy}
                 aria-busy={pending || undefined}
                 className="h-11 w-full gap-2 text-base"
               >
@@ -136,14 +139,12 @@ export function RegisterForm({
                   "Create account"
                 )}
               </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                asChild
-                className="h-11 w-full text-base"
-              >
-                <Link href="/auth/google">Sign up with Google</Link>
-              </Button>
+              <GoogleAuthButton
+                idleLabel="Sign up with Google"
+                pendingLabel="Signing up with Google…"
+                disabled={pending}
+                onBusyChange={setGooglePending}
+              />
               <FieldDescription className="text-center text-base">
                 Already have an account? <Link href="/login">Sign in</Link>
               </FieldDescription>

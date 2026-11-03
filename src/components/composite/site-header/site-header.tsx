@@ -25,6 +25,7 @@ const links = [
   { href: "/about", label: "About", key: "about" },
   { href: "/posts", label: "Posts", key: "posts" },
   { href: "/projects", label: "Projects", key: "projects" },
+  { href: "/contact", label: "Contact", key: "contact" },
 ] as const;
 
 const avatarSrc = "/images/yuanyizun-avatar.png";
@@ -128,10 +129,7 @@ export function SiteHeader({
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-          <Link
-            href="/"
-            className="font-heading text-xl tracking-[-0.03em] no-underline"
-          >
+          <Link href="/" className="brandWordmark no-underline">
             Yizun Yuan
           </Link>
         </div>

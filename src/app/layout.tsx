@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Newsreader } from "next/font/google";
+import { Caveat, Geist, Geist_Mono, Newsreader } from "next/font/google";
 import { SiteShell } from "@/components/composite/site-shell/site-shell";
 import "./globals.css";
 
@@ -22,6 +22,13 @@ const newsreader = Newsreader({
   display: "swap",
 });
 
+const caveat = Caveat({
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  variable: "--font-caveat",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: {
     default: "Yizun Yuan",
@@ -35,7 +42,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${geist.variable} ${geistMono.variable} ${newsreader.variable} h-full antialiased`}
+      className={`${geist.variable} ${geistMono.variable} ${newsreader.variable} ${caveat.variable} h-full antialiased`}
       data-scroll-behavior="smooth"
       data-positions={process.env.THEME_POSITIONS === "1" ? "true" : undefined}
     >

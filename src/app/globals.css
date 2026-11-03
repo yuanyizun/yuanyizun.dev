@@ -9,6 +9,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
   --font-heading: var(--font-newsreader), Georgia, "Times New Roman", serif;
+  --font-brand: var(--font-caveat), ui-rounded, cursive;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
   --color-muted-foreground: var(--muted-foreground);
   --color-primary: var(--primary);
@@ -92,6 +93,16 @@
 html[data-positions="true"] [data-position] {
   outline: 1px dashed #bb4b2c;
   outline-offset: 6px;
+}
+
+/* Header brand wordmark (feature-021) */
+.brandWordmark {
+  font-family: var(--font-brand);
+  font-size: 1.75rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--foreground);
 }
 
 /* Header account Suspense reveal (feature-016) */

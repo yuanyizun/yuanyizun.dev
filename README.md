@@ -47,4 +47,13 @@ Published files are listed with the newest `date` first.
 
 ## Deploy
 
-Deploy this repository on Vercel with the repository root as the project directory and the Next.js framework preset. No environment variables are required. `vibe-coder/` is listed in `.vercelignore` and is not part of the site.
+Deploy this repository on Vercel with the repository root as the project directory and the Next.js framework preset. `vibe-coder/` is listed in `.vercelignore` and is not part of the site.
+
+Production environment variables:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `NEXT_PUBLIC_SITE_URL` — `https://yuanyizun.dev`
+- `AUTH_JWT_SECRET` — at least 32 characters
+
+`AUTH_JWT_SECRET` is required for session cookies. The Supabase values are the project URL and the anon key. Do not set the service role key on Vercel; the app does not use it.

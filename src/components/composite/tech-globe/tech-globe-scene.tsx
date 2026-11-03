@@ -73,13 +73,15 @@ function TechNodeMarker({
   interactive: boolean;
 }) {
   const groupRef = useRef<Group>(null);
+  const elapsedRef = useRef(0);
 
-  useFrame(({ clock }) => {
+  useFrame((_, delta) => {
     const group = groupRef.current;
     if (!group) return;
+    elapsedRef.current += delta;
     const pulse =
       selected && !reduceMotion
-        ? 1.08 + Math.sin(clock.elapsedTime * 3) * 0.05
+        ? 1.08 + Math.sin(elapsedRef.current * 3) * 0.05
         : selected
           ? 1.08
           : 1;

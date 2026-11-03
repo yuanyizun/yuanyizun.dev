@@ -37,8 +37,9 @@ export const templatePlacements: Record<TemplateKey, Placement> = {
         id: "posts-intro",
         type: "PageIntro",
         props: {
-          title: "Notes from the journey.",
-          summary: "Short writing stored as local markdown files.",
+          title: "Engineering Notes & Articles",
+          summary:
+            "Practical write-ups on building production systems, solving backend challenges, and working with modern web stacks.",
         },
       },
     ],

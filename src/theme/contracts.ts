@@ -75,7 +75,11 @@ export type ModuleAssignment =
   | { id: string; type: "ResumeLink"; props: { href: string; label: string } }
   | { id: string; type: "Breadcrumbs"; props: { items: Crumb[] } }
   | { id: string; type: "ArticleHeader"; props: { article: ArticleMeta } }
-  | { id: string; type: "ArticleCover"; props: { title: string } }
+  | {
+      id: string;
+      type: "ArticleCover";
+      props: { title: string; image: string; credit?: string };
+    }
   | {
       id: string;
       type: "ArticleNavigation";

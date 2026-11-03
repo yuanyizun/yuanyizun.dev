@@ -8,6 +8,8 @@ type PostBody = {
   date: string;
   summary: string;
   content: string;
+  image: string;
+  credit?: string;
 };
 
 type RelatedLink = {
@@ -53,7 +55,16 @@ export function PostArticle({
       },
     ],
     "main-middle": [
-      { id: "post-cover", type: "ArticleCover", props: { title: post.title } },
+      {
+        id: "post-cover",
+        type: "ArticleCover",
+        props: {
+          title: post.title,
+          image: post.image,
+          ...(post.credit ? { credit: post.credit } : {}),
+        },
+      },
+
     ],
     sidebar: headings.length
       ? [

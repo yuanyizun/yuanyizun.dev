@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { BrowserPreview } from "@/components/composite/browser-preview/browser-preview";
 
 type ArchiveProject = {
   slug: string;
@@ -85,28 +84,25 @@ export function ProjectArchive({
       ) : (
         <>
           {featured ? (
-            <article className="grid gap-4 overflow-hidden rounded-xl bg-inverse text-inverse-foreground lg:grid-cols-2">
-              <div className="flex flex-col justify-between gap-6 p-6 sm:p-8">
-                <div className="flex flex-col gap-3">
-                  <p className="font-mono text-xs text-inverse-muted">
-                    {featured.context ?? featured.kind}
-                    {featured.period ? ` · ${featured.period}` : ""}
-                  </p>
-                  <h2 className="font-heading text-4xl tracking-[-0.03em]">
-                    {featured.title}
-                  </h2>
-                  <p className="max-w-md text-sm leading-relaxed text-inverse-muted">
-                    {featured.summary}
-                  </p>
-                </div>
-                <Link
-                  href={`/projects/${featured.slug}`}
-                  className="inline-flex min-h-11 w-fit items-center rounded-md bg-primary px-4 text-sm text-primary-foreground no-underline"
-                >
-                  Read case study
-                </Link>
+            <article className="flex flex-col justify-between gap-6 overflow-hidden rounded-xl bg-inverse p-6 text-inverse-foreground sm:p-8">
+              <div className="flex flex-col gap-3">
+                <p className="font-mono text-xs text-inverse-muted">
+                  {featured.context ?? featured.kind}
+                  {featured.period ? ` · ${featured.period}` : ""}
+                </p>
+                <h2 className="font-heading text-4xl tracking-[-0.03em]">
+                  {featured.title}
+                </h2>
+                <p className="max-w-md text-sm leading-relaxed text-inverse-muted">
+                  {featured.summary}
+                </p>
               </div>
-              <BrowserPreview title={featured.title} tone="dark" />
+              <Link
+                href={`/projects/${featured.slug}`}
+                className="inline-flex min-h-11 w-fit items-center rounded-md bg-primary px-4 text-sm text-primary-foreground no-underline"
+              >
+                Read case study
+              </Link>
             </article>
           ) : null}
 

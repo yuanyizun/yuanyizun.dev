@@ -1,6 +1,6 @@
+import Image from "next/image";
 import Link from "next/link";
 import { formatDisplayDate } from "@/utils/date";
-import { OrbitalCover } from "@/components/composite/orbital-cover/orbital-cover";
 
 type ArchivePost = {
   slug: string;
@@ -8,6 +8,7 @@ type ArchivePost = {
   date: string;
   summary: string;
   content: string;
+  image: string;
 };
 
 const pageSize = 8;
@@ -70,8 +71,15 @@ export function PostArchive({
               href={`/posts/${featured.slug}`}
               className="grid gap-6 rounded-xl bg-card p-5 no-underline lg:grid-cols-[minmax(14rem,0.7fr)_minmax(0,1.3fr)] lg:items-center"
             >
-              <div className="overflow-hidden rounded-lg">
-                <OrbitalCover title={featured.title} />
+              <div className="relative aspect-[4/3] overflow-hidden rounded-lg">
+                <Image
+                  src={featured.image}
+                  alt={featured.title}
+                  fill
+                  sizes="(max-width: 64rem) 100vw, 22rem"
+                  className="object-cover grayscale"
+                  priority
+                />
               </div>
               <span className="flex flex-col gap-3">
                 <time

@@ -1,7 +1,7 @@
 import { formatDisplayDate } from "@/utils/date";
 import type { ArticleMeta } from "@/theme/contracts";
 import { ReadingProgress } from "./reading-progress";
-import { ShareButton } from "./share-button";
+import { ShareRail } from "./share-button";
 
 export function ArticleHeader({ article }: { article: ArticleMeta }) {
   return (
@@ -11,13 +11,11 @@ export function ArticleHeader({ article }: { article: ArticleMeta }) {
         {article.title}
       </h1>
       <p className="text-lg leading-relaxed">{article.summary}</p>
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <p className="font-mono text-xs text-muted-foreground">
-          Yizun Yuan · {formatDisplayDate(article.date)} · {article.minutes} min
-          read
-        </p>
-        <ShareButton title={article.title} />
-      </div>
+      <p className="font-mono text-xs text-muted-foreground">
+        Yizun Yuan · {formatDisplayDate(article.date)} · {article.minutes} min
+        read
+      </p>
+      <ShareRail title={article.title} />
     </header>
   );
 }

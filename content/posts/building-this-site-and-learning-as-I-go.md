@@ -2,6 +2,7 @@
 title: Building this site, and learning as I go
 date: 2026-11-02
 summary: Why I built my own portfolio while applying for jobs, and how it became a practical project with Next.js, React, TypeScript, Supabase, and Vercel.
+image: /images/building-this-site-and-learning-as-I-go.webp
 ---
 
 Applying for developer jobs has a way of making you look closely at your own skills. You read a job description, recognise some of the stack, and realise there are other tools you want more hands-on experience with.

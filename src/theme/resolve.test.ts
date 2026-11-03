@@ -60,7 +60,11 @@ test("duplicate assignment ids are rejected", () => {
         {
           id: "same",
           type: "ArticleCover",
-          props: { title: "B" },
+          props: {
+            title: "B",
+            image: "/images/building-this-site-and-learning-as-I-go.webp",
+          },
+
         },
       ],
     }),

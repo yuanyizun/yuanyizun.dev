@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Caveat, Geist, Geist_Mono, Newsreader } from "next/font/google";
+import { GoogleAnalytics } from "@/components/composite/google-analytics/google-analytics";
 import { SiteShell } from "@/components/composite/site-shell/site-shell";
 import "./globals.css";
 
@@ -48,6 +49,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="flex min-h-full flex-col bg-background font-sans text-foreground">
         <SiteShell>{children}</SiteShell>
+        <GoogleAnalytics />
       </body>
     </html>
   );

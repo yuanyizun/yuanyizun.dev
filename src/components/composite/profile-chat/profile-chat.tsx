@@ -154,7 +154,7 @@ function ProfileChatPanel() {
           ref={panelRef}
           role="dialog"
           aria-labelledby="profile-chat-title"
-          className="flex h-[min(36rem,calc(100dvh-6.5rem))] w-full flex-col overflow-hidden rounded-xl bg-card text-card-foreground shadow-lg"
+          className="flex h-[min(36rem,calc(100dvh-6.5rem))] w-full flex-col overflow-hidden rounded-xl border border-border bg-background text-foreground shadow-[0_16px_40px_rgba(36,40,35,0.18)]"
         >
           <div className="flex items-start justify-between gap-4 px-5 pt-5">
             <div className="flex flex-col gap-2">
@@ -184,7 +184,7 @@ function ProfileChatPanel() {
                   <button
                     key={prompt}
                     type="button"
-                    className="min-h-11 rounded-md bg-background px-3 text-left text-base focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                    className="min-h-11 rounded-md border border-border bg-card px-3 text-left text-base focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                     onClick={() => submit(prompt)}
                   >
                     {prompt}
@@ -227,7 +227,7 @@ function ProfileChatPanel() {
           </div>
 
           <form
-            className="flex flex-col gap-3 bg-background px-5 py-4"
+            className="flex flex-col gap-3 border-t border-border bg-card px-5 py-4"
             onSubmit={(event) => {
               event.preventDefault();
               submit(draft);
@@ -244,7 +244,7 @@ function ProfileChatPanel() {
               maxLength={2000}
               value={draft}
               placeholder="Ask about the work"
-              className="min-h-24 w-full resize-none bg-card px-3 py-3 text-base text-foreground outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              className="min-h-24 w-full resize-none rounded-md border border-border bg-background px-3 py-3 text-base text-foreground outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
               onChange={(event) => setDraft(event.target.value)}
               onKeyDown={(event) => {
                 if (event.key === "Enter" && !event.shiftKey) {

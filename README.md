@@ -56,5 +56,6 @@ Production environment variables:
 - `NEXT_PUBLIC_SITE_URL` — `https://yuanyizun.dev`
 - `NEXT_PUBLIC_GA_MEASUREMENT_ID` — GA4 measurement ID, for example `G-B12B13EBWM`. Omit it to leave the Google tag unloaded.
 - `AUTH_JWT_SECRET` — at least 32 characters
+- `GOOGLE_GENERATIVE_AI_API_KEY` — Google AI Studio key for the profile chat. Server-only. Omit it and the chat answers that it is unavailable.
 
 `AUTH_JWT_SECRET` is required for session cookies. The Supabase values are the project URL and the anon key. Do not set the service role key on Vercel; the app does not use it.

@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { NosyPointer } from "@/components/composite/nosy-pointer/nosy-pointer";
+import { ProfileChat } from "@/components/composite/profile-chat/profile-chat";
 import { Position } from "@/components/composite/position/position";
 import type { ModuleAssignment } from "@/theme/contracts";
 import { sitePlacement } from "@/theme/placements/site";
@@ -41,6 +42,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
       <Position name="before-footer" assignments={sitePlacement["before-footer"] ?? []} />
       <Position name="footer" assignments={footer} />
       <Position name="after-footer" assignments={sitePlacement["after-footer"] ?? []} />
+      <ProfileChat />
     </>
   );
 }

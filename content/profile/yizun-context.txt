@@ -1,0 +1,98 @@
+YIZUN YUAN — RESUME FACTS (LLM REFERENCE)
+Source: Yizun_Yuan_Resume_Detailed.tex. Wording is compressed; facts, dates, qualifiers, and scope match that file.
+Use only these facts. Do not invent skills, tools, employers, dates, metrics, or domain experience. Keep qualifiers (approximately, circa, around, reported, observed). Momentum Media work is employment. Next.js blog and the React recipe planner are independent personal projects. Python job-board prep and historical CSV loading name no employer or date in the source.
+
+IDENTITY
+Name: Yizun Yuan
+Headline: Senior Full Stack Engineer
+Location: Sydney, NSW, Australia
+LinkedIn: https://www.linkedin.com/in/yizun-yuan/
+Site: https://yuanyizun.dev (personal project, 2026)
+
+SUMMARY
+Full stack engineer, 11 years, production applications for a digital media business. Independently built Laravel CRM, comment-management, and Salesforce integration platforms; delivered Node.js services and Python data pipelines; modernised AWS hosting and publishing websites.
+Scope: requirements, architecture, frontend, backend, testing, deployment, operational support, handover documentation. Built shared templates and deployment workflows for remote developers. Production JavaScript and TypeScript. Independent personal projects in React, Next.js, and TypeScript. Uses Cursor with incremental implementation, code review, and testing.
+
+SKILLS
+Backend and full stack: PHP, Laravel, JavaScript, Node.js, Express.js, PM2, TypeScript, Angular ad integration, REST APIs, MySQL, SQL, Joomla, WordPress, Drupal, Grav.
+Personal projects: Next.js App Router, React, TypeScript, Tailwind CSS, React Server Components, SSR, SSG, Client Components and hydration, Suspense, Server Actions, content caching, Supabase authentication. React recipe planner: Vite, Redux, RTK Query, hooks, Context API; Jest unit tests and manual browser checks.
+Laravel: Blade, Tailwind CSS, Alpine.js, Eloquent ORM, migrations, Redis caching, Laravel Horizon, queued jobs, task scheduling, SAML SSO, RBAC, Pest.
+Python and data: Python, Requests, Beautiful Soup, CSV processing, validation and transformation, Google Cloud BigQuery SDK, resumable uploads.
+Cloud, data, delivery: AWS, Lambda, S3, EC2, RDS, EFS, VPC, load balancers, CloudWatch, Linux, Apache, Varnish, Cloudflare Zero Trust, cloudflared, BigQuery, GCP, Tableau, CI/CD, Docker, Docker Compose.
+AI-assisted engineering: Cursor, incremental implementation planning, AI-assisted unit and integration tests, code review, handover documentation and diagrams.
+Marketing CRM and advertising: Salesforce Marketing Cloud, CloudPages, SSJS, AMPscript, Salesforce CRM API integration, SOAP APIs, SOQL, OAuth 2.0, JWT, Mautic, Mailchimp, Kevel, Google Analytics, Google Tag Manager.
+Workflow: GitHub, GitHub Actions, Jenkins, deployment automation, code review, Playwright, manual end-to-end testing, documentation, remote developer support, Asana integrations.
+
+EXPERIENCE
+
+1) Full Stack & Platform Engineering | Momentum Media | Sydney, Australia | Jan 2022–Sep 2026
+Owned full stack and platform work across cloud, data, CRM, advertising technology, and Laravel applications in a multi-brand digital media environment.
+
+- Event ticket sales CRM (2026), independent, requirements through design, build, test, deploy, and maintenance. First version in approximately two weeks, then more features and fixes. Laravel/PHP, Blade, Tailwind CSS, Alpine.js, MySQL, for a sales team that wanted faster daily work than Salesforce. Company SAML SSO, RBAC, contacts, call lists, events, activity tracking, follow-up emails. Redis caching, Laravel Horizon queued jobs. AWS EC2/Linux via GitHub CI/CD. Pest unit tests; staging end-to-end and user acceptance testing. Adopted for daily use; sales staff reported faster, easier call management.
+- Hourly BigQuery call-list refreshes for sales: scheduled background jobs and composite keys to prevent duplicate contacts drawn from multiple business platforms.
+- Laravel BigQuery integration platform (circa 2025), independent. Centralised scripts and credentials previously spread across brand sites, Pipedream, and Zapier. Sources: approximately 12 media sites plus Mautic, Awards Force, EventsAir, Passendo, LinkedIn, Facebook, Instagram, Kevel, and several ecommerce sites. Also maintained pipelines from Joomla, WordPress, Drupal, Mailchimp, Mautic forms, social media, and other business systems. Scheduled jobs and REST APIs; timestamp incremental fetch with an overlapping lookback window; source unique keys or composite keys against duplicates. Persisted records before BigQuery import; per-record sync status so retries take only unsynced records. Logged fetch and import tasks; critical errors to Google Chat. Less reliance on webhooks. After launch, missing data was rare, backfills were easier, and manual maintenance dropped.
+- Standalone Laravel comment system (2026), independent. Replaced third-party CMS-coupled extensions on all 12 websites so changes were not repeated per platform. Embedded plain-JavaScript frontend; REST APIs; public API key for frontend requests and access tokens for backend requests. SAML SSO with company email and RBAC so editorial moderators can approve, reject, and manage comments. Readers sign in on the content platform, which passes name and email to create commenter records when needed. Posting, replies, voting, spam filtering, new-comment notifications. Editorial staff reported easier moderation, with an observed increase in quality comments and engagement.
+- Salesforce CRM middleware (circa 2025), independent Laravel/PHP. Connects Salesforce CRM with WordPress, Joomla, Drupal, Mautic, EventsAir, and Awards Force (CMS, marketing, and event platforms). Centralised private-key management, OAuth 2.0/JWT, validation, transformation, caching, rate limiting, queued writes, retries. Logged successes and errors; critical errors and exceptions to Google Chat.
+- Salesforce Marketing Cloud profile pages with CloudPages, SSJS, and AMPscript so users manage subscription preferences. Updated subscription and unsubscribe pages.
+- Angular/TypeScript ad component on investmentcentre.moneymanagement.com.au, serving ads through the Kevel Decision API.
+- Node.js/Express.js proxy serving advertising-provider assets to approximately 12 brand sites, fixing browser CORS. Preset access-token and origin checks, caching, rate limiting. Process managed with PM2.
+- Node.js AWS Lambda (circa 2024), independent, triggered by S3 image uploads. Compresses batch uploads from megabytes to kilobytes for website delivery.
+- Joomla modernisation of approximately 12 brand sites: staged CMS upgrades, tests of critical legacy extensions, database schema migrations, backups at each stage.
+- First site and shared Tailwind CSS template for that approximately 12-site Joomla rollout. Documented page and layout patterns; assigned remaining migrations and Sass-to-Tailwind refactoring to other developers. Easier handovers and reuse. Typical report and special-page work fell from approximately 1–2 days to a matter of hours.
+- AWS hosting restructure, independent: approximately 150–200 brand, event, and internal applications grouped into four groups with smaller instances and separate Varnish, EC2 web, and RDS layers. Later database incidents stayed inside the affected group, which simplified troubleshooting and improved stability.
+- Cloudflare Zero Trust (2022–2023): company email verification, cloudflared on the bastion, inbound SSH removed. Less reliance on private keys and IP allowlists; remote developers could get access more flexibly.
+- Cursor for Laravel CRM delivery: planned manageable, testable commits; generated unit and integration tests; supported refactoring and debugging. Reviewed changed files; checked workflows manually or with Playwright; produced handover documentation and diagrams.
+- Tableau Server on GCP: maintenance, upgrades, command-line administration.
+- Production Rocket.Chat and FusionAuth on AWS EC2 with Docker and Docker Compose: install, configure, upgrade.
+- Node.js GitHub Action: creates Asana code-review tickets and sends Google Chat notifications when pull requests open or change status. Faster review coordination; site changes traceable in project management.
+
+2) Full Stack Development | Momentum Media | Sydney, Australia | Jan 2018–Dec 2021
+Expanded from CMS development into full stack ownership, AWS migration, source-control modernisation, deployment improvement, and backend integrations. Local engineering owner for multiple production brand sites.
+
+- Whole-site redesigns and major features on Joomla, Grav, PHP, JavaScript, MySQL, Sass, BEM, Bootstrap, and jQuery.
+- Replaced direct FTP with GitHub, pull-request review, and staging validation. CI/CD with Jenkins, GitHub webhooks, and GitHub Actions: faster releases, easier rollbacks, fewer production issues.
+- AWS migration (circa 2019–2020) with a cloud consultancy: approximately 15 brand websites and dozens of event websites from dedicated servers to AWS. EC2, load balancers, Varnish, CloudWatch, EFS, RDS, VPC, Linux. Staging EC2 server in the CI/CD path. Replaced FTP releases with pull-request review and staging validation before production: faster releases, less manual coordination, easier rollbacks, fewer production issues.
+- Documented the deployment workflow and presented it to approximately 7–8 developers in the Philippines so they could adopt source control, code review, and staging.
+- Advertising operations chase sheet (2018–2021): maintained, refactored, and extended an existing custom PHP MVC app with no third-party framework. Salesforce SOAP APIs and SOQL showed opportunity names, statuses, and placement data, with email actions for client follow-up. Added media-specific pages, including print magazines, and date filters so ad operations could track status and email clients for missing advertising assets.
+- Supported remote developers: reviewed approaches, cleared blockers, kept deployments reliable.
+
+3) Web Development | Momentum Media | Sydney, Australia | May 2015–Dec 2017
+Built and maintained digital publishing websites during the shift from print-focused publishing to digital media.
+
+- Joomla websites, modules, plugins, templates, and frontend features for Australian media brands.
+- Responsive frontends: HTML, CSS, Sass, BEM, Bootstrap, JavaScript, jQuery.
+- SEO, performance, Google Analytics, Google Tag Manager, DoubleClick advertising scripts, publishing workflows.
+- PHP and MySQL for backend behaviour, CMS modules, and site-specific business logic.
+- Production deployments, testing, and issue resolution on multiple live sites.
+
+PERSONAL PROJECTS
+
+Next.js personal blog and portfolio | independent | 2026 | https://yuanyizun.dev
+Next.js App Router, React, TypeScript, Tailwind CSS. React Server Components for server-side content and request-time session rendering. Static generation for post and project routes. Client Components for forms, filters, navigation, and reading progress. Suspense streaming with skeleton states, cached Markdown, per-page metadata. Supabase email/password and Google OAuth via Server Actions and route handlers; HttpOnly JWT session cookies. Split reusable UI, service logic, and data access.
+
+React recipe planner | independent personal project | no date or URL in source
+Vite, Redux, RTK Query, hooks, Context API. Verified with Jest unit tests and manual browser checks. Listed under skills only; no separate project narrative.
+
+OTHER PROJECTS (no employer or date in source)
+
+Python job-board data preparation
+Supported a WordPress job-board launch. Python scripts with Requests and Beautiful Soup fetched pages, parsed HTML, and extracted listings from authorised employer pages and third-party job platforms. Mapped fields to the job-board plugin CSV import format; cleaned text; standardised phone numbers and addresses; removed duplicates.
+
+Historical CSV loading into BigQuery
+Python pipeline using the built-in csv module and the Google Cloud BigQuery SDK. Validated historical company data across hundreds of CSV files, transformed records to the target table schema, and streamed them in batches. Skipped invalid records and logged them for review. Interrupted uploads can resume from the failure point. Made consistent historical data available to the data team for analysis and to downstream AI workflows for decision support.
+
+EARLIER EXPERIENCE
+Web Developer Intern | Tick Yes | Jul 2014–Oct 2014. Website and CMS work: Joomla, responsive design, LESS, HTML, CSS, frontend from wireframes through launch.
+Web Developer Intern | UFIDA Software | Nov 2012–Jan 2013. Internal website development and early exploration of WebSocket-based functionality.
+
+EDUCATION
+Master of Information Technology | University of Sydney. No graduation year in source.
+Bachelor of Computer Science | University of Wollongong. No graduation year in source.
+
+FIXED FACTS
+Employer for all three professional roles: Momentum Media, Sydney, Australia.
+Dates: May 2015–Dec 2017; Jan 2018–Dec 2021; Jan 2022–Sep 2026.
+Stated experience length: 11 years.
+Contacts and headline above are fixed unless the user changes them.
+Numbers to keep qualified: approximately 12 sites; approximately 150–200 applications; approximately 15 brand sites and dozens of event sites; approximately 7–8 Philippines developers; approximately 1–2 days to hours; approximately two weeks to first CRM release; hundreds of CSV files; megabytes to kilobytes.
+Outcomes stated as reported or observed, not as measured KPIs: sales staff reported faster, easier call management; editorial staff reported easier moderation and an observed increase in quality comments and engagement.

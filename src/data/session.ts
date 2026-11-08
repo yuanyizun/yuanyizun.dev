@@ -3,6 +3,7 @@ import "server-only";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { connection, type NextResponse } from "next/server";
+import { authJwtSecretKey } from "@/data/internal/secrets";
 
 export const SESSION_COOKIE = "yz_session";
 const SESSION_MAX_AGE = 60 * 60 * 24;
@@ -12,14 +13,6 @@ export type SessionClaims = {
   sub: string;
   username: string;
 };
-
-function secretKey() {
-  const secret = process.env.AUTH_JWT_SECRET;
-  if (!secret || secret.length < 32) {
-    throw new Error("AUTH_JWT_SECRET must be set to at least 32 characters.");
-  }
-  return new TextEncoder().encode(secret);
-}
 
 function cookieOptions() {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
@@ -40,14 +33,14 @@ export async function signSessionToken(
     .setSubject(claims.sub)
     .setIssuedAt()
     .setExpirationTime("1d")
-    .sign(secretKey());
+    .sign(authJwtSecretKey());
 }
 
 export async function verifySessionToken(
   token: string,
 ): Promise<SessionClaims | null> {
   try {
-    const { payload } = await jwtVerify(token, secretKey());
+    const { payload } = await jwtVerify(token, authJwtSecretKey());
     const sub = payload.sub;
     const username = payload.username;
     if (
@@ -72,7 +65,7 @@ export async function sessionCookieNeedsReissue(
     return true;
   }
   try {
-    const { payload } = await jwtVerify(token, secretKey());
+    const { payload } = await jwtVerify(token, authJwtSecretKey());
     if (payload.sub !== userId) {
       return true;
     }

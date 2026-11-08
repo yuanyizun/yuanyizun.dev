@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { Check, Link2, Mail, Share2 } from "lucide-react";
-import { Button } from "@/components/primitive/button";
+import { Button } from "@/components/primitive/form-button/form-button";
 import {
   Tooltip,
   TooltipContent,

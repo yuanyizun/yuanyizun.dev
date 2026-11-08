@@ -6,7 +6,7 @@ import { AuthStage } from "@/components/composite/auth-form/auth-stage";
 import { UsernameForm } from "@/components/composite/auth-form/username-form";
 import { PageFrame } from "@/components/composite/page-frame/page-frame";
 import { getCurrentUser } from "@/data/users";
-import { setUsernameAction } from "../actions";
+import { setUsernameAction } from "@/services/auth-actions";
 
 export const metadata: Metadata = {
   title: "Choose a username",

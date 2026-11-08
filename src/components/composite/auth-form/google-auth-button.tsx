@@ -2,7 +2,7 @@
 
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
-import { Button } from "@/components/primitive/button";
+import { Button } from "@/components/primitive/form-button/form-button";
 import { cn } from "@/utils/class-names";
 
 export function GoogleAuthButton({

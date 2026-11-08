@@ -4,23 +4,23 @@ import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useActionState, useState } from "react";
 import { GoogleAuthButton } from "@/components/composite/auth-form/google-auth-button";
-import { Button } from "@/components/primitive/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/primitive/card";
 import {
   Field,
   FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
-} from "@/components/primitive/field";
-import { Input } from "@/components/primitive/input";
-import type { AuthFormState } from "@/utils/auth-form";
+} from "@/components/composite/field/field";
+import { Button } from "@/components/primitive/form-button/form-button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/primitive/card/card";
+import { Input } from "@/components/primitive/input/input";
+import type { AuthFormState } from "@/validation/auth";
 
 const initialState: AuthFormState = {};
 

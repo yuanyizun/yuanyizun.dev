@@ -2,27 +2,27 @@
 
 import { Loader2 } from "lucide-react";
 import { useActionState } from "react";
-import { Button } from "@/components/primitive/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/primitive/card";
 import {
   Field,
   FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
-} from "@/components/primitive/field";
-import { Input } from "@/components/primitive/input";
+} from "@/components/composite/field/field";
+import { Button } from "@/components/primitive/form-button/form-button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/primitive/card/card";
+import { Input } from "@/components/primitive/input/input";
 import {
   USERNAME_HINT,
   USERNAME_PATTERN_ATTR,
   type AuthFormState,
-} from "@/utils/auth-form";
+} from "@/validation/auth";
 
 const initialState: AuthFormState = {};
 

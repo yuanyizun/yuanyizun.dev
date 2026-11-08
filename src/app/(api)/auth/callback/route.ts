@@ -1,8 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { loadCurrentUser } from "@/data/users";
 import { exchangeAuthCode } from "@/services/auth";
-import { setSessionCookie } from "@/services/session";
-import { createClientForResponse } from "@/utils/supabase/server";
 
 function siteOrigin() {
   return (
@@ -20,24 +17,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  const response = NextResponse.redirect(loginUrl);
-  const supabase = createClientForResponse(request, response);
-
   try {
-    await exchangeAuthCode(supabase, code);
+    const destination = await exchangeAuthCode(code);
+    return NextResponse.redirect(destination);
   } catch {
     return NextResponse.redirect(loginUrl);
   }
-
-  const user = await loadCurrentUser(supabase);
-  const destination = user?.username
-    ? new URL("/", origin)
-    : new URL("/register/username", origin);
-  response.headers.set("location", destination.toString());
-
-  if (user?.username) {
-    await setSessionCookie({ sub: user.id, username: user.username }, response);
-  }
-
-  return response;
 }

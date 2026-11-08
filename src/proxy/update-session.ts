@@ -4,7 +4,8 @@ import {
   SESSION_COOKIE,
   sessionCookieNeedsReissue,
   setSessionCookie,
-} from "@/services/session";
+  verifySessionToken,
+} from "@/data/session";
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -50,24 +51,16 @@ export async function updateSession(request: NextRequest) {
       return supabaseResponse;
     }
 
-    const { data: profile, error } = await supabase
-      .from("users")
-      .select("username")
-      .eq("id", userId)
-      .maybeSingle();
-    const username = profile?.username;
-    if (error || typeof username !== "string" || !username) {
+    const claims = token ? await verifySessionToken(token) : null;
+    if (!claims || claims.sub !== userId) {
       return supabaseResponse;
     }
 
-    const nextToken = await setSessionCookie(
-      { sub: userId, username },
-      supabaseResponse,
-    );
+    const nextToken = await setSessionCookie(claims, supabaseResponse);
     // Mirror onto the request so RSC cookies() sees it on this same pass.
     request.cookies.set(SESSION_COOKIE, nextToken);
   } catch {
-    // A missing app secret or profile read must not drop the Supabase refresh.
+    // A missing app secret must not drop the Supabase refresh.
   }
 
   return supabaseResponse;

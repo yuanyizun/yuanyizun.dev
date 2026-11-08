@@ -1,6 +1,8 @@
+import "server-only";
+
 import type { ReactNode } from "react";
 import { ButtonLink } from "@/components/primitive/button/button";
-import { getSessionFromCookie } from "@/services/session";
+import { getSessionFromCookie } from "@/data/session";
 import { cn } from "@/utils/class-names";
 
 type AuthGateNoticeProps = {

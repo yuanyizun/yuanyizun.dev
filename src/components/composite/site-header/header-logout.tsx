@@ -2,7 +2,7 @@
 
 import { Loader2 } from "lucide-react";
 import { useTransition } from "react";
-import { logoutAction } from "@/app/logout/actions";
+import { logoutAction } from "@/app/(web)/logout/actions";
 import { Button } from "@/components/primitive/button/button";
 import { cn } from "@/utils/class-names";
 

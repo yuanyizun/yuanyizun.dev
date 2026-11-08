@@ -1,4 +1,11 @@
-import type { CaseStudyMeta } from "@/theme/contracts";
+export type CaseStudyMeta = {
+  title: string;
+  summary: string;
+  period?: string;
+  context?: string;
+  role?: string;
+  stack?: string[];
+};
 
 export function CaseStudyHeader({ study }: { study: CaseStudyMeta }) {
   const facts = [

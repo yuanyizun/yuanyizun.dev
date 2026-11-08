@@ -1,25 +1,10 @@
-export const POSITION_NAMES = [
-  "before-header",
-  "header",
-  "after-header",
-  "main-before",
-  "main-middle",
-  "main-after",
-  "sidebar",
-  "before-footer",
-  "footer",
-  "after-footer",
-] as const;
-
-export type PositionName = (typeof POSITION_NAMES)[number];
-
 export const SITE_POSITIONS = [
   "before-header",
   "header",
   "before-footer",
   "footer",
   "after-footer",
-] as const satisfies readonly PositionName[];
+] as const;
 
 export const ROUTE_POSITIONS = [
   "after-header",
@@ -27,150 +12,92 @@ export const ROUTE_POSITIONS = [
   "main-middle",
   "sidebar",
   "main-after",
-] as const satisfies readonly PositionName[];
+] as const;
 
-export type NavKey = "home" | "about" | "posts" | "projects" | "contact";
+export const POSITION_NAMES = [
+  "before-header",
+  "header",
+  "after-header",
+  "main-before",
+  "main-middle",
+  "sidebar",
+  "main-after",
+  "before-footer",
+  "footer",
+  "after-footer",
+] as const;
 
-export type Crumb = { label: string; href?: string };
+export type PositionName = (typeof POSITION_NAMES)[number];
 
-export type HeadingLink = { id: string; title: string };
+export type SitePosition = (typeof SITE_POSITIONS)[number];
 
-export type ArticleMeta = {
-  title: string;
-  date: string;
-  summary: string;
-  minutes: number;
-};
+export type RoutePosition = (typeof ROUTE_POSITIONS)[number];
 
-export type RelatedItem = {
-  href: string;
-  title: string;
-  summary: string;
-  meta: string;
-};
+export type PlacementEntry = string | { id: string; component: string };
 
-export type CaseStudyMeta = {
-  title: string;
-  summary: string;
-  period?: string;
-  context?: string;
-  role?: string;
-  stack?: string[];
-};
+export type Placement = Partial<Record<PositionName, PlacementEntry[]>>;
 
-export type ModuleAssignment =
-  | { id: string; type: "SiteHeader"; props: { active?: NavKey } }
-  | { id: string; type: "SiteFooter"; props: Record<string, never> }
-  | {
-      id: string;
-      type: "IntroHero";
-      props: { title: string; summary: string };
-    }
-  | { id: string; type: "ProofPoints"; props: Record<string, never> }
-  | {
-      id: string;
-      type: "PageIntro";
-      props: { title: string; summary?: string; mark?: "profile" };
-    }
-  | { id: string; type: "ResumeLink"; props: { href: string; label: string } }
-  | { id: string; type: "Breadcrumbs"; props: { items: Crumb[] } }
-  | { id: string; type: "ArticleHeader"; props: { article: ArticleMeta } }
-  | {
-      id: string;
-      type: "ArticleCover";
-      props: { title: string; image: string; credit?: string };
-    }
-  | {
-      id: string;
-      type: "ArticleNavigation";
-      props: { headings: HeadingLink[]; label?: string };
-    }
-  | { id: string; type: "AuthorBio"; props: Record<string, never> }
-  | { id: string; type: "RelatedPosts"; props: { items: RelatedItem[] } }
-  | { id: string; type: "CaseStudyHeader"; props: { study: CaseStudyMeta } }
-  | {
-      id: string;
-      type: "ArchitectureFigure";
-      props: { stages: string[]; title: string };
-    }
-  | {
-      id: string;
-      type: "CaseStudyNavigation";
-      props: { headings: HeadingLink[]; label?: string };
-    }
-  | { id: string; type: "RelatedProjects"; props: { items: RelatedItem[] } }
-  | {
-      id: string;
-      type: "ContactCTA";
-      props: { variant?: "compact" | "full" };
-    };
+export type PlacementRegion = "site" | "route";
 
-export type ModuleType = ModuleAssignment["type"];
+export type AllowedPositions = Readonly<Record<string, readonly PositionName[]>>;
 
-export type Placement = Partial<Record<PositionName, ModuleAssignment[]>>;
-
-export const REGISTRY_ALLOWED_POSITIONS: Record<ModuleType, readonly PositionName[]> =
-  {
-    SiteHeader: ["header"],
-    SiteFooter: ["footer"],
-    IntroHero: ["main-before"],
-    ProofPoints: ["main-middle"],
-    PageIntro: ["main-before"],
-    ResumeLink: ["main-after"],
-    Breadcrumbs: ["after-header"],
-    ArticleHeader: ["main-before"],
-    ArticleCover: ["main-middle"],
-    ArticleNavigation: ["sidebar"],
-    AuthorBio: ["main-after"],
-    RelatedPosts: ["main-after"],
-    CaseStudyHeader: ["main-before"],
-    ArchitectureFigure: ["main-middle"],
-    CaseStudyNavigation: ["sidebar"],
-    RelatedProjects: ["main-after"],
-    ContactCTA: ["main-after", "before-footer"],
-  };
-
-export type TemplateKey =
-  | "home"
-  | "about"
-  | "posts"
-  | "post"
-  | "projects"
-  | "project"
-  | "contact"
-  | "auth"
-  | "not-found"
-  | "error";
-
-export type FrameVariant = "wide" | "reading" | "compact";
-
+const SITE_SET = new Set<string>(SITE_POSITIONS);
+const ROUTE_SET = new Set<string>(ROUTE_POSITIONS);
 const POSITION_SET = new Set<string>(POSITION_NAMES);
 
-export function validatePlacement(placement: Placement): string[] {
+export function readPlacementEntry(entry: PlacementEntry): { id: string; component: string } | null {
+  if (typeof entry === "string") {
+    return entry.length > 0 ? { id: entry, component: entry } : null;
+  }
+  if (entry.id.length === 0 || entry.component.length === 0) {
+    return null;
+  }
+  return { id: entry.id, component: entry.component };
+}
+
+export function validatePlacement(
+  placement: Placement,
+  region: PlacementRegion,
+  allowed: AllowedPositions,
+): string[] {
   const errors: string[] = [];
   const ids = new Set<string>();
+  const regionSet = region === "site" ? SITE_SET : ROUTE_SET;
 
-  for (const [position, assignments] of Object.entries(placement)) {
+  for (const [position, entries] of Object.entries(placement)) {
     if (!POSITION_SET.has(position)) {
       errors.push(`Unknown position "${position}"`);
       continue;
     }
 
-    for (const assignment of assignments ?? []) {
-      if (ids.has(assignment.id)) {
-        errors.push(`Duplicate assignment id "${assignment.id}"`);
-      }
-      ids.add(assignment.id);
+    if (!regionSet.has(position)) {
+      errors.push(
+        region === "route"
+          ? `Site position "${position}" cannot be set on a template`
+          : `Route position "${position}" cannot be set on the site`,
+      );
+      continue;
+    }
 
-      const allowed = REGISTRY_ALLOWED_POSITIONS[assignment.type];
-      if (!allowed) {
-        errors.push(`Unknown module "${assignment.type}"`);
+    for (const entry of entries ?? []) {
+      const parsed = readPlacementEntry(entry);
+      if (!parsed) {
+        errors.push(`Invalid placement entry in "${position}"`);
         continue;
       }
-      if (!allowed.includes(position as PositionName)) {
-        errors.push(
-          `${assignment.type} cannot be placed in "${position}"`,
-        );
+
+      if (ids.has(parsed.id)) {
+        errors.push(`Duplicate assignment id "${parsed.id}"`);
+      }
+      ids.add(parsed.id);
+
+      const positions = allowed[parsed.component];
+      if (!positions) {
+        errors.push(`Unknown component "${parsed.component}"`);
+        continue;
+      }
+      if (!positions.includes(position as PositionName)) {
+        errors.push(`${parsed.component} cannot be placed in "${position}"`);
       }
     }
   }

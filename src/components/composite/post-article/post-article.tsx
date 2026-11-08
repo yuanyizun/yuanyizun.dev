@@ -27,24 +27,21 @@ export function PostArticle({
   related: RelatedLink[];
 }) {
   const headings = extractHeadings(post.content);
-  const positions: Placement = {
-    "after-header": [
-      {
-        id: "post-breadcrumbs",
-        type: "Breadcrumbs",
-        props: {
+  const positions: Placement | undefined =
+    headings.length === 0 ? { sidebar: [] } : undefined;
+
+  return (
+    <PageFrame
+      template="post"
+      positions={positions}
+      props={{
+        Breadcrumbs: {
           items: [
             { label: "Posts", href: "/posts" },
             { label: post.title },
           ],
         },
-      },
-    ],
-    "main-before": [
-      {
-        id: "post-title",
-        type: "ArticleHeader",
-        props: {
+        ArticleHeader: {
           article: {
             title: post.title,
             date: post.date,
@@ -52,45 +49,15 @@ export function PostArticle({
             minutes: readingMinutes(post.content),
           },
         },
-      },
-    ],
-    "main-middle": [
-      {
-        id: "post-cover",
-        type: "ArticleCover",
-        props: {
+        ArticleCover: {
           title: post.title,
           image: post.image,
           ...(post.credit ? { credit: post.credit } : {}),
         },
-      },
-
-    ],
-    sidebar: headings.length
-      ? [
-          {
-            id: "post-contents",
-            type: "ArticleNavigation",
-            props: { headings, label: "Contents" },
-          },
-        ]
-      : [],
-    "main-after": [
-      { id: "post-author", type: "AuthorBio", props: {} },
-      ...(related.length
-        ? [
-            {
-              id: "post-related" as const,
-              type: "RelatedPosts" as const,
-              props: { items: related },
-            },
-          ]
-        : []),
-    ],
-  };
-
-  return (
-    <PageFrame template="post" positions={positions}>
+        SectionNav: { headings, label: "Contents" },
+        RelatedList: { title: "Related notes", items: related },
+      }}
+    >
       <article id="article-body" className="w-full max-w-[47.5rem]">
         <Markdown>{post.content}</Markdown>
       </article>

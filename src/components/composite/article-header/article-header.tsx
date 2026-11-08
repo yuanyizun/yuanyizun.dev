@@ -1,7 +1,13 @@
 import { formatDisplayDate } from "@/utils/date";
-import type { ArticleMeta } from "@/theme/contracts";
 import { ReadingProgress } from "./reading-progress";
 import { ShareRail } from "./share-button";
+
+export type ArticleMeta = {
+  title: string;
+  date: string;
+  summary: string;
+  minutes: number;
+};
 
 export function ArticleHeader({ article }: { article: ArticleMeta }) {
   return (

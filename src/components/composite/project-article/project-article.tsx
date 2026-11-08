@@ -30,24 +30,29 @@ export function ProjectArticle({
   related: RelatedLink[];
 }) {
   const headings = extractHeadings(project.content);
-  const positions: Placement = {
-    "after-header": [
-      {
-        id: "project-breadcrumbs",
-        type: "Breadcrumbs",
-        props: {
+  const positions: Placement = {};
+  if (headings.length === 0) {
+    positions.sidebar = [];
+  }
+  if (!project.stages?.length) {
+    positions["main-middle"] = [];
+  }
+  if (related.length === 0) {
+    positions["main-after"] = [];
+  }
+
+  return (
+    <PageFrame
+      template="project"
+      positions={positions}
+      props={{
+        Breadcrumbs: {
           items: [
             { label: "Projects", href: "/projects" },
             { label: project.title },
           ],
         },
-      },
-    ],
-    "main-before": [
-      {
-        id: "project-header",
-        type: "CaseStudyHeader",
-        props: {
+        CaseStudyHeader: {
           study: {
             title: project.title,
             summary: project.summary,
@@ -57,39 +62,14 @@ export function ProjectArticle({
             stack: project.stack,
           },
         },
-      },
-    ],
-    "main-middle": project.stages?.length
-      ? [
-          {
-            id: "project-figure",
-            type: "ArchitectureFigure",
-            props: { stages: project.stages, title: project.title },
-          },
-        ]
-      : [],
-    sidebar: headings.length
-      ? [
-          {
-            id: "project-contents",
-            type: "CaseStudyNavigation",
-            props: { headings, label: "On this page" },
-          },
-        ]
-      : [],
-    "main-after": related.length
-      ? [
-          {
-            id: "project-related",
-            type: "RelatedProjects",
-            props: { items: related },
-          },
-        ]
-      : [],
-  };
-
-  return (
-    <PageFrame template="project" positions={positions}>
+        ArchitectureFigure: {
+          stages: project.stages ?? [],
+          title: project.title,
+        },
+        SectionNav: { headings, label: "On this page" },
+        RelatedList: { title: "Related work", items: related },
+      }}
+    >
       <div className="flex w-full max-w-[47.5rem] flex-col gap-6">
         {project.url ? (
           <p>

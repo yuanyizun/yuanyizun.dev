@@ -13,7 +13,16 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <PageFrame template="contact">
+    <PageFrame
+      template="contact"
+      props={{
+        PageIntro: {
+          title: "Contact",
+          summary:
+            "Write or call about production systems, platforms, and full stack work. Sydney, NSW, Australia.",
+        },
+      }}
+    >
       <Suspense fallback={<AuthGateFallback />}>
         <AuthGate message="Sign in to peek at the contact details.">
           <ContactLinks />

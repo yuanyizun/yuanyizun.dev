@@ -7,7 +7,16 @@ import { SelectedWorkSkeleton } from "@/components/composite/selected-work/selec
 
 export default function HomePage({ searchParams }: PageProps<"/">) {
   return (
-    <PageFrame template="home">
+    <PageFrame
+      template="home"
+      props={{
+        IntroHero: {
+          title: "Senior full stack & platform engineer.",
+          summary:
+            "11 years delivering publishing platforms, business applications, integrations, and cloud infrastructure.",
+        },
+      }}
+    >
       <div className="flex flex-col gap-16">
         <Suspense fallback={<SelectedWorkSkeleton />}>
           <SelectedWorkSection searchParams={searchParams} />

@@ -1,0 +1,43 @@
+{
+  "site": {
+    "before-header": ["NosyPointer"],
+    "header": ["SiteHeader"],
+    "before-footer": ["ContactCTA"],
+    "footer": ["SiteFooter"],
+    "after-footer": ["ProfileChat"]
+  },
+  "templates": {
+    "home": {
+      "main-before": ["IntroHero"],
+      "main-middle": ["ProofPoints"]
+    },
+    "about": {
+      "main-before": ["PageIntro"]
+    },
+    "posts": {
+      "main-before": ["PageIntro"]
+    },
+    "post": {
+      "after-header": ["Breadcrumbs"],
+      "main-before": ["ArticleHeader"],
+      "main-middle": ["ArticleCover"],
+      "sidebar": ["SectionNav"],
+      "main-after": ["AuthorBio", "RelatedList"]
+    },
+    "projects": {
+      "main-before": ["PageIntro"]
+    },
+    "project": {
+      "after-header": ["Breadcrumbs"],
+      "main-before": ["CaseStudyHeader"],
+      "main-middle": ["ArchitectureFigure"],
+      "sidebar": ["SectionNav"],
+      "main-after": ["RelatedList"]
+    },
+    "contact": {
+      "main-before": ["PageIntro"]
+    },
+    "auth": {},
+    "not-found": {}
+  }
+}

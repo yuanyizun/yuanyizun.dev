@@ -1,5 +1,11 @@
 import Link from "next/link";
-import type { RelatedItem } from "@/theme/contracts";
+
+export type RelatedItem = {
+  href: string;
+  title: string;
+  summary: string;
+  meta: string;
+};
 
 export function RelatedList({
   title,

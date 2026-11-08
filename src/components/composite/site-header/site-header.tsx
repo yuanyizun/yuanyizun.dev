@@ -16,7 +16,6 @@ import {
 } from "@/components/composite/tooltip/tooltip";
 import { SOCIAL_LINKS, type SocialLink } from "@/catalog/social-links";
 import { cn } from "@/utils/class-names";
-import type { NavKey } from "@/theme/contracts";
 import { HeaderTicker } from "./header-ticker";
 import "./site-header.module.css";
 
@@ -96,6 +95,8 @@ function SocialLinks({ className }: { className?: string }) {
     </div>
   );
 }
+
+export type NavKey = "home" | "about" | "posts" | "projects" | "contact";
 
 export function SiteHeader({
   active,

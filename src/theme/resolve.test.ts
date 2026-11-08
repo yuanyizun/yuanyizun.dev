@@ -1,76 +1,96 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import type { Placement } from "./contracts";
-import { resolvePlacement, assertPlacement } from "./resolve";
+import type { AllowedPositions, Placement } from "./contracts";
+import { assertPlacement, resolvePlacement } from "./resolve";
+
+const allowed: AllowedPositions = {
+  PageIntro: ["main-before"],
+  IntroHero: ["main-before"],
+  ArticleCover: ["main-middle"],
+  SectionNav: ["sidebar"],
+  AuthorBio: ["main-after"],
+  RelatedList: ["main-after"],
+  SiteHeader: ["header"],
+};
 
 const base: Placement = {
-  "main-before": [
-    {
-      id: "intro",
-      type: "PageIntro",
-      props: { title: "Notes from the journey." },
-    },
-  ],
-  sidebar: [
-    {
-      id: "contents",
-      type: "ArticleNavigation",
-      props: { headings: [{ id: "one", title: "One" }] },
-    },
-  ],
+  "main-before": ["PageIntro"],
+  sidebar: ["SectionNav"],
+  "main-after": ["AuthorBio", "RelatedList"],
 };
 
 test("omitted positions inherit and missing positions stay empty", () => {
-  const resolved = resolvePlacement(base, {
-    "main-before": [
-      {
-        id: "replaced",
-        type: "PageIntro",
-        props: { title: "Replaced" },
-      },
-    ],
-  });
+  const resolved = resolvePlacement(base, { "main-before": ["IntroHero"] });
 
-  assert.equal(resolved["main-before"]?.[0]?.id, "replaced");
-  assert.equal(resolved.sidebar?.[0]?.id, "contents");
+  assert.deepEqual(resolved["main-before"], ["IntroHero"]);
+  assert.deepEqual(resolved.sidebar, ["SectionNav"]);
   assert.deepEqual(resolved["after-header"], []);
+  assert.deepEqual(resolved["main-after"], ["AuthorBio", "RelatedList"]);
 });
 
 test("an empty array clears an inherited position", () => {
   const resolved = resolvePlacement(base, { sidebar: [] });
+
   assert.deepEqual(resolved.sidebar, []);
-  assert.equal(resolved["main-before"]?.[0]?.id, "intro");
+  assert.deepEqual(resolved["main-before"], ["PageIntro"]);
 });
 
-test("unknown modules and illegal positions are rejected", () => {
+test("array order survives the merge", () => {
+  const resolved = resolvePlacement(base, {
+    "main-after": [{ id: "notes", component: "RelatedList" }, "AuthorBio"],
+  });
+
+  assert.deepEqual(resolved["main-after"], [
+    { id: "notes", component: "RelatedList" },
+    "AuthorBio",
+  ]);
+});
+
+test("a site position on a template is rejected", () => {
+  assert.throws(() => assertPlacement({ header: ["SiteHeader"] }, "route", allowed));
+});
+
+test("a route position on the site is rejected", () => {
+  assert.throws(() => assertPlacement({ sidebar: ["SectionNav"] }, "site", allowed));
+});
+
+test("an unknown component is rejected", () => {
+  assert.throws(() => assertPlacement({ "main-before": ["Missing"] }, "route", allowed));
+});
+
+test("a component in a position it does not allow is rejected", () => {
+  assert.throws(() => assertPlacement({ "main-middle": ["PageIntro"] }, "route", allowed));
+});
+
+test("an unknown position is rejected", () => {
   assert.throws(() =>
-    assertPlacement({
-      header: [{ id: "bad", type: "PageIntro", props: { title: "No" } }],
-    }),
+    assertPlacement({ nope: ["PageIntro"] } as Placement, "route", allowed),
   );
 });
 
-test("duplicate assignment ids are rejected", () => {
+test("a duplicate id is rejected, including an object-form entry", () => {
   assert.throws(() =>
-    assertPlacement({
-      "main-before": [
-        { id: "same", type: "PageIntro", props: { title: "A" } },
-      ],
-      "main-middle": [
-        {
-          id: "same",
-          type: "ArticleCover",
-          props: {
-            title: "B",
-            image: "/images/building-this-site-and-learning-as-I-go.webp",
-          },
-
-        },
-      ],
-    }),
+    assertPlacement(
+      {
+        "main-before": ["PageIntro"],
+        "main-middle": [{ id: "PageIntro", component: "ArticleCover" }],
+      },
+      "route",
+      allowed,
+    ),
   );
 });
 
 test("a legal placement passes", () => {
-  assert.doesNotThrow(() => assertPlacement(resolvePlacement(base)));
+  assert.doesNotThrow(() =>
+    assertPlacement(
+      {
+        "main-before": ["PageIntro"],
+        "main-middle": [{ id: "cover", component: "ArticleCover" }],
+        "main-after": ["AuthorBio", "RelatedList"],
+      },
+      "route",
+      allowed,
+    ),
+  );
 });

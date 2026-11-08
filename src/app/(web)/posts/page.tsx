@@ -10,7 +10,16 @@ export const metadata: Metadata = {
 
 export default function PostsPage({ searchParams }: PageProps<"/posts">) {
   return (
-    <PageFrame template="posts">
+    <PageFrame
+      template="posts"
+      props={{
+        PageIntro: {
+          title: "Engineering Notes & Articles",
+          summary:
+            "Practical write-ups on building production systems, solving backend challenges, and working with modern web stacks.",
+        },
+      }}
+    >
       <Suspense fallback={<PostArchiveSkeleton />}>
         <PostArchiveSection searchParams={searchParams} />
       </Suspense>

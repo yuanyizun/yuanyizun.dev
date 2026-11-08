@@ -1,5 +1,6 @@
 import Link from "next/link";
-import type { Crumb } from "@/theme/contracts";
+
+export type Crumb = { label: string; href?: string };
 
 export function Breadcrumbs({ items }: { items: Crumb[] }) {
   return (

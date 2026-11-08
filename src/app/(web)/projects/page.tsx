@@ -10,7 +10,16 @@ export const metadata: Metadata = {
 
 export default function ProjectsPage({ searchParams }: PageProps<"/projects">) {
   return (
-    <PageFrame template="projects">
+    <PageFrame
+      template="projects"
+      props={{
+        PageIntro: {
+          title: "Production systems. Practical outcomes.",
+          summary:
+            "Selected systems from eleven years at one digital publisher, plus one personal project.",
+        },
+      }}
+    >
       <Suspense fallback={<ProjectArchiveSkeleton />}>
         <ProjectArchiveSection searchParams={searchParams} />
       </Suspense>

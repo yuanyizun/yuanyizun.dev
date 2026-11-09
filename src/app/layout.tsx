@@ -10,6 +10,7 @@ const geist = Geist({
   display: "swap",
 });
 
+// Code, dates, and meta labels on most routes, including the ticker on the first screen.
 const geistMono = Geist_Mono({
   subsets: ["latin"],
   variable: "--font-geist-mono",
@@ -19,10 +20,12 @@ const geistMono = Geist_Mono({
 const newsreader = Newsreader({
   subsets: ["latin"],
   weight: "500",
+  style: ["normal", "italic"],
   variable: "--font-newsreader",
   display: "swap",
 });
 
+// Script wordmark in the first paint of every route. The header is a client component, so this call stays here.
 const caveat = Caveat({
   subsets: ["latin"],
   weight: "600",

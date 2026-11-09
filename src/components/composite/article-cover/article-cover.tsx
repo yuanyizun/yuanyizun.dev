@@ -1,11 +1,12 @@
 import Image from "next/image";
+import { containerContentSizes } from "@/components/primitive/container/container";
 
 export function ArticleCover({
-  title,
+  alt,
   image,
   credit,
 }: {
-  title: string;
+  alt: string;
   image: string;
   credit?: string;
 }) {
@@ -14,9 +15,10 @@ export function ArticleCover({
       <div className="relative aspect-[4/3] overflow-hidden rounded-xl">
         <Image
           src={image}
-          alt={title}
+          alt={alt}
           fill
-          sizes="(max-width: 47.5rem) 100vw, 47.5rem"
+          sizes={containerContentSizes}
+          loading="eager"
           className="object-cover grayscale"
         />
       </div>

@@ -73,7 +73,7 @@ export const themeRegistry = {
   ArticleCover: {
     component: placed(ArticleCover),
     positions: ["main-middle"],
-    required: ["title", "image"],
+    required: ["alt", "image"],
   },
   SectionNav: { component: placed(SectionNav), positions: ["sidebar"], required: ["headings"] },
   AuthorBio: { component: placed(AuthorBio), positions: ["main-after"], required: [] },
@@ -103,7 +103,7 @@ export type PlacementProps = {
   PageIntro?: { title: string; summary?: string; mark?: "profile" };
   Breadcrumbs?: { items: Crumb[] };
   ArticleHeader?: { article: ArticleMeta };
-  ArticleCover?: { title: string; image: string; credit?: string };
+  ArticleCover?: { alt: string; image: string; credit?: string };
   SectionNav?: { headings: HeadingLink[]; label?: string };
   CaseStudyHeader?: { study: CaseStudyMeta };
   ArchitectureFigure?: { stages: string[]; title: string };

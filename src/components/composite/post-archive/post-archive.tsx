@@ -9,6 +9,7 @@ type ArchivePost = {
   summary: string;
   content: string;
   image: string;
+  alt: string;
 };
 
 const pageSize = 8;
@@ -74,11 +75,11 @@ export function PostArchive({
               <div className="relative aspect-[4/3] overflow-hidden rounded-lg">
                 <Image
                   src={featured.image}
-                  alt={featured.title}
+                  alt={featured.alt}
                   fill
-                  sizes="(max-width: 64rem) 100vw, 22rem"
+                  sizes="(min-width: 64rem) calc(0.35 * (min(100vw, 90rem) - 2 * clamp(1rem, 6.15vw, 5rem) - 4rem)), calc(100vw - 2 * clamp(1rem, 6.15vw, 5rem) - 2.5rem)"
                   className="object-cover grayscale"
-                  priority
+                  preload
                 />
               </div>
               <span className="flex flex-col gap-3">

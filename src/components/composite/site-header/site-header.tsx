@@ -1,11 +1,13 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { ExternalLink, Menu, X } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import portrait from "../../../../public/images/yuanyizun-avatar.png";
 import { Dialog } from "radix-ui";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/primitive/avatar/avatar";
+import { Avatar, AvatarFallback } from "@/components/primitive/avatar/avatar";
 import { ButtonLink } from "@/components/primitive/button/button";
 import { Container } from "@/components/primitive/container/container";
 import {
@@ -27,7 +29,8 @@ const links = [
   { href: "/contact", label: "Contact", key: "contact" },
 ] as const;
 
-const avatarSrc = "/images/yuanyizun-avatar.png";
+// Avatar size="lg" is size-10 (2.5rem). Fixed width asks for 1x and 2x, not a viewport srcset.
+const headerAvatarPx = 40;
 
 function isActive(pathname: string, href: string) {
   if (href === "/") {
@@ -37,12 +40,26 @@ function isActive(pathname: string, href: string) {
 }
 
 function HeaderAvatar({ className }: { className?: string }) {
+  const [failed, setFailed] = useState(false);
+
   return (
     <Avatar size="lg" className={cn("bg-background", className)}>
-      <AvatarImage src={avatarSrc} alt="Yizun Yuan" className="grayscale" />
-      <AvatarFallback className="bg-background text-foreground">
-        YY
-      </AvatarFallback>
+      {failed ? (
+        <AvatarFallback className="bg-background text-foreground">
+          YY
+        </AvatarFallback>
+      ) : (
+        <Image
+          src={portrait}
+          alt="Yizun Yuan"
+          width={headerAvatarPx}
+          height={headerAvatarPx}
+          loading="eager"
+          fetchPriority="low"
+          onError={() => setFailed(true)}
+          className="aspect-square size-full rounded-full object-cover grayscale"
+        />
+      )}
     </Avatar>
   );
 }

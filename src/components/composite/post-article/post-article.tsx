@@ -9,6 +9,7 @@ type PostBody = {
   summary: string;
   content: string;
   image: string;
+  alt: string;
   credit?: string;
 };
 
@@ -50,7 +51,7 @@ export function PostArticle({
           },
         },
         ArticleCover: {
-          title: post.title,
+          alt: post.alt,
           image: post.image,
           ...(post.credit ? { credit: post.credit } : {}),
         },

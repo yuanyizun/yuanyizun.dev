@@ -7,6 +7,13 @@ const projectRoot = path.dirname(fileURLToPath(import.meta.url));
 const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
+  images: {
+    localPatterns: [
+      { pathname: "/images/**", search: "" },
+      // Static imports are served from this path. The portrait uses one.
+      { pathname: "/_next/static/media/**", search: "" },
+    ],
+  },
   outputFileTracingExcludes: {
     "/*": ["./vibe-coder/**/*"],
   },

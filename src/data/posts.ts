@@ -13,6 +13,7 @@ import type { ContentRecord } from "@/data/internal/types";
 
 export type Post = ContentRecord & {
   image: string;
+  alt: string;
   credit?: string;
 };
 
@@ -60,7 +61,11 @@ function requireImage(data: Record<string, unknown>, slug: string) {
     throw new Error(`${slug}.md image file is missing: ${value}`);
   }
 
-  return { image: value, credit: creditForFilename(filename) };
+  return {
+    image: value,
+    alt: requireText(data, "alt", slug),
+    credit: creditForFilename(filename),
+  };
 }
 
 function toPost(entry: MarkdownEntry): Post {
@@ -69,7 +74,7 @@ function toPost(entry: MarkdownEntry): Post {
     throw new Error(`${entry.slug}.md is missing frontmatter field "date"`);
   }
 
-  const { image, credit } = requireImage(entry.data, entry.slug);
+  const { image, alt, credit } = requireImage(entry.data, entry.slug);
 
   return {
     slug: entry.slug,
@@ -78,6 +83,7 @@ function toPost(entry: MarkdownEntry): Post {
     summary: requireText(entry.data, "summary", entry.slug),
     content: entry.content,
     image,
+    alt,
     ...(credit ? { credit } : {}),
   };
 }

@@ -26,6 +26,7 @@ export function RelatedList({
           <li key={item.href}>
             <Link
               href={item.href}
+              prefetch={false}
               className="flex h-full flex-col gap-2 rounded-xl bg-card p-5 no-underline"
             >
               <span className="font-mono text-xs text-muted-foreground">

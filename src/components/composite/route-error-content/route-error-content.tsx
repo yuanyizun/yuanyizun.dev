@@ -21,6 +21,7 @@ export function RouteErrorContent({ onRetry }: { onRetry: () => void }) {
         </button>
         <Link
           href="/"
+          prefetch={false}
           className="inline-flex min-h-11 items-center rounded-md bg-card px-4 text-sm no-underline"
         >
           Home

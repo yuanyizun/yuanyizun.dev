@@ -70,6 +70,7 @@ export function PostArchive({
           {featured ? (
             <Link
               href={`/posts/${featured.slug}`}
+              prefetch={false}
               className="grid gap-6 rounded-xl bg-card p-5 no-underline lg:grid-cols-[minmax(14rem,0.7fr)_minmax(0,1.3fr)] lg:items-center"
             >
               <div className="relative aspect-[4/3] overflow-hidden rounded-lg">
@@ -104,6 +105,7 @@ export function PostArchive({
                 <li key={post.slug} className="border-t border-border">
                   <Link
                     href={`/posts/${post.slug}`}
+                    prefetch={false}
                     className="grid gap-2 py-5 no-underline sm:grid-cols-[8rem_minmax(0,1fr)]"
                   >
                     <time

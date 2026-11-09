@@ -27,6 +27,7 @@ const links = [
   { href: "/posts", label: "Posts", key: "posts" },
   { href: "/projects", label: "Projects", key: "projects" },
   { href: "/contact", label: "Contact", key: "contact" },
+  { href: "/dashboard", label: "Dashboard", key: "dashboard" },
 ] as const;
 
 // Avatar size="lg" is size-10 (2.5rem). Fixed width asks for 1x and 2x, not a viewport srcset.
@@ -113,7 +114,13 @@ function SocialLinks({ className }: { className?: string }) {
   );
 }
 
-export type NavKey = "home" | "about" | "posts" | "projects" | "contact";
+export type NavKey =
+  | "home"
+  | "about"
+  | "posts"
+  | "projects"
+  | "contact"
+  | "dashboard";
 
 export function SiteHeader({
   active,
@@ -149,6 +156,7 @@ export function SiteHeader({
           </TooltipProvider>
           <Link
             href="/"
+            prefetch={false}
             className="font-brand text-[1.75rem] font-semibold leading-none tracking-[-0.01em] text-foreground no-underline"
           >
             Yizun Yuan
@@ -163,6 +171,7 @@ export function SiteHeader({
               <Link
                 key={link.href}
                 href={link.href}
+                prefetch={link.href === "/" ? false : undefined}
                 aria-current={current ? "page" : undefined}
                 className={cn(
                   "navLinkSketch",
@@ -205,6 +214,7 @@ export function SiteHeader({
                     <Link
                       key={link.href}
                       href={link.href}
+                      prefetch={link.href === "/" ? false : undefined}
                       aria-current={current ? "page" : undefined}
                       className={cn(
                         "navLinkSketch",

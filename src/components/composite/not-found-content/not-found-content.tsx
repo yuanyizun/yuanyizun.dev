@@ -20,6 +20,7 @@ export function NotFoundContent() {
           <Link
             key={link.href}
             href={link.href}
+            prefetch={link.href === "/" ? false : undefined}
             className="inline-flex min-h-11 items-center rounded-md bg-card px-4 text-sm no-underline"
           >
             {link.label}

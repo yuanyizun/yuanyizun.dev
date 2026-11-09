@@ -52,7 +52,7 @@ export default function GlobalError({
             >
               Try again
             </button>
-            <Link href="/" style={{ color: "#242823" }}>
+            <Link href="/" prefetch={false} style={{ color: "#242823" }}>
               Home
             </Link>
           </p>

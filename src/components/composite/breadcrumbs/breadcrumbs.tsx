@@ -11,7 +11,11 @@ export function Breadcrumbs({ items }: { items: Crumb[] }) {
           return (
             <li key={`${item.label}-${index}`} className="flex items-center gap-2">
               {item.href && !last ? (
-                <Link href={item.href} className="no-underline hover:text-foreground">
+                <Link
+                  href={item.href}
+                  prefetch={item.href === "/" ? false : undefined}
+                  className="no-underline hover:text-foreground"
+                >
                   {item.label}
                 </Link>
               ) : (

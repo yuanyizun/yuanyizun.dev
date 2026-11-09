@@ -38,6 +38,7 @@ export function SelectedWorkTimeline({
           >
             <Link
               href={`/projects/${project.slug}`}
+              prefetch={false}
               className="group col-span-2 grid grid-cols-subgrid text-foreground no-underline"
             >
               <span className="relative flex justify-center">

@@ -24,6 +24,7 @@ export function LatestWriting({ posts }: { posts: WritingPost[] }) {
             <li key={post.slug} className="border-t border-border">
               <Link
                 href={`/posts/${post.slug}`}
+                prefetch={false}
                 className="grid gap-2 py-5 no-underline sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-8"
               >
                 <time

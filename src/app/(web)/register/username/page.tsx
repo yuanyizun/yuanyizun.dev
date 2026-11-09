@@ -19,9 +19,9 @@ async function UsernameSection() {
     redirect("/login");
   }
 
-  // Cookie writes are illegal in RSC pages; proxy re-issues yz_session on `/`.
+  // Cookie writes are illegal in RSC pages; the proxy re-issues yz_session.
   if (user.username) {
-    redirect("/");
+    redirect("/dashboard");
   }
 
   return <UsernameForm action={setUsernameAction} />;

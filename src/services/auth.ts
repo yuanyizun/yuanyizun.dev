@@ -68,7 +68,7 @@ async function finishAuthenticatedRedirect(user: CurrentUser): Promise<never> {
     redirect("/register/username");
   }
   await setSessionCookie({ sub: user.id, username: user.username });
-  redirect("/");
+  redirect("/dashboard");
 }
 
 /** Send signed-in visitors away from login/register forms. */
@@ -80,7 +80,7 @@ export async function redirectIfSignedIn(): Promise<void> {
   if (!user.username) {
     redirect("/register/username");
   }
-  redirect("/");
+  redirect("/dashboard");
 }
 
 export async function registerWithPassword(
@@ -170,7 +170,7 @@ export async function exchangeAuthCode(code: string): Promise<string> {
 
   if (user?.username) {
     await setSessionCookie({ sub: user.id, username: user.username });
-    return `${siteUrl()}/`;
+    return `${siteUrl()}/dashboard`;
   }
 
   return `${siteUrl()}/register/username`;
@@ -192,5 +192,5 @@ export async function setUsername(
   }
 
   await setSessionCookie({ sub: current.id, username: input.username });
-  redirect("/");
+  redirect("/dashboard");
 }

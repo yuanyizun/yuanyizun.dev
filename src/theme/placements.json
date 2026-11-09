@@ -37,6 +37,9 @@
     "contact": {
       "main-before": ["PageIntro"]
     },
+    "dashboard": {
+      "main-before": ["PageIntro"]
+    },
     "auth": {},
     "not-found": {}
   }

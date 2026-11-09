@@ -90,7 +90,7 @@ export function SelectedWorkBody({
         {projects.length === 0 ? (
           <div className="flex min-h-28 flex-col gap-3 py-6">
             <p>No projects in that range.</p>
-            <Link href="/" className="inline-flex text-sm no-underline hover:text-primary">
+            <Link href="/" prefetch={false} className="inline-flex text-sm no-underline hover:text-primary">
               Show all selected work
             </Link>
           </div>

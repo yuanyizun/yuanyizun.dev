@@ -93,6 +93,61 @@ async function loadCurrentUser(
   return toCurrentUser(profile);
 }
 
+export type RegisteredUser = {
+  id: string;
+  username: string | null;
+  roleKey: string;
+  roleLabel: string;
+  createdAt: string;
+};
+
+export type ListRegisteredUsersResult =
+  | { ok: true; users: RegisteredUser[] }
+  | { ok: false };
+
+type RegisteredUserRow = {
+  id: string;
+  username: string | null;
+  role_key: string;
+  role_label: string;
+  created_at: string;
+};
+
+function toRegisteredUser(row: RegisteredUserRow): RegisteredUser {
+  return {
+    id: row.id,
+    username: row.username,
+    roleKey: row.role_key,
+    roleLabel: row.role_label,
+    createdAt: row.created_at,
+  };
+}
+
+function isRegisteredUserRow(value: unknown): value is RegisteredUserRow {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+  const row = value as Record<string, unknown>;
+  return (
+    typeof row.id === "string" &&
+    (typeof row.username === "string" || row.username === null) &&
+    typeof row.role_key === "string" &&
+    typeof row.role_label === "string" &&
+    typeof row.created_at === "string"
+  );
+}
+
+export async function listRegisteredUsers(): Promise<ListRegisteredUsersResult> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("list_registered_users");
+
+  if (error || !Array.isArray(data) || !data.every(isRegisteredUserRow)) {
+    return { ok: false };
+  }
+
+  return { ok: true, users: data.map(toRegisteredUser) };
+}
+
 export async function getCurrentUser(): Promise<CurrentUser | null> {
   const supabase = await createClient();
   return loadCurrentUser(supabase);

@@ -99,6 +99,7 @@ export function ProjectArchive({
               </div>
               <Link
                 href={`/projects/${featured.slug}`}
+                prefetch={false}
                 className="inline-flex min-h-11 w-fit items-center rounded-md bg-primary px-4 text-sm text-primary-foreground no-underline"
               >
                 Read case study
@@ -112,6 +113,7 @@ export function ProjectArchive({
                 <li key={project.slug}>
                   <Link
                     href={`/projects/${project.slug}`}
+                    prefetch={false}
                     className="flex h-full flex-col gap-3 rounded-xl bg-card p-6 no-underline"
                   >
                     <p className="font-mono text-xs text-muted-foreground">
@@ -138,6 +140,7 @@ export function ProjectArchive({
                   <li key={project.slug}>
                     <Link
                       href={`/projects/${project.slug}`}
+                      prefetch={false}
                       className="flex h-full flex-col gap-3 rounded-xl bg-card p-6 no-underline"
                     >
                       <p className="font-mono text-xs text-muted-foreground">

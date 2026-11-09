@@ -7,6 +7,18 @@ import {
   verifySessionToken,
 } from "@/data/session";
 
+function isDashboardPath(pathname: string) {
+  return pathname === "/dashboard" || pathname.startsWith("/dashboard/");
+}
+
+function redirectToLogin(request: NextRequest, from: NextResponse) {
+  const response = NextResponse.redirect(new URL("/login", request.url));
+  from.cookies.getAll().forEach((cookie) => {
+    response.cookies.set(cookie);
+  });
+  return response;
+}
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
@@ -38,29 +50,32 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
-  // Refresh the Supabase session. Do not authorize routes here.
+  // Refresh the Supabase session.
   const { data } = await supabase.auth.getClaims();
   const userId = data?.claims.sub;
-  if (!userId) {
-    return supabaseResponse;
+  if (userId) {
+    try {
+      const token = request.cookies.get(SESSION_COOKIE)?.value;
+      if (await sessionCookieNeedsReissue(token, userId)) {
+        const claims = token ? await verifySessionToken(token) : null;
+        if (claims && claims.sub === userId) {
+          const nextToken = await setSessionCookie(claims, supabaseResponse);
+          // Mirror onto the request so RSC cookies() sees it on this same pass.
+          request.cookies.set(SESSION_COOKIE, nextToken);
+        }
+      }
+    } catch {
+      // A missing app secret must not drop the Supabase refresh.
+    }
   }
 
-  try {
+  // Guard private routes before any page render (avoids a content flash).
+  if (isDashboardPath(request.nextUrl.pathname)) {
     const token = request.cookies.get(SESSION_COOKIE)?.value;
-    if (!(await sessionCookieNeedsReissue(token, userId))) {
-      return supabaseResponse;
-    }
-
     const claims = token ? await verifySessionToken(token) : null;
-    if (!claims || claims.sub !== userId) {
-      return supabaseResponse;
+    if (!claims) {
+      return redirectToLogin(request, supabaseResponse);
     }
-
-    const nextToken = await setSessionCookie(claims, supabaseResponse);
-    // Mirror onto the request so RSC cookies() sees it on this same pass.
-    request.cookies.set(SESSION_COOKIE, nextToken);
-  } catch {
-    // A missing app secret must not drop the Supabase refresh.
   }
 
   return supabaseResponse;

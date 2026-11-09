@@ -13,25 +13,25 @@ export const metadata: Metadata = {
   title: "Dashboard",
 };
 
-async function DashboardBody() {
+async function DashboardUsers({ currentUserId }: { currentUserId: string }) {
+  const result = await listRegisteredUsers();
+  if (!result.ok) {
+    return <RegisteredUsers users={[]} currentUserId={currentUserId} error />;
+  }
+  return (
+    <RegisteredUsers users={result.users} currentUserId={currentUserId} />
+  );
+}
+
+async function DashboardGate() {
+  // Proxy redirects signed-out visitors before render. This keeps the cookie
+  // read inside Suspense for Cache Components and avoids painting PageIntro
+  // until a session exists.
   const session = await getSessionFromCookie();
   if (!session) {
     redirect("/login");
   }
 
-  const result = await listRegisteredUsers();
-  if (!result.ok) {
-    return (
-      <RegisteredUsers users={[]} currentUserId={session.sub} error />
-    );
-  }
-
-  return (
-    <RegisteredUsers users={result.users} currentUserId={session.sub} />
-  );
-}
-
-export default function DashboardPage() {
   return (
     <PageFrame
       template="dashboard"
@@ -43,8 +43,18 @@ export default function DashboardPage() {
       }}
     >
       <Suspense fallback={<RegisteredUsersSkeleton />}>
-        <DashboardBody />
+        <DashboardUsers currentUserId={session.sub} />
       </Suspense>
     </PageFrame>
+  );
+}
+
+export default function DashboardPage() {
+  // No dashboard chrome in the outer fallback — a signed-out flash would
+  // otherwise show the intro before redirect().
+  return (
+    <Suspense fallback={null}>
+      <DashboardGate />
+    </Suspense>
   );
 }

@@ -90,7 +90,7 @@ export function ProjectArchive({
                   {featured.context ?? featured.kind}
                   {featured.period ? ` · ${featured.period}` : ""}
                 </p>
-                <h2 className="font-heading text-4xl tracking-[-0.03em]">
+                <h2 className="font-heading text-4xl tracking-heading">
                   {featured.title}
                 </h2>
                 <p className="max-w-md text-sm leading-relaxed text-inverse-muted">
@@ -118,7 +118,7 @@ export function ProjectArchive({
                       {project.kind}
                       {project.period ? ` · ${project.period}` : ""}
                     </p>
-                    <p className="font-heading text-2xl tracking-[-0.03em]">
+                    <p className="font-heading text-2xl tracking-heading">
                       {project.title}
                     </p>
                     <p className="text-sm leading-relaxed">{project.summary}</p>
@@ -130,7 +130,7 @@ export function ProjectArchive({
 
           {personal.length > 0 ? (
             <section className="flex flex-col gap-4">
-              <h2 className="font-heading text-3xl tracking-[-0.03em]">
+              <h2 className="font-heading text-3xl tracking-heading">
                 Personal project
               </h2>
               <ul className="grid gap-4 md:grid-cols-2">
@@ -143,7 +143,7 @@ export function ProjectArchive({
                       <p className="font-mono text-xs text-muted-foreground">
                         {project.period}
                       </p>
-                      <p className="font-heading text-2xl tracking-[-0.03em]">
+                      <p className="font-heading text-2xl tracking-heading">
                         {project.title}
                       </p>
                       <p className="text-sm leading-relaxed">{project.summary}</p>

@@ -20,7 +20,7 @@ export function RelatedList({
 
   return (
     <section className="flex flex-col gap-5">
-      <h2 className="font-heading text-3xl tracking-[-0.03em]">{title}</h2>
+      <h2 className="font-heading text-3xl tracking-heading">{title}</h2>
       <ul className="grid gap-4 md:grid-cols-2">
         {items.map((item) => (
           <li key={item.href}>
@@ -31,7 +31,7 @@ export function RelatedList({
               <span className="font-mono text-xs text-muted-foreground">
                 {item.meta}
               </span>
-              <span className="font-heading text-2xl tracking-[-0.03em]">
+              <span className="font-heading text-2xl tracking-heading">
                 {item.title}
               </span>
               <span className="text-sm leading-relaxed text-foreground">

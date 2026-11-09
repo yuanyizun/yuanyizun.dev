@@ -4,17 +4,17 @@ import { cn } from "@/utils/class-names";
 
 const styles = {
   primary:
-    "bg-primary text-primary-foreground hover:bg-[#9d3d24] focus-visible:outline-primary",
+    "bg-primary text-primary-foreground hover:bg-primary-hover focus-visible:outline-primary-foreground",
   outline:
-    "border border-foreground/15 bg-transparent text-foreground hover:bg-card focus-visible:outline-foreground",
+    "border border-foreground/15 bg-transparent text-foreground hover:bg-card",
   inverse:
-    "bg-primary text-primary-foreground hover:bg-[#9d3d24] focus-visible:outline-white",
+    "bg-primary text-primary-foreground hover:bg-primary-hover focus-visible:outline-primary-foreground",
 } as const;
 
 type Variant = keyof typeof styles;
 
 const base =
-  "inline-flex min-h-11 items-center justify-center rounded-md px-4 text-sm font-medium no-underline transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2";
+  "inline-flex min-h-11 items-center justify-center rounded-md px-4 text-sm font-medium no-underline transition-colors";
 
 export function ButtonLink({
   variant = "primary",

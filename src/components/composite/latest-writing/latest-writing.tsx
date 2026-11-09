@@ -13,7 +13,7 @@ export function LatestWriting({ posts }: { posts: WritingPost[] }) {
 
   return (
     <section className="flex flex-col gap-5">
-      <h2 className="font-heading text-[clamp(2rem,3vw,2.75rem)] tracking-[-0.03em]">
+      <h2 className="font-heading text-section tracking-heading">
         Latest writing
       </h2>
       {latest.length === 0 ? (

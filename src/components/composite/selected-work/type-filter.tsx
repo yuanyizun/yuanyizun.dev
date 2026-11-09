@@ -1,8 +1,10 @@
 "use client";
 
 function chipClass(selected: boolean) {
-  return `inline-flex min-h-11 items-center rounded-md px-3 text-sm transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${
-    selected ? "bg-primary text-primary-foreground" : "bg-card text-foreground"
+  return `inline-flex min-h-11 items-center rounded-md px-3 text-sm transition-colors ${
+    selected
+      ? "bg-primary text-primary-foreground focus-visible:outline-primary-foreground"
+      : "bg-card text-foreground"
   }`;
 }
 

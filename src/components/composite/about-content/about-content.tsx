@@ -2,7 +2,7 @@ export function AboutContent() {
   return (
     <div className="flex flex-col gap-16">
       <section className="grid gap-8 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
-        <h2 className="font-heading text-[clamp(2rem,3vw,2.75rem)] tracking-[-0.03em]">
+        <h2 className="font-heading text-section tracking-heading">
           Eleven years in one publishing house.
         </h2>
         <div className="flex max-w-2xl flex-col gap-4 text-base leading-relaxed">
@@ -24,12 +24,12 @@ export function AboutContent() {
       </section>
 
       <section className="flex flex-col gap-6">
-        <h2 className="font-heading text-[clamp(2rem,3vw,2.75rem)] tracking-[-0.03em]">
+        <h2 className="font-heading text-section tracking-heading">
           Momentum Media
         </h2>
         <div className="grid gap-4 lg:grid-cols-3">
           <article className="flex flex-col gap-3 rounded-xl bg-card p-5">
-            <h3 className="font-heading text-2xl tracking-[-0.03em]">
+            <h3 className="font-heading text-2xl tracking-heading">
               Full Stack & Platform Engineering
             </h3>
             <p className="font-mono text-xs text-muted-foreground">
@@ -66,7 +66,7 @@ export function AboutContent() {
             </ul>
           </article>
           <article className="flex flex-col gap-3 rounded-xl bg-card p-5">
-            <h3 className="font-heading text-2xl tracking-[-0.03em]">
+            <h3 className="font-heading text-2xl tracking-heading">
               Full Stack Development
             </h3>
             <p className="font-mono text-xs text-muted-foreground">
@@ -94,7 +94,7 @@ export function AboutContent() {
             </ul>
           </article>
           <article className="flex flex-col gap-3 rounded-xl bg-card p-5">
-            <h3 className="font-heading text-2xl tracking-[-0.03em]">
+            <h3 className="font-heading text-2xl tracking-heading">
               Web Development
             </h3>
             <p className="font-mono text-xs text-muted-foreground">
@@ -123,7 +123,7 @@ export function AboutContent() {
 
       <section className="grid gap-10 lg:grid-cols-2">
         <div className="flex flex-col gap-4">
-          <h2 className="font-heading text-3xl tracking-[-0.03em]">
+          <h2 className="font-heading text-3xl tracking-heading">
             Earlier experience
           </h2>
           <p>
@@ -138,14 +138,14 @@ export function AboutContent() {
           </p>
         </div>
         <div className="flex flex-col gap-4">
-          <h2 className="font-heading text-3xl tracking-[-0.03em]">Education</h2>
+          <h2 className="font-heading text-3xl tracking-heading">Education</h2>
           <p>Master of Information Technology · University of Sydney</p>
           <p>Bachelor of Computer Science · University of Wollongong</p>
         </div>
       </section>
 
       <section className="flex flex-col gap-6">
-        <h2 className="font-heading text-3xl tracking-[-0.03em]">Skills</h2>
+        <h2 className="font-heading text-3xl tracking-heading">Skills</h2>
         <div className="grid gap-6 text-sm leading-relaxed sm:grid-cols-2">
           <p>
             <span className="font-medium">Backend and full stack.</span> PHP,

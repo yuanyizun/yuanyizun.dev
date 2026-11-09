@@ -20,7 +20,7 @@ export function ArchitectureFigure({
             key={stage}
             className="rounded-xl bg-inverse px-4 py-5 text-inverse-foreground"
           >
-            <p className="font-heading text-2xl leading-tight tracking-[-0.03em]">
+            <p className="font-heading text-2xl leading-tight tracking-heading">
               {stage}
             </p>
           </li>

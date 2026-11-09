@@ -65,7 +65,7 @@ export function SectionNav({
     <nav aria-label={label}>
       <button
         type="button"
-        className="flex min-h-11 w-full items-center justify-between rounded-md bg-card px-4 text-left text-sm min-[1200px]:hidden"
+        className="flex min-h-11 w-full items-center justify-between rounded-md bg-card px-4 text-left text-sm reading:hidden"
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => setOpen((value) => !value)}
@@ -76,7 +76,7 @@ export function SectionNav({
       <ol
         id={panelId}
         data-open={open ? "true" : "false"}
-        className="relative mt-3 hidden list-none gap-[0.15rem] border-l border-border pl-4 data-[open=true]:grid min-[1200px]:mt-0 min-[1200px]:grid"
+        className="relative mt-3 hidden list-none gap-[0.15rem] border-l border-border pl-4 data-[open=true]:grid reading:mt-0 reading:grid"
       >
         {headings.map((heading) => {
           const current = heading.id === currentId;

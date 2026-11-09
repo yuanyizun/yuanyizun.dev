@@ -32,7 +32,7 @@ export function ProofPoints() {
           key={point.title}
           className="flex flex-col gap-3 bg-inverse p-6 text-inverse-foreground"
         >
-          <h3 className="font-heading text-[clamp(1.65rem,2vw,2rem)] leading-[1.05] tracking-[-0.03em]">
+          <h3 className="font-heading text-[clamp(1.65rem,2vw,2rem)] leading-[1.05] tracking-heading">
             {point.title}
           </h3>
           <p className="text-base leading-relaxed text-inverse-muted">

@@ -18,14 +18,14 @@ const geistMono = Geist_Mono({
 
 const newsreader = Newsreader({
   subsets: ["latin"],
-  weight: ["400", "500"],
+  weight: "500",
   variable: "--font-newsreader",
   display: "swap",
 });
 
 const caveat = Caveat({
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
+  weight: "600",
   variable: "--font-caveat",
   display: "swap",
 });
@@ -44,7 +44,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       className={`${geist.variable} ${geistMono.variable} ${newsreader.variable} ${caveat.variable} h-full antialiased`}
-      data-scroll-behavior="smooth"
       data-positions={process.env.THEME_POSITIONS === "1" ? "true" : undefined}
     >
       <body className="flex min-h-full flex-col bg-background font-sans text-foreground">

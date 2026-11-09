@@ -1,6 +1,5 @@
 @import "tailwindcss" source(none);
 @source "..";
-@source not "../../vibe-coder";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
@@ -14,6 +13,7 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-border: var(--border);
@@ -32,6 +32,12 @@
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) * 1.4);
+  --breakpoint-reading: 75rem;
+  --text-display: clamp(2.5rem, 5vw, 4.25rem);
+  --text-display--line-height: 0.98;
+  --text-section: clamp(2rem, 3vw, 2.75rem);
+  --tracking-heading: -0.03em;
+  --tracking-display: -0.035em;
 }
 
 :root {
@@ -40,6 +46,7 @@
   --muted: #eaede3;
   --muted-foreground: #646b60;
   --primary: #bb4b2c;
+  --primary-hover: #9d3d24;
   --primary-foreground: #ffffff;
   --secondary: #eaede3;
   --secondary-foreground: #242823;
@@ -63,7 +70,7 @@
   }
 
   html {
-    @apply scroll-smooth;
+    scroll-behavior: auto;
   }
 
   body {
@@ -76,12 +83,12 @@
   h3,
   .font-heading {
     font-family: var(--font-heading);
-    font-weight: 450;
+    font-weight: 500;
     text-wrap: balance;
   }
 
   :focus-visible {
-    outline: 2px solid var(--primary);
+    outline: 2px solid var(--ring);
     outline-offset: 3px;
   }
 
@@ -91,60 +98,17 @@
 }
 
 html[data-positions="true"] [data-position] {
-  outline: 1px dashed #bb4b2c;
+  outline: 1px dashed var(--ring);
   outline-offset: 6px;
 }
 
-/* Header brand wordmark (feature-021) */
-.brandWordmark {
-  font-family: var(--font-brand);
-  font-size: 1.75rem;
-  font-weight: 600;
-  line-height: 1;
-  letter-spacing: -0.01em;
-  color: var(--foreground);
-}
-
-/* Header account Suspense reveal (feature-016) */
-:root {
-  --duration-header-account-exit: 150ms;
-  --duration-header-account-enter: 220ms;
-}
-
-::view-transition {
-  pointer-events: none;
-}
-
-::view-transition-old(.header-account-exit) {
-  animation: var(--duration-header-account-exit) ease-out both header-account-fade
-    reverse;
-}
-
-::view-transition-new(.header-account-enter) {
-  animation: var(--duration-header-account-enter) ease-in
-    var(--duration-header-account-exit) both header-account-fade;
-}
-
-@keyframes header-account-fade {
-  from {
-    filter: blur(2px);
-    opacity: 0;
-  }
-  to {
-    filter: blur(0);
-    opacity: 1;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
-  ::view-transition-old(*),
-  ::view-transition-new(*),
-  ::view-transition-group(*) {
-    animation-duration: 0s !important;
-    animation-delay: 0s !important;
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

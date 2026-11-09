@@ -17,15 +17,15 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .nosyPointerActive,
-  .nosyPointerActive * {
-    cursor: none !important;
+  html.nosyPointerActive,
+  html.nosyPointerActive * {
+    cursor: none;
   }
 
-  .nosyPointerActive input,
-  .nosyPointerActive textarea,
-  .nosyPointerActive [contenteditable]:not([contenteditable="false"]) {
-    cursor: text !important;
+  html.nosyPointerActive input,
+  html.nosyPointerActive textarea,
+  html.nosyPointerActive [contenteditable]:not([contenteditable="false"]) {
+    cursor: text;
   }
 }
 

@@ -87,7 +87,7 @@ function SocialLinks({ className }: { className?: string }) {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={link.label}
-          className="inline-flex size-11 items-center justify-center rounded-md text-foreground no-underline transition-colors hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+          className="inline-flex size-11 items-center justify-center rounded-md text-foreground no-underline transition-colors hover:text-primary"
         >
           <SocialIcon id={link.id} />
         </a>
@@ -120,7 +120,7 @@ export function SiteHeader({
                 <Link
                   href="/about"
                   aria-label="Learn more about me!"
-                  className="group rounded-full no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+                  className="group rounded-full no-underline"
                 >
                   <HeaderAvatar className="motion-safe:group-hover:animate-[spin_3s_linear_infinite]" />
                 </Link>
@@ -130,7 +130,10 @@ export function SiteHeader({
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-          <Link href="/" className="brandWordmark no-underline">
+          <Link
+            href="/"
+            className="font-brand text-[1.75rem] font-semibold leading-none tracking-[-0.01em] text-foreground no-underline"
+          >
             Yizun Yuan
           </Link>
         </div>
@@ -164,10 +167,10 @@ export function SiteHeader({
             <span className="sr-only">Open menu</span>
           </Dialog.Trigger>
           <Dialog.Portal>
-            <Dialog.Overlay className="fixed inset-0 z-40 bg-[#242823]/40" />
+            <Dialog.Overlay className="fixed inset-0 z-40 bg-foreground/40" />
             <Dialog.Content className="fixed inset-y-0 right-0 z-50 flex w-full max-w-sm flex-col gap-8 bg-background px-6 py-5 outline-none">
               <div className="flex items-center justify-between">
-                <Dialog.Title className="font-heading text-2xl tracking-[-0.03em]">
+                <Dialog.Title className="font-heading text-2xl tracking-heading">
                   Menu
                 </Dialog.Title>
                 <Dialog.Close className="inline-flex size-11 items-center justify-center rounded-md">

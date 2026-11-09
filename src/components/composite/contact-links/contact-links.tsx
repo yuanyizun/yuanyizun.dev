@@ -11,7 +11,7 @@ export function ContactLinks() {
         <li key={row.href}>
           <a
             href={row.href}
-            className="font-heading text-3xl tracking-[-0.03em] no-underline hover:text-primary"
+            className="font-heading text-3xl tracking-heading no-underline hover:text-primary"
           >
             {row.label}
           </a>

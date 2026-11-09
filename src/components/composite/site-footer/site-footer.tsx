@@ -15,7 +15,7 @@ export function SiteFooter() {
       className="flex flex-col gap-8 py-10 sm:flex-row sm:items-end sm:justify-between"
     >
       <div className="flex flex-col gap-3">
-        <p className="font-heading text-3xl tracking-[-0.03em]">Yizun Yuan</p>
+        <p className="font-heading text-3xl tracking-heading">Yizun Yuan</p>
         <p className="text-sm text-muted-foreground">Sydney, NSW</p>
       </div>
       <nav className="flex flex-wrap gap-x-5 gap-y-2 text-sm">

@@ -164,7 +164,7 @@ export function TechGlobe() {
             <p className="font-mono text-[0.7rem] uppercase tracking-[0.08em] text-muted-foreground">
               {TECH_GLOBE_CATEGORIES[selected.category]}
             </p>
-            <p className="font-heading text-2xl tracking-[-0.03em]">
+            <p className="font-heading text-2xl tracking-heading">
               {selected.label}
             </p>
             <p className="mt-1 text-sm leading-relaxed text-foreground">

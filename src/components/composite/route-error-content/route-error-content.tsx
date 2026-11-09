@@ -5,7 +5,7 @@ import Link from "next/link";
 export function RouteErrorContent({ onRetry }: { onRetry: () => void }) {
   return (
     <div className="flex max-w-xl flex-col gap-6">
-      <h1 className="font-heading text-[clamp(2.5rem,5vw,4.25rem)] leading-[0.98] tracking-[-0.035em]">
+      <h1 className="font-heading text-display tracking-display">
         This page failed to load.
       </h1>
       <p className="text-lg leading-relaxed">

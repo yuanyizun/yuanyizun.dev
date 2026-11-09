@@ -160,7 +160,7 @@ function ProfileChatPanel() {
             <div className="flex flex-col gap-2">
               <h2
                 id="profile-chat-title"
-                className="font-heading text-2xl tracking-[-0.03em]"
+                className="font-heading text-2xl tracking-heading"
               >
                 Ask about Yizun
               </h2>
@@ -170,7 +170,7 @@ function ProfileChatPanel() {
             </div>
             <button
               type="button"
-              className="min-h-11 shrink-0 px-1 text-base underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              className="min-h-11 shrink-0 px-1 text-base underline-offset-4 hover:underline"
               onClick={() => setOpen(false)}
             >
               Close
@@ -184,7 +184,7 @@ function ProfileChatPanel() {
                   <button
                     key={prompt}
                     type="button"
-                    className="min-h-11 rounded-md border border-border bg-card px-3 text-left text-base focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                    className="min-h-11 rounded-md border border-border bg-card px-3 text-left text-base"
                     onClick={() => submit(prompt)}
                   >
                     {prompt}
@@ -244,7 +244,7 @@ function ProfileChatPanel() {
               maxLength={2000}
               value={draft}
               placeholder="Ask about the work"
-              className="min-h-24 w-full resize-none rounded-md border border-border bg-background px-3 py-3 text-base text-foreground outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              className="min-h-24 w-full resize-none rounded-md border border-border bg-background px-3 py-3 text-base text-foreground"
               onChange={(event) => setDraft(event.target.value)}
               onKeyDown={(event) => {
                 if (event.key === "Enter" && !event.shiftKey) {

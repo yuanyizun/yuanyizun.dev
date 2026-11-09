@@ -18,7 +18,7 @@ export function PageIntro({
       }
     >
       <div className="flex max-w-3xl flex-col gap-5">
-        <h1 className="font-heading text-[clamp(2.5rem,5.4vw,4.75rem)] leading-[0.98] tracking-[-0.035em]">
+        <h1 className="font-heading text-[clamp(2.5rem,5.4vw,4.75rem)] leading-[0.98] tracking-display">
           {title}
         </h1>
         {summary ? (

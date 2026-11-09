@@ -1,6 +1,7 @@
 import "server-only";
 
 import { Suspense, ViewTransition } from "react";
+import "./header-account.module.css";
 import { ButtonLink } from "@/components/primitive/button/button";
 import { getSessionFromCookie } from "@/data/session";
 import { cn } from "@/utils/class-names";

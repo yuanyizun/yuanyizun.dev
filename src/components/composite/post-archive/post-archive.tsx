@@ -88,7 +88,7 @@ export function PostArchive({
                 >
                   {formatDisplayDate(featured.date)}
                 </time>
-                <span className="font-heading text-4xl tracking-[-0.03em]">
+                <span className="font-heading text-4xl tracking-heading">
                   {featured.title}
                 </span>
                 <span className="max-w-xl text-base leading-relaxed">

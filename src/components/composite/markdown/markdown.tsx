@@ -46,7 +46,7 @@ export function Markdown({ children }: { children: string }) {
             </pre>
           ),
           blockquote: ({ children: nodes }) => (
-            <blockquote className="border-l-0 bg-card px-5 py-4 font-heading text-2xl leading-snug tracking-[-0.03em]">
+            <blockquote className="border-l-0 bg-card px-5 py-4 font-heading text-2xl leading-snug tracking-heading">
               {nodes}
             </blockquote>
           ),

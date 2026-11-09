@@ -113,7 +113,7 @@ export function ShareRail({ title }: { title: string }) {
     <TooltipProvider delayDuration={150}>
       <div
         ref={rootRef}
-        className="flex flex-col items-start gap-2 min-[1200px]:fixed min-[1200px]:top-1/2 min-[1200px]:left-4 min-[1200px]:z-30 min-[1200px]:-translate-y-1/2"
+        className="flex flex-col items-start gap-2 reading:fixed reading:top-1/2 reading:left-4 reading:z-30 reading:-translate-y-1/2"
       >
         <Tooltip>
           <TooltipTrigger asChild>

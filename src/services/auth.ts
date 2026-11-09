@@ -67,7 +67,11 @@ async function finishAuthenticatedRedirect(user: CurrentUser): Promise<never> {
   if (!user.username) {
     redirect("/register/username");
   }
-  await setSessionCookie({ sub: user.id, username: user.username });
+  await setSessionCookie({
+    sub: user.id,
+    username: user.username,
+    role: user.roleKey,
+  });
   redirect("/dashboard");
 }
 
@@ -169,7 +173,11 @@ export async function exchangeAuthCode(code: string): Promise<string> {
   }
 
   if (user?.username) {
-    await setSessionCookie({ sub: user.id, username: user.username });
+    await setSessionCookie({
+      sub: user.id,
+      username: user.username,
+      role: user.roleKey,
+    });
     return `${siteUrl()}/dashboard`;
   }
 
@@ -191,6 +199,10 @@ export async function setUsername(
     };
   }
 
-  await setSessionCookie({ sub: current.id, username: input.username });
+  await setSessionCookie({
+    sub: current.id,
+    username: input.username,
+    role: current.roleKey,
+  });
   redirect("/dashboard");
 }

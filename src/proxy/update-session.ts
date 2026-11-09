@@ -1,25 +1,15 @@
 import { createServerClient } from "@supabase/ssr";
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import {
   SESSION_COOKIE,
   sessionCookieNeedsReissue,
   setSessionCookie,
   verifySessionToken,
 } from "@/data/session";
+import { copyResponseCookies, type ProxyContext } from "./chain";
 
-function isDashboardPath(pathname: string) {
-  return pathname === "/dashboard" || pathname.startsWith("/dashboard/");
-}
-
-function redirectToLogin(request: NextRequest, from: NextResponse) {
-  const response = NextResponse.redirect(new URL("/login", request.url));
-  from.cookies.getAll().forEach((cookie) => {
-    response.cookies.set(cookie);
-  });
-  return response;
-}
-
-export async function updateSession(request: NextRequest) {
+export async function updateSession(context: ProxyContext) {
+  const { request } = context;
   let supabaseResponse = NextResponse.next({
     request,
   });
@@ -60,7 +50,7 @@ export async function updateSession(request: NextRequest) {
         const claims = token ? await verifySessionToken(token) : null;
         if (claims && claims.sub === userId) {
           const nextToken = await setSessionCookie(claims, supabaseResponse);
-          // Mirror onto the request so RSC cookies() sees it on this same pass.
+          // Mirror onto the request so later steps and RSC cookies() see it.
           request.cookies.set(SESSION_COOKIE, nextToken);
         }
       }
@@ -69,14 +59,7 @@ export async function updateSession(request: NextRequest) {
     }
   }
 
-  // Guard private routes before any page render (avoids a content flash).
-  if (isDashboardPath(request.nextUrl.pathname)) {
-    const token = request.cookies.get(SESSION_COOKIE)?.value;
-    const claims = token ? await verifySessionToken(token) : null;
-    if (!claims) {
-      return redirectToLogin(request, supabaseResponse);
-    }
-  }
-
-  return supabaseResponse;
+  copyResponseCookies(context.response, supabaseResponse);
+  context.response = supabaseResponse;
+  context.session = undefined;
 }

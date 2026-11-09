@@ -12,6 +12,8 @@ const SESSION_REFRESH_WINDOW = 60 * 60;
 export type SessionClaims = {
   sub: string;
   username: string;
+  /** Present on sessions issued after role was added to the cookie. */
+  role?: string;
 };
 
 function cookieOptions() {
@@ -28,7 +30,14 @@ function cookieOptions() {
 export async function signSessionToken(
   claims: SessionClaims,
 ): Promise<string> {
-  return new SignJWT({ username: claims.username })
+  const payload: { username: string; role?: string } = {
+    username: claims.username,
+  };
+  if (claims.role) {
+    payload.role = claims.role;
+  }
+
+  return new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
     .setSubject(claims.sub)
     .setIssuedAt()
@@ -51,7 +60,12 @@ export async function verifySessionToken(
     ) {
       return null;
     }
-    return { sub, username };
+    const role = payload.role;
+    return {
+      sub,
+      username,
+      ...(typeof role === "string" && role ? { role } : {}),
+    };
   } catch {
     return null;
   }

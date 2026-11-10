@@ -1,5 +1,6 @@
 import "server-only";
 
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import {
   clearProfileCache,
@@ -208,4 +209,37 @@ export async function setUsername(
     role: current.roleKey,
   });
   redirect("/dashboard");
+}
+
+/**
+ * Dashboard “edit my profile” — stay on page with shaped state.
+ * Write is bound to the verified session id; posted ids/roles are ignored.
+ */
+export async function updateProfile(
+  input: UsernameInput,
+): Promise<AuthFormState> {
+  const current = await getCurrentUser();
+  if (!current) {
+    return { message: "Sign in required." };
+  }
+
+  if (!current.username) {
+    return { message: "Finish setting up your username first." };
+  }
+
+  const result = await updateUsername(current.id, input.username);
+  if (!result.ok) {
+    return {
+      errors: { username: mapAuthError(result.error.message) },
+    };
+  }
+
+  await setProfileCache({
+    sub: current.id,
+    username: input.username,
+    role: current.roleKey,
+  });
+  revalidatePath("/dashboard");
+
+  return { ok: true, message: "Saved." };
 }

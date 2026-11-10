@@ -121,3 +121,10 @@ export function parseUsername(formData: FormData): ParseResult<UsernameInput> {
   }
   return { ok: true, value: { username: username.value! } };
 }
+
+/** Dashboard profile edit — same username allowlist; ignore any posted ids/roles. */
+export function parseUpdateProfile(
+  formData: FormData,
+): ParseResult<UsernameInput> {
+  return parseUsername(formData);
+}

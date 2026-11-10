@@ -19,7 +19,7 @@ async function UsernameSection() {
     redirect("/login");
   }
 
-  // Cookie writes are illegal in RSC pages; the proxy re-issues yz_session.
+  // Cookie writes are illegal in RSC pages; the proxy reloads yz_profile.
   if (user.username) {
     redirect("/dashboard");
   }

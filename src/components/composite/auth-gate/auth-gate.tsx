@@ -2,7 +2,7 @@ import "server-only";
 
 import type { ReactNode } from "react";
 import { ButtonLink } from "@/components/primitive/button/button";
-import { getSessionFromCookie } from "@/data/session";
+import { getProfileCache } from "@/data/session";
 import { cn } from "@/utils/class-names";
 
 type AuthGateNoticeProps = {
@@ -75,8 +75,8 @@ type AuthGateProps = {
 };
 
 /**
- * Renders `children` only when `yz_session` verifies.
- * Otherwise patches the page with a sign-in sticker.
+ * Renders `children` only when the reconciled `yz_profile` cache verifies.
+ * Supabase Auth remains the identity session; this gate does not call Supabase.
  */
 export async function AuthGate({
   children,
@@ -85,9 +85,9 @@ export async function AuthGate({
   label,
   className,
 }: AuthGateProps) {
-  const session = await getSessionFromCookie();
+  const profile = await getProfileCache();
 
-  if (!session) {
+  if (!profile) {
     return (
       <AuthGateNotice
         message={message}

@@ -2,8 +2,8 @@ import "server-only";
 
 import { redirect } from "next/navigation";
 import {
-  clearSessionCookie,
-  setSessionCookie,
+  clearProfileCache,
+  setProfileCache,
 } from "@/data/session";
 import {
   exchangeAuthCode as exchangeAuthCodeInData,
@@ -60,18 +60,25 @@ function mapAuthError(message: string): string {
   if (lower.includes("invalid login credentials")) {
     return "Email or password is incorrect.";
   }
-  return message || "Something went wrong. Try again.";
+  return "Something went wrong. Try again.";
+}
+
+async function writeProfileCache(user: CurrentUser): Promise<void> {
+  if (!user.username) {
+    return;
+  }
+  await setProfileCache({
+    sub: user.id,
+    username: user.username,
+    role: user.roleKey,
+  });
 }
 
 async function finishAuthenticatedRedirect(user: CurrentUser): Promise<never> {
   if (!user.username) {
     redirect("/register/username");
   }
-  await setSessionCookie({
-    sub: user.id,
-    username: user.username,
-    role: user.roleKey,
-  });
+  await writeProfileCache(user);
   redirect("/dashboard");
 }
 
@@ -147,7 +154,7 @@ export async function signInWithPassword(
 }
 
 export async function signOut(): Promise<void> {
-  await clearSessionCookie();
+  await clearProfileCache();
   await signOutAuth();
   redirect("/");
 }
@@ -173,11 +180,7 @@ export async function exchangeAuthCode(code: string): Promise<string> {
   }
 
   if (user?.username) {
-    await setSessionCookie({
-      sub: user.id,
-      username: user.username,
-      role: user.roleKey,
-    });
+    await writeProfileCache(user);
     return `${siteUrl()}/dashboard`;
   }
 
@@ -199,7 +202,7 @@ export async function setUsername(
     };
   }
 
-  await setSessionCookie({
+  await setProfileCache({
     sub: current.id,
     username: input.username,
     role: current.roleKey,

@@ -5,73 +5,71 @@ import { cookies } from "next/headers";
 import { connection, type NextResponse } from "next/server";
 import { authJwtSecretKey } from "@/data/internal/secrets";
 
-export const SESSION_COOKIE = "yz_session";
-const SESSION_MAX_AGE = 60 * 60 * 24;
-const SESSION_REFRESH_WINDOW = 60 * 60;
+/** Short profile cache. Supabase cookies remain the identity session. */
+export const PROFILE_CACHE_COOKIE = "yz_profile";
+/** Legacy dual-session cookie; cleared on sign-out / reconcile clear. */
+const LEGACY_SESSION_COOKIE = "yz_session";
+export const PROFILE_CACHE_MAX_AGE = 60 * 15;
+export const PROFILE_CACHE_TTL_SECONDS = PROFILE_CACHE_MAX_AGE;
 
-export type SessionClaims = {
+export type ProfileCacheClaims = {
   sub: string;
   username: string;
-  /** Present on sessions issued after role was added to the cookie. */
-  role?: string;
+  /** App role key from public.roles.key — not the Supabase JWT `role`. */
+  role: string;
 };
 
-function cookieOptions() {
+function cookieOptions(maxAge = PROFILE_CACHE_MAX_AGE) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
   return {
     httpOnly: true,
     sameSite: "lax" as const,
     path: "/",
-    maxAge: SESSION_MAX_AGE,
+    maxAge,
     secure: siteUrl.startsWith("https"),
   };
 }
 
-export async function signSessionToken(
-  claims: SessionClaims,
+export async function signProfileCacheToken(
+  claims: ProfileCacheClaims,
 ): Promise<string> {
-  const payload: { username: string; role?: string } = {
+  return new SignJWT({
     username: claims.username,
-  };
-  if (claims.role) {
-    payload.role = claims.role;
-  }
-
-  return new SignJWT(payload)
+    role: claims.role,
+  })
     .setProtectedHeader({ alg: "HS256" })
     .setSubject(claims.sub)
     .setIssuedAt()
-    .setExpirationTime("1d")
+    .setExpirationTime(`${PROFILE_CACHE_TTL_SECONDS}s`)
     .sign(authJwtSecretKey());
 }
 
-export async function verifySessionToken(
+export async function verifyProfileCacheToken(
   token: string,
-): Promise<SessionClaims | null> {
+): Promise<ProfileCacheClaims | null> {
   try {
     const { payload } = await jwtVerify(token, authJwtSecretKey());
     const sub = payload.sub;
     const username = payload.username;
+    const role = payload.role;
     if (
       typeof sub !== "string" ||
       !sub ||
       typeof username !== "string" ||
-      !username
+      !username ||
+      typeof role !== "string" ||
+      !role
     ) {
       return null;
     }
-    const role = payload.role;
-    return {
-      sub,
-      username,
-      ...(typeof role === "string" && role ? { role } : {}),
-    };
+    return { sub, username, role };
   } catch {
     return null;
   }
 }
 
-export async function sessionCookieNeedsReissue(
+/** True when the token is missing, invalid, incomplete, or older than the TTL. */
+export async function profileCacheIsStale(
   token: string | undefined,
   userId: string,
 ): Promise<boolean> {
@@ -86,49 +84,67 @@ export async function sessionCookieNeedsReissue(
     if (typeof payload.username !== "string" || !payload.username) {
       return true;
     }
-    if (typeof payload.exp !== "number") {
+    if (typeof payload.role !== "string" || !payload.role) {
       return true;
     }
-    return payload.exp - Math.floor(Date.now() / 1000) < SESSION_REFRESH_WINDOW;
+    if (typeof payload.iat !== "number") {
+      return true;
+    }
+    return (
+      Math.floor(Date.now() / 1000) - payload.iat >= PROFILE_CACHE_TTL_SECONDS
+    );
   } catch {
     return true;
   }
 }
 
-export async function getSessionFromCookie(): Promise<SessionClaims | null> {
+export async function getProfileCache(): Promise<ProfileCacheClaims | null> {
   // jose jwtVerify uses new Date() for exp; mark request-bound first.
   await connection();
-  const token = (await cookies()).get(SESSION_COOKIE)?.value;
+  const token = (await cookies()).get(PROFILE_CACHE_COOKIE)?.value;
 
   if (!token) {
     return null;
   }
-  return verifySessionToken(token);
+  return verifyProfileCacheToken(token);
 }
 
-export async function setSessionCookie(
-  claims: SessionClaims,
+export async function setProfileCache(
+  claims: ProfileCacheClaims,
   response?: NextResponse,
 ): Promise<string> {
-  const token = await signSessionToken(claims);
+  const token = await signProfileCacheToken(claims);
   const options = cookieOptions();
   if (response) {
-    response.cookies.set(SESSION_COOKIE, token, options);
+    response.cookies.set(PROFILE_CACHE_COOKIE, token, options);
     return token;
   }
-  (await cookies()).set(SESSION_COOKIE, token, options);
+  (await cookies()).set(PROFILE_CACHE_COOKIE, token, options);
   return token;
 }
 
-export async function clearSessionCookie(
-  response?: NextResponse,
-): Promise<void> {
+function clearLegacySessionCookie(response?: NextResponse): void {
   if (response) {
-    response.cookies.set(SESSION_COOKIE, "", {
-      ...cookieOptions(),
+    response.cookies.set(LEGACY_SESSION_COOKIE, "", {
+      ...cookieOptions(0),
       maxAge: 0,
     });
     return;
   }
-  (await cookies()).delete(SESSION_COOKIE);
+}
+
+export async function clearProfileCache(
+  response?: NextResponse,
+): Promise<void> {
+  if (response) {
+    response.cookies.set(PROFILE_CACHE_COOKIE, "", {
+      ...cookieOptions(0),
+      maxAge: 0,
+    });
+    clearLegacySessionCookie(response);
+    return;
+  }
+  const jar = await cookies();
+  jar.delete(PROFILE_CACHE_COOKIE);
+  jar.delete(LEGACY_SESSION_COOKIE);
 }

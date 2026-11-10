@@ -3,7 +3,7 @@ import "server-only";
 import { Suspense, ViewTransition } from "react";
 import "./header-account.module.css";
 import { ButtonLink } from "@/components/primitive/button/button";
-import { getSessionFromCookie } from "@/data/session";
+import { getProfileCache } from "@/data/session";
 import { cn } from "@/utils/class-names";
 import { HeaderLogout } from "./header-logout";
 
@@ -32,9 +32,9 @@ export function HeaderAccountFallback({ className }: { className?: string }) {
 }
 
 export async function HeaderAccount({ className }: { className?: string }) {
-  const session = await getSessionFromCookie();
+  const profile = await getProfileCache();
 
-  if (!session) {
+  if (!profile) {
     return <HeaderSignIn className={className} />;
   }
 
@@ -45,7 +45,7 @@ export async function HeaderAccount({ className }: { className?: string }) {
         className,
       )}
     >
-      <span>hello, {session.username}</span>
+      <span>hello, {profile.username}</span>
       <HeaderLogout />
     </div>
   );

@@ -6,7 +6,7 @@ import {
   RegisteredUsers,
   RegisteredUsersSkeleton,
 } from "@/components/composite/registered-users/registered-users";
-import { getSessionFromCookie } from "@/data/session";
+import { getProfileCache } from "@/data/session";
 import { listRegisteredUsers } from "@/data/users";
 
 export const metadata: Metadata = {
@@ -24,11 +24,10 @@ async function DashboardUsers({ currentUserId }: { currentUserId: string }) {
 }
 
 async function DashboardGate() {
-  // Proxy redirects signed-out visitors before render. This keeps the cookie
-  // read inside Suspense for Cache Components and avoids painting PageIntro
-  // until a session exists.
-  const session = await getSessionFromCookie();
-  if (!session) {
+  // Proxy redirects visitors without a reconciled profile cache before render.
+  // Keep the cookie read inside Suspense for Cache Components.
+  const profile = await getProfileCache();
+  if (!profile) {
     redirect("/login");
   }
 
@@ -43,7 +42,7 @@ async function DashboardGate() {
       }}
     >
       <Suspense fallback={<RegisteredUsersSkeleton />}>
-        <DashboardUsers currentUserId={session.sub} />
+        <DashboardUsers currentUserId={profile.sub} />
       </Suspense>
     </PageFrame>
   );

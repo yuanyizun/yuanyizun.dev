@@ -1,14 +1,14 @@
 import { NextResponse, type NextRequest } from "next/server";
-import type { SessionClaims } from "@/data/session";
+import type { ProfileCacheClaims } from "@/data/session";
 
 export type ProxyContext = {
   readonly request: NextRequest;
   response: NextResponse;
   /**
-   * App session for this request. `undefined` means unread.
-   * `updateSession` clears it after refreshing cookies.
+   * Reconciled profile cache for this request. `undefined` means unread.
+   * `updateSession` clears the memo after Auth verify + cache reconcile.
    */
-  session: SessionClaims | null | undefined;
+  session: ProfileCacheClaims | null | undefined;
 };
 
 /** Return a response to stop the pipeline. Return nothing to continue. */

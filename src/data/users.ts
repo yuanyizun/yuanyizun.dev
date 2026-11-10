@@ -65,6 +65,34 @@ async function loadProfile(
   return profile as ProfileRow;
 }
 
+export type ProfileCacheFields = {
+  username: string;
+  roleKey: string;
+};
+
+/** Profile fields for the short `yz_profile` cache. No Auth round trip. */
+export async function loadProfileCacheFields(
+  supabase: SupabaseClient,
+  userId: string,
+): Promise<ProfileCacheFields | null> {
+  let profile = await loadProfile(supabase, userId);
+
+  if (!profile) {
+    const { error } = await supabase.rpc("ensure_user_profile");
+    if (error) {
+      return null;
+    }
+    profile = await loadProfile(supabase, userId);
+  }
+
+  const user = profile ? toCurrentUser(profile) : null;
+  if (!user?.username || !user.roleKey) {
+    return null;
+  }
+
+  return { username: user.username, roleKey: user.roleKey };
+}
+
 async function loadCurrentUser(
   supabase: SupabaseClient,
 ): Promise<CurrentUser | null> {

@@ -165,7 +165,67 @@ function isRegisteredUserRow(value: unknown): value is RegisteredUserRow {
   );
 }
 
-export async function listRegisteredUsers(): Promise<ListRegisteredUsersResult> {
+export type AppRoleOption = {
+  key: string;
+  label: string;
+};
+
+export type RegisteredUsersFilters = {
+  q: string;
+  role: string | null;
+};
+
+function applyRegisteredUserFilters(
+  users: RegisteredUser[],
+  filters?: RegisteredUsersFilters,
+): RegisteredUser[] {
+  if (!filters) {
+    return users;
+  }
+
+  const q = filters.q.trim().toLowerCase();
+  return users.filter((user) => {
+    if (q) {
+      if (!user.username || !user.username.toLowerCase().includes(q)) {
+        return false;
+      }
+    }
+    if (filters.role && user.roleKey !== filters.role) {
+      return false;
+    }
+    return true;
+  });
+}
+
+export async function listAppRoles(): Promise<AppRoleOption[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("roles")
+    .select("key, label")
+    .order("label");
+
+  if (error || !Array.isArray(data)) {
+    return [];
+  }
+
+  return data.flatMap((row) => {
+    if (
+      !row ||
+      typeof row !== "object" ||
+      typeof row.key !== "string" ||
+      typeof row.label !== "string" ||
+      !row.key ||
+      !row.label
+    ) {
+      return [];
+    }
+    return [{ key: row.key, label: row.label }];
+  });
+}
+
+export async function listRegisteredUsers(
+  filters?: RegisteredUsersFilters,
+): Promise<ListRegisteredUsersResult> {
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("list_registered_users");
 
@@ -173,7 +233,10 @@ export async function listRegisteredUsers(): Promise<ListRegisteredUsersResult> 
     return { ok: false };
   }
 
-  return { ok: true, users: data.map(toRegisteredUser) };
+  return {
+    ok: true,
+    users: applyRegisteredUserFilters(data.map(toRegisteredUser), filters),
+  };
 }
 
 export async function getCurrentUser(): Promise<CurrentUser | null> {

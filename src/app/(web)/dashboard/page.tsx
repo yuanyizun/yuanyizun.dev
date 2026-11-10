@@ -7,30 +7,64 @@ import {
   RegisteredUsersSkeleton,
 } from "@/components/composite/registered-users/registered-users";
 import { getProfileCache } from "@/data/session";
-import { listRegisteredUsers } from "@/data/users";
+import { listAppRoles, listRegisteredUsers } from "@/data/users";
+import { parseRegisteredUsersQuery } from "@/utils/registered-users-query";
 
 export const metadata: Metadata = {
   title: "Dashboard",
 };
 
-async function DashboardUsers({ currentUserId }: { currentUserId: string }) {
-  const result = await listRegisteredUsers();
-  if (!result.ok) {
-    return <RegisteredUsers users={[]} currentUserId={currentUserId} error />;
-  }
-  return (
-    <RegisteredUsers users={result.users} currentUserId={currentUserId} />
-  );
-}
+async function DashboardBody({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  // Proxy already redirects visitors without a reconciled profile cache.
+  // Keep the cookie read (and the list fetch) inside Suspense for Cache Components.
+  const [raw, profile, roles] = await Promise.all([
+    searchParams,
+    getProfileCache(),
+    listAppRoles(),
+  ]);
 
-async function DashboardGate() {
-  // Proxy redirects visitors without a reconciled profile cache before render.
-  // Keep the cookie read inside Suspense for Cache Components.
-  const profile = await getProfileCache();
   if (!profile) {
     redirect("/login");
   }
 
+  const filters = parseRegisteredUsersQuery(
+    raw,
+    roles.map((role) => role.key),
+  );
+  const result = await listRegisteredUsers(filters);
+
+  if (!result.ok) {
+    return (
+      <RegisteredUsers
+        active={filters}
+        roles={roles}
+        users={[]}
+        currentUserId={profile.sub}
+        error
+      />
+    );
+  }
+
+  return (
+    <RegisteredUsers
+      active={filters}
+      roles={roles}
+      users={result.users}
+      currentUserId={profile.sub}
+    />
+  );
+}
+
+export default function DashboardPage({
+  searchParams,
+}: PageProps<"/dashboard">) {
+  // Paint PageFrame immediately. Signed-out visitors never reach this route
+  // (proxy requireLogin), so the old null outer fallback only caused a blank
+  // → chrome pop for signed-in refreshes.
   return (
     <PageFrame
       template="dashboard"
@@ -42,18 +76,8 @@ async function DashboardGate() {
       }}
     >
       <Suspense fallback={<RegisteredUsersSkeleton />}>
-        <DashboardUsers currentUserId={profile.sub} />
+        <DashboardBody searchParams={searchParams} />
       </Suspense>
     </PageFrame>
-  );
-}
-
-export default function DashboardPage() {
-  // No dashboard chrome in the outer fallback — a signed-out flash would
-  // otherwise show the intro before redirect().
-  return (
-    <Suspense fallback={null}>
-      <DashboardGate />
-    </Suspense>
   );
 }

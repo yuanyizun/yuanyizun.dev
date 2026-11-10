@@ -1,14 +1,14 @@
 import "server-only";
 
 import type { CurrentUser } from "@/data/users";
-import { isAdmin } from "@/services/authz";
+import { isActionAuthorized } from "@/services/action-access";
 
-/** Admin-only: create roles via the roles-manage form. */
+/** JSON action `createRole`: create roles via the roles-manage form. */
 export function canCreateRole(actor: CurrentUser): boolean {
-  return isAdmin(actor);
+  return isActionAuthorized("createRole", actor);
 }
 
-/** Admin-only: view and use the roles-manage dashboard section. */
+/** JSON action `manageRoles`: view and use the roles-manage dashboard section. */
 export function canManageRoles(actor: CurrentUser): boolean {
-  return isAdmin(actor);
+  return isActionAuthorized("manageRoles", actor);
 }

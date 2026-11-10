@@ -1,6 +1,11 @@
-import type { AppRole } from "@/data/roles";
 import type { RoleFormState } from "@/validation/role";
 import { RolesCreateForm } from "./roles-create-form";
+
+type ManagedRole = {
+  key: string;
+  label: string;
+  description: string | null;
+};
 
 function Bone({ className }: { className?: string }) {
   return <div className={`rounded-xl bg-card ${className ?? ""}`} aria-hidden />;
@@ -36,7 +41,7 @@ export function RolesManage({
   roles,
   action,
 }: {
-  roles: AppRole[];
+  roles: ManagedRole[];
   action: (state: RoleFormState, formData: FormData) => Promise<RoleFormState>;
 }) {
   return (
@@ -60,7 +65,7 @@ export function RolesManage({
   );
 }
 
-function RolesList({ roles }: { roles: AppRole[] }) {
+function RolesList({ roles }: { roles: ManagedRole[] }) {
   if (roles.length === 0) {
     return (
       <p className="text-sm text-muted-foreground">No roles yet.</p>

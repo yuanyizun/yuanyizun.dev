@@ -1,5 +1,5 @@
 import { redirectPreservingCookies, type ProxyContext } from "../chain";
-import { isLoginAllowed, routeAccess } from "../support/access";
+import { isLoginAllowed, routeAccess } from "../access";
 
 export async function requireLogin(context: ProxyContext) {
   const pathname = context.request.nextUrl.pathname;

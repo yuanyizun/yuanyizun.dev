@@ -9,17 +9,6 @@ export type PermissionActor = {
 
 export type RoleGrant = "*" | readonly string[];
 
-type RouteContext = {
-  params: Promise<Record<string, string | string[] | undefined>>;
-};
-
-type RouteHandler = (
-  request: Request,
-  context: RouteContext,
-) => Promise<Response> | Response;
-
-type ActorLoader = () => Promise<PermissionActor | null>;
-
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
@@ -189,36 +178,4 @@ export function assertPermission(
   if (!hasPermission(permission, actor)) {
     throw new PermissionError("forbidden");
   }
-}
-
-function permissionDeniedResponse(error: PermissionError): Response {
-  const status = error.code === "unauthenticated" ? 401 : 403;
-  return Response.json({ error: error.message }, { status });
-}
-
-/**
- * Route-handler gate. The third argument overrides the actor lookup in tests.
- * Production callers omit it and use the database user.
- */
-export function withPermission(
-  permission: string,
-  handler: RouteHandler,
-  loadActor?: ActorLoader,
-): RouteHandler {
-  return async (request, context) => {
-    const actor = loadActor
-      ? await loadActor()
-      : await import("@/data/users").then((users) => users.getCurrentUser());
-
-    try {
-      assertPermission(permission, actor);
-    } catch (error) {
-      if (error instanceof PermissionError) {
-        return permissionDeniedResponse(error);
-      }
-      throw error;
-    }
-
-    return handler(request, context);
-  };
 }

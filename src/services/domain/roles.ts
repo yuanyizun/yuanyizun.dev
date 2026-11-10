@@ -1,13 +1,11 @@
 import "server-only";
 
 import { revalidatePath } from "next/cache";
+import { canCreateRole } from "@/authorization/roles";
 import { createRole } from "@/data/roles";
 import { getCurrentUser } from "@/data/users";
-import { canCreateRole } from "@/services/policies/role-policy";
-import {
-  parseCreateRole,
-  type RoleFormState,
-} from "@/validation/role";
+import { log } from "@/log/log";
+import { type CreateRoleInput, type RoleFormState } from "@/validation/role";
 
 function isUniqueViolation(code?: string, message?: string): boolean {
   if (code === "23505") {
@@ -17,7 +15,9 @@ function isUniqueViolation(code?: string, message?: string): boolean {
   return lower.includes("duplicate") || lower.includes("unique");
 }
 
-export async function createAppRole(formData: FormData): Promise<RoleFormState> {
+export async function createAppRole(
+  input: CreateRoleInput,
+): Promise<RoleFormState> {
   const actor = await getCurrentUser();
   if (!actor) {
     return { message: "Sign in required." };
@@ -27,19 +27,16 @@ export async function createAppRole(formData: FormData): Promise<RoleFormState> 
     return { message: "You cannot create roles." };
   }
 
-  const parsed = parseCreateRole(formData);
-  if (!parsed.ok) {
-    return parsed.state;
-  }
-
-  const result = await createRole(parsed.value);
+  const result = await createRole(input);
   if (!result.ok) {
     if (isUniqueViolation(result.error.code, result.error.message)) {
       return {
         errors: { name: "A role with this name already exists." },
       };
     }
-    console.error("createRole failed:", result.error.message);
+    log.error("role.create_failed", {
+      message: result.error.message,
+    });
     return { message: "Could not create role. Try again." };
   }
 

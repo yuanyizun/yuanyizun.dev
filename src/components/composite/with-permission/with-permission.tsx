@@ -2,8 +2,8 @@ import "server-only";
 
 import type { ReactNode } from "react";
 import { ButtonLink } from "@/components/primitive/button/button";
+import { hasPermission } from "@/authorization/permissions";
 import { getCurrentUser } from "@/data/users";
-import { hasPermission } from "@/services/permissions/permissions";
 import { cn } from "@/utils/class-names";
 
 type PermissionPlaceholderProps = {

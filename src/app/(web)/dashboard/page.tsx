@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { redirect } from "next/navigation";
 import { PageFrame } from "@/components/composite/page-frame/page-frame";
 import { ProfileEditForm } from "@/components/composite/profile-edit-form/profile-edit-form";
 import {
@@ -11,100 +10,44 @@ import {
   RolesManage,
   RolesManageSkeleton,
 } from "@/components/composite/roles-manage/roles-manage";
-import { WithPermission } from "@/components/composite/with-permission/with-permission";
-import { listRoles } from "@/data/roles";
-import {
-  listRegisteredUsers,
-  type CurrentUser,
-} from "@/data/users";
 import { updateProfileAction } from "@/services/actions/auth-actions";
-import { requirePermission } from "@/services/permissions/permissions";
 import { createRoleAction } from "@/services/actions/role-actions";
-import { parseRegisteredUsersQuery } from "@/utils/registered-users-query";
+import { getDashboardPage } from "@/services/pages/dashboard";
 
 export const metadata: Metadata = {
   title: "Dashboard",
 };
-
-async function RegisteredUsersSection({
-  raw,
-  user,
-  roleOptions,
-}: {
-  raw: Record<string, string | string[] | undefined>;
-  user: CurrentUser;
-  roleOptions: { key: string; label: string }[];
-}) {
-  const filters = parseRegisteredUsersQuery(
-    raw,
-    roleOptions.map((role) => role.key),
-  );
-  const result = await listRegisteredUsers(filters);
-
-  if (!result.ok) {
-    return (
-      <RegisteredUsers
-        active={filters}
-        roles={roleOptions}
-        users={[]}
-        currentUserId={user.id}
-        error
-      />
-    );
-  }
-
-  return (
-    <RegisteredUsers
-      active={filters}
-      roles={roleOptions}
-      users={result.users}
-      currentUserId={user.id}
-    />
-  );
-}
 
 async function DashboardBody({
   searchParams,
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  // Proxy requireLogin already redirects visitors without a verified Supabase session.
-  // Keep verified user + list fetch inside Suspense for Cache Components.
-  const [raw, user, roles] = await Promise.all([
-    searchParams,
-    requirePermission("basic"),
-    listRoles(),
-  ]);
-
-  if (!user.username) {
-    redirect("/register/username");
-  }
-
-  const roleOptions = roles.map(({ key, label }) => ({ key, label }));
-  const roleLabel =
-    roles.find((role) => role.key === user.roleKey)?.label ?? user.roleKey;
+  const page = await getDashboardPage(await searchParams);
 
   return (
     <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
       <ProfileEditForm
         action={updateProfileAction}
         defaults={{
-          username: user.username,
-          email: user.email,
-          roleKey: user.roleKey,
-          roleLabel,
+          username: page.user.username,
+          email: page.user.email,
+          roleKey: page.user.roleKey,
+          roleLabel: page.roleLabel,
         }}
       />
-      <WithPermission permission="user_view">
-        <RegisteredUsersSection
-          raw={raw}
-          user={user}
-          roleOptions={roleOptions}
+      {page.registeredUsers ? (
+        <RegisteredUsers
+          active={page.registeredUsers.active}
+          roles={page.registeredUsers.roles}
+          users={page.registeredUsers.users}
+          currentUserId={page.user.id}
+          error={page.registeredUsers.error}
         />
-      </WithPermission>
-      <WithPermission permission="role_view">
-        <RolesManage roles={roles} action={createRoleAction} />
-      </WithPermission>
+      ) : null}
+      {page.roles ? (
+        <RolesManage roles={page.roles} action={createRoleAction} />
+      ) : null}
     </div>
   );
 }
@@ -139,9 +82,6 @@ function DashboardFallback() {
 export default function DashboardPage({
   searchParams,
 }: PageProps<"/dashboard">) {
-  // Paint PageFrame immediately. Signed-out visitors never reach this route
-  // (proxy requireLogin), so the old null outer fallback only caused a blank
-  // → chrome pop for signed-in refreshes.
   return (
     <PageFrame
       template="dashboard"

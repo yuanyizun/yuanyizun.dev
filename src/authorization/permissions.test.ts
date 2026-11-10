@@ -1,14 +1,15 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  assertPermission,
   hasPermission,
   parsePermissionCatalog,
   parseRolePermissions,
+  PermissionError,
   permissionsForActor,
   permissionCatalog,
   roleGrants,
-  withPermission,
-} from "@/services/permissions/permission-rules";
+} from "@/authorization/permissions";
 
 const catalog = parsePermissionCatalog({
   permissions: ["basic", "user_view", "user_delete"],
@@ -93,29 +94,18 @@ test("parse rejects duplicate ids, unknown grants, empty role keys, and star in 
   assert.throws(() => parseRolePermissions({ roles: [] }, catalog));
 });
 
-test("withPermission returns 401, 403, then the handler", async () => {
-  const context = { params: Promise.resolve({}) };
-  const request = new Request("http://localhost/api/example");
-  const handler = async () => Response.json({ ok: true });
-
-  const anonymous = await withPermission("user_delete", handler, async () => null)(
-    request,
-    context,
+test("assertPermission denies anonymous callers and members, and allows admin", () => {
+  assert.throws(
+    () => assertPermission("user_delete", null),
+    (error: unknown) =>
+      error instanceof PermissionError && error.code === "unauthenticated",
   );
-  assert.equal(anonymous.status, 401);
-
-  const member = await withPermission(
-    "user_delete",
-    handler,
-    async () => ({ roleKey: "member" }),
-  )(request, context);
-  assert.equal(member.status, 403);
-
-  const admin = await withPermission(
-    "user_delete",
-    handler,
-    async () => ({ roleKey: "admin" }),
-  )(request, context);
-  assert.equal(admin.status, 200);
-  assert.deepEqual(await admin.json(), { ok: true });
+  assert.throws(
+    () => assertPermission("user_delete", { roleKey: "member" }),
+    (error: unknown) =>
+      error instanceof PermissionError && error.code === "forbidden",
+  );
+  assert.doesNotThrow(() =>
+    assertPermission("user_delete", { roleKey: "admin" }),
+  );
 });

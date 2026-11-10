@@ -2,20 +2,18 @@ import "server-only";
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { listRoleOptions } from "@/data/roles";
-import {
-  deleteRegisteredUser,
-  getCurrentUser,
-  getRegisteredUserById,
-  signOutAuth,
-  updateRegisteredUserRole,
-} from "@/data/users";
 import {
   canDeleteRegisteredUser,
   canUpdateRegisteredUserRole,
-} from "@/services/policies/user-policy";
-import { parseRoleKey } from "@/validation/role";
-import { parseUserId } from "@/validation/user";
+} from "@/authorization/users";
+import {
+  deleteRegisteredUser,
+  getRegisteredUserById,
+  updateRegisteredUserRole,
+} from "@/data/registered-users";
+import { listRoleOptions } from "@/data/roles";
+import { getCurrentUser, signOutAuth } from "@/data/users";
+import { log } from "@/log/log";
 
 export type DeleteRegisteredUserState =
   | { ok: true }
@@ -26,7 +24,7 @@ export type UpdateRegisteredUserRoleState =
   | { ok: false; message: string };
 
 export async function deleteRegisteredUserAccount(
-  id: string,
+  userId: string,
 ): Promise<DeleteRegisteredUserState> {
   const actor = await getCurrentUser();
   if (!actor) {
@@ -37,11 +35,6 @@ export async function deleteRegisteredUserAccount(
     return { ok: false, message: "Finish setting up your username first." };
   }
 
-  const userId = parseUserId(id);
-  if (!userId) {
-    return { ok: false, message: "Invalid user." };
-  }
-
   const target = await getRegisteredUserById(userId);
   if (!target || !canDeleteRegisteredUser(actor, target)) {
     return { ok: false, message: "You cannot delete this user." };
@@ -49,7 +42,9 @@ export async function deleteRegisteredUserAccount(
 
   const result = await deleteRegisteredUser(target.id);
   if (!result.ok) {
-    console.error("deleteRegisteredUser failed:", result.error.message);
+    log.error("registered_user.delete_failed", {
+      message: result.error.message,
+    });
     return { ok: false, message: "Could not delete user. Try again." };
   }
 
@@ -64,8 +59,8 @@ export async function deleteRegisteredUserAccount(
 }
 
 export async function updateRegisteredUserRoleAccount(
-  id: string,
-  roleKeyInput: string,
+  userId: string,
+  roleKey: string,
 ): Promise<UpdateRegisteredUserRoleState> {
   const actor = await getCurrentUser();
   if (!actor) {
@@ -74,16 +69,6 @@ export async function updateRegisteredUserRoleAccount(
 
   if (!actor.username) {
     return { ok: false, message: "Finish setting up your username first." };
-  }
-
-  const userId = parseUserId(id);
-  if (!userId) {
-    return { ok: false, message: "Invalid user." };
-  }
-
-  const roleKey = parseRoleKey(roleKeyInput);
-  if (!roleKey) {
-    return { ok: false, message: "Invalid role." };
   }
 
   const roles = await listRoleOptions();
@@ -105,7 +90,9 @@ export async function updateRegisteredUserRoleAccount(
     roleKey,
   });
   if (!result.ok) {
-    console.error("updateRegisteredUserRole failed:", result.error.message);
+    log.error("registered_user.role_update_failed", {
+      message: result.error.message,
+    });
     return { ok: false, message: "Could not update role. Try again." };
   }
 

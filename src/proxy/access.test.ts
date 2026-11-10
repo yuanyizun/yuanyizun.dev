@@ -5,7 +5,7 @@ import {
   parseAccess,
   pathMatches,
   pathnameRequiresLogin,
-} from "@/proxy/support/access";
+} from "@/proxy/access";
 
 test("prefix rules include the path and its children only", () => {
   const rule = { path: "/dashboard", match: "prefix" as const };

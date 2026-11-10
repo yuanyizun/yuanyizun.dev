@@ -239,6 +239,45 @@ export async function listRegisteredUsers(
   };
 }
 
+export async function getRegisteredUserById(
+  userId: string,
+): Promise<RegisteredUser | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("get_registered_user", {
+    target_id: userId,
+  });
+
+  if (error || !Array.isArray(data) || data.length === 0) {
+    return null;
+  }
+
+  const row = data[0];
+  if (!isRegisteredUserRow(row)) {
+    return null;
+  }
+
+  return toRegisteredUser(row);
+}
+
+export type DeleteRegisteredUserResult =
+  | { ok: true }
+  | { ok: false; error: AuthStorageError };
+
+export async function deleteRegisteredUser(
+  userId: string,
+): Promise<DeleteRegisteredUserResult> {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("delete_registered_user", {
+    target_id: userId,
+  });
+
+  if (error) {
+    return { ok: false, error: { message: error.message } };
+  }
+
+  return { ok: true };
+}
+
 export async function getCurrentUser(): Promise<CurrentUser | null> {
   const supabase = await createClient();
   return loadCurrentUser(supabase);

@@ -7,6 +7,7 @@ import {
   hasRegisteredUsersFilters,
   type RegisteredUsersSelection,
 } from "@/utils/registered-users-query";
+import { DeleteRegisteredUserButton } from "./delete-registered-user-button";
 import {
   RegisteredUsersFilters,
   type RegisteredUsersRoleOption,
@@ -110,7 +111,7 @@ function RegisteredUsersResults({
         return (
           <li
             key={user.id}
-            className="flex items-baseline justify-between gap-4 rounded-xl bg-card px-5 py-4"
+            className="flex items-start justify-between gap-4 rounded-xl bg-card px-5 py-4"
           >
             <div className="flex min-w-0 flex-col gap-1">
               <span className="truncate font-heading text-2xl tracking-heading text-foreground">
@@ -124,13 +125,18 @@ function RegisteredUsersResults({
               <span className="font-mono text-xs tracking-[0.14em] text-muted-foreground uppercase">
                 {user.roleLabel}
               </span>
+              <time
+                dateTime={user.createdAt}
+                className="font-mono text-xs text-muted-foreground"
+              >
+                {formatDisplayDate(user.createdAt)}
+              </time>
             </div>
-            <time
-              dateTime={user.createdAt}
-              className="shrink-0 font-mono text-xs text-muted-foreground"
-            >
-              {formatDisplayDate(user.createdAt)}
-            </time>
+            <DeleteRegisteredUserButton
+              id={user.id}
+              username={user.username}
+              className="shrink-0"
+            />
           </li>
         );
       })}

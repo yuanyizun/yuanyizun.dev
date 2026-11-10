@@ -14,7 +14,7 @@ function Bone({ className }: { className?: string }) {
 export function RegisteredUsersSkeleton() {
   return (
     <section
-      className="flex max-w-xl flex-col gap-5 rounded-xl border border-foreground/15 p-5"
+      className="flex w-full flex-col gap-5 rounded-xl border border-foreground/15 p-5"
       role="status"
       aria-live="polite"
       aria-busy="true"

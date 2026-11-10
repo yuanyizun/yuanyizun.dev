@@ -8,6 +8,7 @@ import {
   type RegisteredUsersSelection,
 } from "@/utils/registered-users-query";
 import { DeleteRegisteredUserButton } from "./delete-registered-user-button";
+import { RegisteredUserRoleSelect } from "./registered-user-role-select";
 import {
   RegisteredUsersFilters,
   type RegisteredUsersRoleOption,
@@ -16,6 +17,7 @@ import {
 export type RegisteredUserItem = {
   id: string;
   username: string | null;
+  roleKey: string;
   roleLabel: string;
   createdAt: string;
 };
@@ -37,7 +39,7 @@ export function RegisteredUsersPanel({
   const filtered = hasRegisteredUsersFilters(active);
 
   return (
-    <section className="flex max-w-xl flex-col gap-5 rounded-xl border border-foreground/15 p-5">
+    <section className="flex w-full flex-col gap-5 rounded-xl border border-foreground/15 p-5">
       <RegisteredUsersFilters
         active={active}
         roles={roles}
@@ -55,6 +57,7 @@ export function RegisteredUsersPanel({
         {isPending ? <span className="sr-only">Updating results…</span> : null}
         <RegisteredUsersResults
           users={users}
+          roles={roles}
           currentUserId={currentUserId}
           error={error}
           filtered={filtered}
@@ -66,11 +69,13 @@ export function RegisteredUsersPanel({
 
 function RegisteredUsersResults({
   users,
+  roles,
   currentUserId,
   error,
   filtered,
 }: {
   users: RegisteredUserItem[];
+  roles: RegisteredUsersRoleOption[];
   currentUserId: string;
   error: boolean;
   filtered: boolean;
@@ -122,9 +127,12 @@ function RegisteredUsersResults({
                   </span>
                 ) : null}
               </span>
-              <span className="font-mono text-xs tracking-[0.14em] text-muted-foreground uppercase">
-                {user.roleLabel}
-              </span>
+              <RegisteredUserRoleSelect
+                userId={user.id}
+                username={user.username}
+                roleKey={user.roleKey}
+                roles={roles}
+              />
               <time
                 dateTime={user.createdAt}
                 className="font-mono text-xs text-muted-foreground"

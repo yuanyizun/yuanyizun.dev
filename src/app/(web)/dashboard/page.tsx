@@ -7,8 +7,14 @@ import {
   RegisteredUsers,
   RegisteredUsersSkeleton,
 } from "@/components/composite/registered-users/registered-users";
-import { getCurrentUser, listAppRoles, listRegisteredUsers } from "@/data/users";
+import {
+  RolesManage,
+  RolesManageSkeleton,
+} from "@/components/composite/roles-manage/roles-manage";
+import { listRoles } from "@/data/roles";
+import { getCurrentUser, listRegisteredUsers } from "@/data/users";
 import { updateProfileAction } from "@/services/auth-actions";
+import { createRoleAction } from "@/services/role-actions";
 import { parseRegisteredUsersQuery } from "@/utils/registered-users-query";
 
 export const metadata: Metadata = {
@@ -25,7 +31,7 @@ async function DashboardBody({
   const [raw, user, roles] = await Promise.all([
     searchParams,
     getCurrentUser(),
-    listAppRoles(),
+    listRoles(),
   ]);
 
   if (!user) {
@@ -35,16 +41,17 @@ async function DashboardBody({
     redirect("/register/username");
   }
 
+  const roleOptions = roles.map(({ key, label }) => ({ key, label }));
   const filters = parseRegisteredUsersQuery(
     raw,
-    roles.map((role) => role.key),
+    roleOptions.map((role) => role.key),
   );
   const result = await listRegisteredUsers(filters);
   const roleLabel =
     roles.find((role) => role.key === user.roleKey)?.label ?? user.roleKey;
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
       <ProfileEditForm
         action={updateProfileAction}
         defaults={{
@@ -57,28 +64,29 @@ async function DashboardBody({
       {result.ok ? (
         <RegisteredUsers
           active={filters}
-          roles={roles}
+          roles={roleOptions}
           users={result.users}
           currentUserId={user.id}
         />
       ) : (
         <RegisteredUsers
           active={filters}
-          roles={roles}
+          roles={roleOptions}
           users={[]}
           currentUserId={user.id}
           error
         />
       )}
+      <RolesManage roles={roles} action={createRoleAction} />
     </div>
   );
 }
 
 function DashboardFallback() {
   return (
-    <div className="flex flex-col gap-8">
+    <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
       <section
-        className="flex max-w-xl flex-col gap-5 rounded-xl border border-foreground/15 p-5"
+        className="flex w-full flex-col gap-5 rounded-xl border border-foreground/15 p-5"
         role="status"
         aria-live="polite"
         aria-busy="true"
@@ -96,6 +104,7 @@ function DashboardFallback() {
         </div>
       </section>
       <RegisteredUsersSkeleton />
+      <RolesManageSkeleton />
     </div>
   );
 }

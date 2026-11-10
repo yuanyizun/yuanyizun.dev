@@ -2,6 +2,7 @@ import "server-only";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/data/internal/database";
+import { listRoleOptions } from "@/data/roles";
 
 export type CurrentUser = {
   id: string;
@@ -165,10 +166,7 @@ function isRegisteredUserRow(value: unknown): value is RegisteredUserRow {
   );
 }
 
-export type AppRoleOption = {
-  key: string;
-  label: string;
-};
+export type { AppRoleOption } from "@/data/roles";
 
 export type RegisteredUsersFilters = {
   q: string;
@@ -197,30 +195,8 @@ function applyRegisteredUserFilters(
   });
 }
 
-export async function listAppRoles(): Promise<AppRoleOption[]> {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("roles")
-    .select("key, label")
-    .order("label");
-
-  if (error || !Array.isArray(data)) {
-    return [];
-  }
-
-  return data.flatMap((row) => {
-    if (
-      !row ||
-      typeof row !== "object" ||
-      typeof row.key !== "string" ||
-      typeof row.label !== "string" ||
-      !row.key ||
-      !row.label
-    ) {
-      return [];
-    }
-    return [{ key: row.key, label: row.label }];
-  });
+export async function listAppRoles() {
+  return listRoleOptions();
 }
 
 export async function listRegisteredUsers(
@@ -276,6 +252,42 @@ export async function deleteRegisteredUser(
   }
 
   return { ok: true };
+}
+
+export type UpdateRegisteredUserRoleResult =
+  | { ok: true; user: RegisteredUser }
+  | { ok: false; error: AuthStorageError };
+
+export async function updateRegisteredUserRole(input: {
+  userId: string;
+  roleKey: string;
+}): Promise<UpdateRegisteredUserRoleResult> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("update_registered_user_role", {
+    target_id: input.userId,
+    p_role_key: input.roleKey,
+  });
+
+  if (error) {
+    return { ok: false, error: { message: error.message } };
+  }
+
+  if (!Array.isArray(data) || data.length === 0) {
+    return {
+      ok: false,
+      error: { message: "Unexpected update_registered_user_role response." },
+    };
+  }
+
+  const row = data[0];
+  if (!isRegisteredUserRow(row)) {
+    return {
+      ok: false,
+      error: { message: "Unexpected update_registered_user_role response." },
+    };
+  }
+
+  return { ok: true, user: toRegisteredUser(row) };
 }
 
 export async function getCurrentUser(): Promise<CurrentUser | null> {

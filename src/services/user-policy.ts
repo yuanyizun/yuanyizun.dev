@@ -16,3 +16,14 @@ export function canDeleteRegisteredUser(
 ): boolean {
   return Boolean(actor.username && target.id);
 }
+
+/**
+ * v1: any signed-in member with a username may change any directory user's role.
+ * Tighten later (admin role) without changing select wiring.
+ */
+export function canUpdateRegisteredUserRole(
+  actor: CurrentUser,
+  target: RegisteredUserTarget,
+): boolean {
+  return Boolean(actor.username && target.id);
+}

@@ -2,17 +2,27 @@ import "server-only";
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { clearProfileCache } from "@/data/session";
+import { listRoleOptions } from "@/data/roles";
+import { clearProfileCache, setProfileCache } from "@/data/session";
 import {
   deleteRegisteredUser,
   getCurrentUser,
   getRegisteredUserById,
   signOutAuth,
+  updateRegisteredUserRole,
 } from "@/data/users";
-import { canDeleteRegisteredUser } from "@/services/user-policy";
+import {
+  canDeleteRegisteredUser,
+  canUpdateRegisteredUserRole,
+} from "@/services/user-policy";
+import { parseRoleKey } from "@/validation/role";
 import { parseUserId } from "@/validation/user";
 
 export type DeleteRegisteredUserState =
+  | { ok: true }
+  | { ok: false; message: string };
+
+export type UpdateRegisteredUserRoleState =
   | { ok: true }
   | { ok: false; message: string };
 
@@ -49,6 +59,64 @@ export async function deleteRegisteredUserAccount(
     await clearProfileCache();
     await signOutAuth();
     redirect("/");
+  }
+
+  revalidatePath("/dashboard");
+  return { ok: true };
+}
+
+export async function updateRegisteredUserRoleAccount(
+  id: string,
+  roleKeyInput: string,
+): Promise<UpdateRegisteredUserRoleState> {
+  const actor = await getCurrentUser();
+  if (!actor) {
+    return { ok: false, message: "Sign in required." };
+  }
+
+  if (!actor.username) {
+    return { ok: false, message: "Finish setting up your username first." };
+  }
+
+  const userId = parseUserId(id);
+  if (!userId) {
+    return { ok: false, message: "Invalid user." };
+  }
+
+  const roleKey = parseRoleKey(roleKeyInput);
+  if (!roleKey) {
+    return { ok: false, message: "Invalid role." };
+  }
+
+  const roles = await listRoleOptions();
+  if (!roles.some((role) => role.key === roleKey)) {
+    return { ok: false, message: "Invalid role." };
+  }
+
+  const target = await getRegisteredUserById(userId);
+  if (!target || !canUpdateRegisteredUserRole(actor, target)) {
+    return { ok: false, message: "You cannot update this user's role." };
+  }
+
+  if (target.roleKey === roleKey) {
+    return { ok: true };
+  }
+
+  const result = await updateRegisteredUserRole({
+    userId: target.id,
+    roleKey,
+  });
+  if (!result.ok) {
+    console.error("updateRegisteredUserRole failed:", result.error.message);
+    return { ok: false, message: "Could not update role. Try again." };
+  }
+
+  if (target.id === actor.id) {
+    await setProfileCache({
+      sub: actor.id,
+      username: actor.username,
+      role: result.user.roleKey,
+    });
   }
 
   revalidatePath("/dashboard");

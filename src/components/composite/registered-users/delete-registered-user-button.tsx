@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Button } from "@/components/primitive/button/button";
-import { deleteRegisteredUserAction } from "@/services/user-actions";
+import { deleteRegisteredUserAction } from "@/services/actions/user-actions";
 import { cn } from "@/utils/class-names";
 
 export function DeleteRegisteredUserButton({

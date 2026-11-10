@@ -1,6 +1,6 @@
 import "server-only";
 import { notFound } from "next/navigation";
-import { getProjectPage } from "@/services/project-page";
+import { getProjectPage } from "@/services/pages/project-page";
 import { ProjectArticle } from "./project-article";
 
 export async function ProjectArticleSection({

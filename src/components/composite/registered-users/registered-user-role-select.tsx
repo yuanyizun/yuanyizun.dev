@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { updateRegisteredUserRoleAction } from "@/services/user-actions";
+import { updateRegisteredUserRoleAction } from "@/services/actions/user-actions";
 import { cn } from "@/utils/class-names";
 import type { RegisteredUsersRoleOption } from "./registered-users-filters";
 

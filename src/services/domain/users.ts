@@ -3,7 +3,6 @@ import "server-only";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { listRoleOptions } from "@/data/roles";
-import { clearProfileCache, setProfileCache } from "@/data/session";
 import {
   deleteRegisteredUser,
   getCurrentUser,
@@ -14,7 +13,7 @@ import {
 import {
   canDeleteRegisteredUser,
   canUpdateRegisteredUserRole,
-} from "@/services/user-policy";
+} from "@/services/policies/user-policy";
 import { parseRoleKey } from "@/validation/role";
 import { parseUserId } from "@/validation/user";
 
@@ -56,7 +55,6 @@ export async function deleteRegisteredUserAccount(
 
   const deletedSelf = target.id === actor.id;
   if (deletedSelf) {
-    await clearProfileCache();
     await signOutAuth();
     redirect("/");
   }
@@ -109,14 +107,6 @@ export async function updateRegisteredUserRoleAccount(
   if (!result.ok) {
     console.error("updateRegisteredUserRole failed:", result.error.message);
     return { ok: false, message: "Could not update role. Try again." };
-  }
-
-  if (target.id === actor.id) {
-    await setProfileCache({
-      sub: actor.id,
-      username: actor.username,
-      role: result.user.roleKey,
-    });
   }
 
   revalidatePath("/dashboard");

@@ -6,7 +6,7 @@ import {
   signInWithPassword,
   signOut,
   updateProfile,
-} from "@/services/auth";
+} from "@/services/domain/auth";
 import {
   parseLogin,
   parseRegister,

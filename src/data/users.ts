@@ -1,6 +1,7 @@
 import "server-only";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { cache } from "react";
 import { createClient } from "@/data/internal/database";
 import { listRoleOptions } from "@/data/roles";
 
@@ -64,34 +65,6 @@ async function loadProfile(
   }
 
   return profile as ProfileRow;
-}
-
-export type ProfileCacheFields = {
-  username: string;
-  roleKey: string;
-};
-
-/** Profile fields for the short `yz_profile` cache. No Auth round trip. */
-export async function loadProfileCacheFields(
-  supabase: SupabaseClient,
-  userId: string,
-): Promise<ProfileCacheFields | null> {
-  let profile = await loadProfile(supabase, userId);
-
-  if (!profile) {
-    const { error } = await supabase.rpc("ensure_user_profile");
-    if (error) {
-      return null;
-    }
-    profile = await loadProfile(supabase, userId);
-  }
-
-  const user = profile ? toCurrentUser(profile) : null;
-  if (!user?.username || !user.roleKey) {
-    return null;
-  }
-
-  return { username: user.username, roleKey: user.roleKey };
 }
 
 async function loadCurrentUser(
@@ -290,10 +263,10 @@ export async function updateRegisteredUserRole(input: {
   return { ok: true, user: toRegisteredUser(row) };
 }
 
-export async function getCurrentUser(): Promise<CurrentUser | null> {
+export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
   const supabase = await createClient();
   return loadCurrentUser(supabase);
-}
+});
 
 export async function signUpWithPassword(input: {
   email: string;

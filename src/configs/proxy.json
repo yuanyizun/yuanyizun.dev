@@ -1,8 +1,6 @@
 {
   "loginPath": "/login",
-  "denyPath": "/",
   "requireLogin": [
     { "path": "/dashboard", "match": "prefix" }
-  ],
-  "authorize": []
+  ]
 }

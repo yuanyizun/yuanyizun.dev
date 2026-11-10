@@ -6,7 +6,7 @@ import { AuthStage } from "@/components/composite/auth-form/auth-stage";
 import { UsernameForm } from "@/components/composite/auth-form/username-form";
 import { PageFrame } from "@/components/composite/page-frame/page-frame";
 import { getCurrentUser } from "@/data/users";
-import { setUsernameAction } from "@/services/auth-actions";
+import { setUsernameAction } from "@/services/actions/auth-actions";
 
 export const metadata: Metadata = {
   title: "Choose a username",
@@ -19,7 +19,6 @@ async function UsernameSection() {
     redirect("/login");
   }
 
-  // Cookie writes are illegal in RSC pages; the proxy reloads yz_profile.
   if (user.username) {
     redirect("/dashboard");
   }

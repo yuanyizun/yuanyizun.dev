@@ -1,0 +1,10 @@
+{
+  "permissions": [
+    "basic",
+    "user_view",
+    "user_delete",
+    "user_update_role",
+    "role_view",
+    "role_create"
+  ]
+}

@@ -3,7 +3,7 @@ import "server-only";
 import { Suspense, ViewTransition } from "react";
 import "./header-account.module.css";
 import { ButtonLink } from "@/components/primitive/button/button";
-import { getProfileCache } from "@/data/session";
+import { getCurrentUser } from "@/data/users";
 import { cn } from "@/utils/class-names";
 import { HeaderLogout } from "./header-logout";
 
@@ -32,9 +32,9 @@ export function HeaderAccountFallback({ className }: { className?: string }) {
 }
 
 export async function HeaderAccount({ className }: { className?: string }) {
-  const profile = await getProfileCache();
+  const user = await getCurrentUser();
 
-  if (!profile) {
+  if (!user) {
     return <HeaderSignIn className={className} />;
   }
 
@@ -45,7 +45,13 @@ export async function HeaderAccount({ className }: { className?: string }) {
         className,
       )}
     >
-      <span>hello, {profile.username}</span>
+      {user.username ? (
+        <span>hello, {user.username}</span>
+      ) : (
+        <ButtonLink href="/register/username" variant="outline">
+          Finish setup
+        </ButtonLink>
+      )}
       <HeaderLogout />
     </div>
   );

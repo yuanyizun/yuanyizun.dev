@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { startGoogleOAuth } from "@/services/auth";
+import { startGoogleOAuth } from "@/services/domain/auth";
 
 function siteOrigin() {
   return (

@@ -1,6 +1,6 @@
 "use server";
 
-import { createAppRole } from "@/services/roles";
+import { createAppRole } from "@/services/domain/roles";
 import type { RoleFormState } from "@/validation/role";
 
 export async function createRoleAction(

@@ -1,4 +1,4 @@
-import raw from "../../content/header-ticker.json";
+import raw from "@/configs/header-ticker.json";
 
 export type HeaderTickerContent = {
   items: string[];

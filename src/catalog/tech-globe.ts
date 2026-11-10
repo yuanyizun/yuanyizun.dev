@@ -1,4 +1,4 @@
-import raw from "../../content/tech-globe.json";
+import raw from "@/configs/tech-globe.json";
 
 export type TechGlobeCategory =
   | "backend"

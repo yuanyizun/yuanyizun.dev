@@ -4,8 +4,8 @@ import { AuthFormSkeleton } from "@/components/composite/auth-form/auth-form-ske
 import { AuthStage } from "@/components/composite/auth-form/auth-stage";
 import { LoginForm } from "@/components/composite/auth-form/login-form";
 import { PageFrame } from "@/components/composite/page-frame/page-frame";
-import { redirectIfSignedIn } from "@/services/auth";
-import { loginAction } from "@/services/auth-actions";
+import { redirectIfSignedIn } from "@/services/domain/auth";
+import { loginAction } from "@/services/actions/auth-actions";
 
 export const metadata: Metadata = {
   title: "Sign in",

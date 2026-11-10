@@ -3,7 +3,7 @@
 import { Loader2 } from "lucide-react";
 import { useTransition } from "react";
 import { Button } from "@/components/primitive/button/button";
-import { logoutAction } from "@/services/auth-actions";
+import { logoutAction } from "@/services/actions/auth-actions";
 import { cn } from "@/utils/class-names";
 
 export function HeaderLogout({ className }: { className?: string }) {

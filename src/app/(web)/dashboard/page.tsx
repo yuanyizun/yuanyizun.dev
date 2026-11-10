@@ -11,49 +11,76 @@ import {
   RolesManage,
   RolesManageSkeleton,
 } from "@/components/composite/roles-manage/roles-manage";
+import { WithPermission } from "@/components/composite/with-permission/with-permission";
 import { listRoles } from "@/data/roles";
-import { getCurrentUser, listRegisteredUsers } from "@/data/users";
-import { updateProfileAction } from "@/services/auth-actions";
-import { createRoleAction } from "@/services/role-actions";
-import { canManageRoles } from "@/services/role-policy";
-import { canViewRegisteredUsers } from "@/services/user-policy";
+import {
+  listRegisteredUsers,
+  type CurrentUser,
+} from "@/data/users";
+import { updateProfileAction } from "@/services/actions/auth-actions";
+import { requirePermission } from "@/services/permissions/permissions";
+import { createRoleAction } from "@/services/actions/role-actions";
 import { parseRegisteredUsersQuery } from "@/utils/registered-users-query";
 
 export const metadata: Metadata = {
   title: "Dashboard",
 };
 
+async function RegisteredUsersSection({
+  raw,
+  user,
+  roleOptions,
+}: {
+  raw: Record<string, string | string[] | undefined>;
+  user: CurrentUser;
+  roleOptions: { key: string; label: string }[];
+}) {
+  const filters = parseRegisteredUsersQuery(
+    raw,
+    roleOptions.map((role) => role.key),
+  );
+  const result = await listRegisteredUsers(filters);
+
+  if (!result.ok) {
+    return (
+      <RegisteredUsers
+        active={filters}
+        roles={roleOptions}
+        users={[]}
+        currentUserId={user.id}
+        error
+      />
+    );
+  }
+
+  return (
+    <RegisteredUsers
+      active={filters}
+      roles={roleOptions}
+      users={result.users}
+      currentUserId={user.id}
+    />
+  );
+}
+
 async function DashboardBody({
   searchParams,
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  // Proxy already redirects visitors without a reconciled profile cache.
+  // Proxy requireLogin already redirects visitors without a verified Supabase session.
   // Keep verified user + list fetch inside Suspense for Cache Components.
   const [raw, user, roles] = await Promise.all([
     searchParams,
-    getCurrentUser(),
+    requirePermission("basic"),
     listRoles(),
   ]);
 
-  if (!user) {
-    redirect("/login");
-  }
   if (!user.username) {
     redirect("/register/username");
   }
 
-  const viewUsers = canViewRegisteredUsers(user);
-  const manageRoles = canManageRoles(user);
   const roleOptions = roles.map(({ key, label }) => ({ key, label }));
-  const filters = viewUsers
-    ? parseRegisteredUsersQuery(
-        raw,
-        roleOptions.map((role) => role.key),
-      )
-    : null;
-  const result =
-    viewUsers && filters ? await listRegisteredUsers(filters) : null;
   const roleLabel =
     roles.find((role) => role.key === user.roleKey)?.label ?? user.roleKey;
 
@@ -68,27 +95,16 @@ async function DashboardBody({
           roleLabel,
         }}
       />
-      {viewUsers && filters && result ? (
-        result.ok ? (
-          <RegisteredUsers
-            active={filters}
-            roles={roleOptions}
-            users={result.users}
-            currentUserId={user.id}
-          />
-        ) : (
-          <RegisteredUsers
-            active={filters}
-            roles={roleOptions}
-            users={[]}
-            currentUserId={user.id}
-            error
-          />
-        )
-      ) : null}
-      {manageRoles ? (
+      <WithPermission permission="user_view">
+        <RegisteredUsersSection
+          raw={raw}
+          user={user}
+          roleOptions={roleOptions}
+        />
+      </WithPermission>
+      <WithPermission permission="role_view">
         <RolesManage roles={roles} action={createRoleAction} />
-      ) : null}
+      </WithPermission>
     </div>
   );
 }

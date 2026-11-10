@@ -2,23 +2,24 @@ import "server-only";
 
 import type { ReactNode } from "react";
 import { ButtonLink } from "@/components/primitive/button/button";
-import { getProfileCache } from "@/data/session";
+import { getCurrentUser } from "@/data/users";
+import { hasPermission } from "@/services/permissions/permissions";
 import { cn } from "@/utils/class-names";
 
-type AuthGateNoticeProps = {
+type PermissionPlaceholderProps = {
   message: string;
   href?: string;
   label?: string;
   className?: string;
 };
 
-/** Paper sticker shown when the visitor is signed out. */
-export function AuthGateNotice({
+/** Paper sticker shown when a visitor is denied a permission. */
+export function PermissionPlaceholder({
   message,
   href = "/login",
   label = "Sign in",
   className,
-}: AuthGateNoticeProps) {
+}: PermissionPlaceholderProps) {
   return (
     <div className={cn("relative max-w-md py-8", className)}>
       <span
@@ -43,7 +44,11 @@ export function AuthGateNotice({
   );
 }
 
-export function AuthGateFallback({ className }: { className?: string }) {
+export function PermissionPlaceholderFallback({
+  className,
+}: {
+  className?: string;
+}) {
   return (
     <div
       className={cn("relative max-w-md py-8", className)}
@@ -65,37 +70,23 @@ export function AuthGateFallback({ className }: { className?: string }) {
   );
 }
 
-type AuthGateProps = {
-  children: ReactNode;
-  /** Copy on the sticker when signed out. */
-  message: string;
-  href?: string;
-  label?: string;
-  className?: string;
-};
-
 /**
- * Renders `children` only when the reconciled `yz_profile` cache verifies.
- * Supabase Auth remains the identity session; this gate does not call Supabase.
+ * Renders `children` when the database user has `permission`.
+ * Denial renders `placeholder`, or nothing when that prop is omitted.
+ * Pages that must redirect use `requirePermission` instead.
  */
-export async function AuthGate({
+export async function WithPermission({
+  permission,
+  placeholder = null,
   children,
-  message,
-  href,
-  label,
-  className,
-}: AuthGateProps) {
-  const profile = await getProfileCache();
-
-  if (!profile) {
-    return (
-      <AuthGateNotice
-        message={message}
-        href={href}
-        label={label}
-        className={className}
-      />
-    );
+}: {
+  permission: string;
+  placeholder?: ReactNode;
+  children: ReactNode;
+}) {
+  const user = await getCurrentUser();
+  if (!hasPermission(permission, user)) {
+    return placeholder;
   }
 
   return children;

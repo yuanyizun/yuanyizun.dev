@@ -3,7 +3,7 @@ import "server-only";
 import { revalidatePath } from "next/cache";
 import { createRole } from "@/data/roles";
 import { getCurrentUser } from "@/data/users";
-import { canCreateRole } from "@/services/role-policy";
+import { canCreateRole } from "@/services/policies/role-policy";
 import {
   parseCreateRole,
   type RoleFormState,

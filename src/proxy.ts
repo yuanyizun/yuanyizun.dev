@@ -1,12 +1,11 @@
 import { type NextRequest } from "next/server";
-import { authorize } from "./proxy/authorize";
 import { runProxy } from "./proxy/chain";
-import { requireLogin } from "./proxy/require-login";
-import { updateSession } from "./proxy/update-session";
+import { requireLogin } from "./proxy/middleware/require-login";
+import { updateSession } from "./proxy/middleware/update-session";
 
 export async function proxy(request: NextRequest) {
   // Refresh cookies before any check that reads them. Append a step to extend the chain.
-  return runProxy(request, [updateSession, requireLogin, authorize]);
+  return runProxy(request, [updateSession, requireLogin]);
 }
 
 export const config = {

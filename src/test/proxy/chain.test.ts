@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { NextRequest, NextResponse } from "next/server";
-import { runProxy, type ProxyStep } from "./chain";
+import { runProxy, type ProxyStep } from "@/proxy/chain";
 
 test("a terminal response keeps cookies set by earlier steps", async () => {
   const request = new NextRequest("http://localhost:3002/dashboard");

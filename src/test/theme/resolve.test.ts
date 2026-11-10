@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import type { AllowedPositions, Placement } from "./contracts";
-import { assertPlacement, resolvePlacement } from "./resolve";
+import type { AllowedPositions, Placement } from "@/theme/contracts";
+import { assertPlacement, resolvePlacement } from "@/theme/resolve";
 
 const allowed: AllowedPositions = {
   PageIntro: ["main-before"],

@@ -1,4 +1,4 @@
-import raw from "../../content/social-links.json";
+import raw from "@/configs/social-links.json";
 
 export type SocialLink = {
   id: string;

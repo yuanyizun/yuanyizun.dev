@@ -4,7 +4,7 @@ import {
   chatAvailable,
   sameOrigin,
   streamProfileChat,
-} from "@/services/chat";
+} from "@/services/domain/chat";
 import { parseChatMessages } from "@/validation/chat";
 
 export const maxDuration = 30;

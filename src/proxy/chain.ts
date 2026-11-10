@@ -1,14 +1,17 @@
 import { NextResponse, type NextRequest } from "next/server";
-import type { ProfileCacheClaims } from "@/data/session";
+
+export type ProxyAuth =
+  | { status: "signed_out" }
+  | { status: "unavailable" }
+  | { status: "verified"; sub: string };
 
 export type ProxyContext = {
   readonly request: NextRequest;
   response: NextResponse;
   /**
-   * Reconciled profile cache for this request. `undefined` means unread.
-   * `updateSession` clears the memo after Auth verify + cache reconcile.
+   * Supabase Auth result for this request. `undefined` until `updateSession`.
    */
-  session: ProfileCacheClaims | null | undefined;
+  auth: ProxyAuth | undefined;
 };
 
 /** Return a response to stop the pipeline. Return nothing to continue. */
@@ -45,7 +48,7 @@ export async function runProxy(
   const context: ProxyContext = {
     request,
     response: NextResponse.next({ request }),
-    session: undefined,
+    auth: undefined,
   };
 
   for (const step of steps) {

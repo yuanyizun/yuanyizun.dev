@@ -1,9 +1,0 @@
-{
-  "authorize": [
-    { "action": "viewRegisteredUsers", "roles": ["admin"] },
-    { "action": "manageRoles", "roles": ["admin"] },
-    { "action": "createRole", "roles": ["admin"] },
-    { "action": "deleteRegisteredUser", "roles": ["admin"] },
-    { "action": "updateRegisteredUserRole", "roles": ["admin"] }
-  ]
-}

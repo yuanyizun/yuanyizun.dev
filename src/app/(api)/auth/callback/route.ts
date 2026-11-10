@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { exchangeAuthCode } from "@/services/auth";
+import { exchangeAuthCode } from "@/services/domain/auth";
 
 function siteOrigin() {
   return (

@@ -5,7 +5,7 @@ import {
   updateRegisteredUserRoleAccount,
   type DeleteRegisteredUserState,
   type UpdateRegisteredUserRoleState,
-} from "@/services/users";
+} from "@/services/domain/users";
 
 export async function deleteRegisteredUserAction(
   id: string,

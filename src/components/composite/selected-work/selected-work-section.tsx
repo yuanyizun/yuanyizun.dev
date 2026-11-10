@@ -1,5 +1,5 @@
 import "server-only";
-import { getSelectedWork } from "@/services/selected-work";
+import { getSelectedWork } from "@/services/pages/selected-work";
 import { SelectedWork } from "./selected-work";
 
 export async function SelectedWorkSection({

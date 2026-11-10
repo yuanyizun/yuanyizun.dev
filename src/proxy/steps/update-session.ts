@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { log } from "@/log/log";
 import {
   copyResponseCookies,
   type ProxyAuth,
@@ -22,6 +23,31 @@ function classifyGetClaimsResult(result: {
   }
 
   return { status: "signed_out" };
+}
+
+type AuthUserCheck = {
+  user: { id?: string } | null;
+  error: { name?: string } | null;
+};
+
+/**
+ * A verified JWT can outlive a deleted account. Confirm the auth user still
+ * exists before keeping the session. A retryable outage leaves the cookie.
+ */
+export function sessionAfterUserCheck(
+  auth: ProxyAuth,
+  check: AuthUserCheck,
+): { auth: ProxyAuth; clearSession: boolean } {
+  if (auth.status !== "verified") {
+    return { auth, clearSession: false };
+  }
+  if (check.user?.id) {
+    return { auth, clearSession: false };
+  }
+  if (check.error?.name === "AuthRetryableFetchError") {
+    return { auth, clearSession: false };
+  }
+  return { auth: { status: "signed_out" }, clearSession: true };
 }
 
 function expireLegacySessionCookies(
@@ -78,7 +104,26 @@ export async function updateSession(context: ProxyContext) {
   );
 
   const claimsResult = await supabase.auth.getClaims();
-  const auth = classifyGetClaimsResult(claimsResult);
+  let auth = classifyGetClaimsResult(claimsResult);
+
+  if (auth.status === "verified") {
+    const userResult = await supabase.auth.getUser();
+    const decision = sessionAfterUserCheck(auth, {
+      user: userResult.data.user,
+      error: userResult.error,
+    });
+    if (decision.clearSession) {
+      try {
+        await supabase.auth.signOut();
+      } catch (error) {
+        log.warn("auth.session_clear_failed", {
+          message: error instanceof Error ? error.message : "sign out failed",
+        });
+      }
+    }
+    auth = decision.auth;
+  }
+
   expireLegacySessionCookies(request, supabaseResponse);
 
   copyResponseCookies(context.response, supabaseResponse);

@@ -20,6 +20,30 @@ test("a terminal response keeps cookies set by earlier steps", async () => {
   assert.equal(response.cookies.get("sb")?.value, "refreshed");
 });
 
+test("a login redirect keeps a cleared session cookie", async () => {
+  const request = new NextRequest("http://localhost:3002/dashboard");
+  const steps: ProxyStep[] = [
+    async (context) => {
+      context.response.cookies.set("sb-auth-token", "", {
+        path: "/",
+        maxAge: 0,
+        httpOnly: true,
+        sameSite: "lax",
+      });
+    },
+    async (context) =>
+      NextResponse.redirect(new URL("/login", context.request.url)),
+  ];
+
+  const response = await runProxy(request, steps);
+  const setCookie = response.headers.get("set-cookie") ?? "";
+
+  assert.equal(response.status, 307);
+  assert.equal(response.headers.get("location"), "http://localhost:3002/login");
+  assert.match(setCookie, /sb-auth-token=/);
+  assert.match(setCookie, /Max-Age=0/);
+});
+
 test("steps after a terminal response do not run", async () => {
   let ran = false;
   const request = new NextRequest("http://localhost:3002/about");

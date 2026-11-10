@@ -1,11 +1,14 @@
 import "server-only";
 
 import type { CurrentUser } from "@/data/users";
+import { isAdmin } from "@/services/authz";
 
-/**
- * v1: any signed-in member with a username may create roles.
- * Tighten later (admin role) without changing form wiring.
- */
+/** Admin-only: create roles via the roles-manage form. */
 export function canCreateRole(actor: CurrentUser): boolean {
-  return Boolean(actor.username);
+  return isAdmin(actor);
+}
+
+/** Admin-only: view and use the roles-manage dashboard section. */
+export function canManageRoles(actor: CurrentUser): boolean {
+  return isAdmin(actor);
 }

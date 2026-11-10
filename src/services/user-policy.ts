@@ -1,29 +1,29 @@
 import "server-only";
 
 import type { CurrentUser } from "@/data/users";
+import { isAdmin } from "@/services/authz";
 
 export type RegisteredUserTarget = {
   id: string;
 };
 
-/**
- * v1: any signed-in member with a username may remove any directory account.
- * Tighten later (admin role, ownership) without changing button wiring.
- */
+/** Admin-only: view the registered-users dashboard section / directory data. */
+export function canViewRegisteredUsers(actor: CurrentUser): boolean {
+  return isAdmin(actor);
+}
+
+/** Admin-only: remove a directory account (requires a loaded target id). */
 export function canDeleteRegisteredUser(
   actor: CurrentUser,
   target: RegisteredUserTarget,
 ): boolean {
-  return Boolean(actor.username && target.id);
+  return Boolean(isAdmin(actor) && target.id);
 }
 
-/**
- * v1: any signed-in member with a username may change any directory user's role.
- * Tighten later (admin role) without changing select wiring.
- */
+/** Admin-only: change a directory user's role (requires a loaded target id). */
 export function canUpdateRegisteredUserRole(
   actor: CurrentUser,
   target: RegisteredUserTarget,
 ): boolean {
-  return Boolean(actor.username && target.id);
+  return Boolean(isAdmin(actor) && target.id);
 }

@@ -15,6 +15,8 @@ import { listRoles } from "@/data/roles";
 import { getCurrentUser, listRegisteredUsers } from "@/data/users";
 import { updateProfileAction } from "@/services/auth-actions";
 import { createRoleAction } from "@/services/role-actions";
+import { canManageRoles } from "@/services/role-policy";
+import { canViewRegisteredUsers } from "@/services/user-policy";
 import { parseRegisteredUsersQuery } from "@/utils/registered-users-query";
 
 export const metadata: Metadata = {
@@ -41,12 +43,17 @@ async function DashboardBody({
     redirect("/register/username");
   }
 
+  const viewUsers = canViewRegisteredUsers(user);
+  const manageRoles = canManageRoles(user);
   const roleOptions = roles.map(({ key, label }) => ({ key, label }));
-  const filters = parseRegisteredUsersQuery(
-    raw,
-    roleOptions.map((role) => role.key),
-  );
-  const result = await listRegisteredUsers(filters);
+  const filters = viewUsers
+    ? parseRegisteredUsersQuery(
+        raw,
+        roleOptions.map((role) => role.key),
+      )
+    : null;
+  const result =
+    viewUsers && filters ? await listRegisteredUsers(filters) : null;
   const roleLabel =
     roles.find((role) => role.key === user.roleKey)?.label ?? user.roleKey;
 
@@ -61,23 +68,27 @@ async function DashboardBody({
           roleLabel,
         }}
       />
-      {result.ok ? (
-        <RegisteredUsers
-          active={filters}
-          roles={roleOptions}
-          users={result.users}
-          currentUserId={user.id}
-        />
-      ) : (
-        <RegisteredUsers
-          active={filters}
-          roles={roleOptions}
-          users={[]}
-          currentUserId={user.id}
-          error
-        />
-      )}
-      <RolesManage roles={roles} action={createRoleAction} />
+      {viewUsers && filters && result ? (
+        result.ok ? (
+          <RegisteredUsers
+            active={filters}
+            roles={roleOptions}
+            users={result.users}
+            currentUserId={user.id}
+          />
+        ) : (
+          <RegisteredUsers
+            active={filters}
+            roles={roleOptions}
+            users={[]}
+            currentUserId={user.id}
+            error
+          />
+        )
+      ) : null}
+      {manageRoles ? (
+        <RolesManage roles={roles} action={createRoleAction} />
+      ) : null}
     </div>
   );
 }

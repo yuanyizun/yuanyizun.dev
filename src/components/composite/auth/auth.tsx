@@ -2,24 +2,23 @@ import "server-only";
 
 import type { ReactNode } from "react";
 import { ButtonLink } from "@/components/primitive/button/button";
-import { hasPermission } from "@/authorization/permissions";
 import { getCurrentUser } from "@/data/users";
 import { cn } from "@/utils/class-names";
 
-type PermissionPlaceholderProps = {
+type AuthPlaceholderProps = {
   message: string;
   href?: string;
   label?: string;
   className?: string;
 };
 
-/** Paper sticker shown when a visitor is denied a permission. */
-export function PermissionPlaceholder({
+/** Paper sticker shown when a visitor is not signed in. */
+export function AuthPlaceholder({
   message,
   href = "/login",
   label = "Sign in",
   className,
-}: PermissionPlaceholderProps) {
+}: AuthPlaceholderProps) {
   return (
     <div className={cn("relative max-w-md py-8", className)}>
       <span
@@ -44,7 +43,7 @@ export function PermissionPlaceholder({
   );
 }
 
-export function PermissionPlaceholderFallback({
+export function AuthPlaceholderFallback({
   className,
 }: {
   className?: string;
@@ -71,21 +70,19 @@ export function PermissionPlaceholderFallback({
 }
 
 /**
- * Renders `children` when the database user has `permission`.
- * Denial renders `placeholder`, or nothing when that prop is omitted.
- * Pages that must redirect use `requirePermission` instead.
+ * Renders `children` when a database user exists.
+ * A missing user renders `placeholder`, or nothing when that prop is omitted.
+ * This component does not check permissions and does not redirect.
  */
-export async function WithPermission({
-  permission,
+export async function Auth({
   placeholder = null,
   children,
 }: {
-  permission: string;
   placeholder?: ReactNode;
   children: ReactNode;
 }) {
   const user = await getCurrentUser();
-  if (!hasPermission(permission, user)) {
+  if (!user) {
     return placeholder;
   }
 

@@ -3,10 +3,10 @@ import { Suspense } from "react";
 import { ContactLinks } from "@/components/composite/contact-links/contact-links";
 import { PageFrame } from "@/components/composite/page-frame/page-frame";
 import {
-  PermissionPlaceholder,
-  PermissionPlaceholderFallback,
-  WithPermission,
-} from "@/components/composite/with-permission/with-permission";
+  Auth,
+  AuthPlaceholder,
+  AuthPlaceholderFallback,
+} from "@/components/composite/auth/auth";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -24,15 +24,14 @@ export default function ContactPage() {
         },
       }}
     >
-      <Suspense fallback={<PermissionPlaceholderFallback />}>
-        <WithPermission
-          permission="basic"
+      <Suspense fallback={<AuthPlaceholderFallback />}>
+        <Auth
           placeholder={
-            <PermissionPlaceholder message="Sign in to peek at the contact details." />
+            <AuthPlaceholder message="Sign in to peek at the contact details." />
           }
         >
           <ContactLinks />
-        </WithPermission>
+        </Auth>
       </Suspense>
     </PageFrame>
   );

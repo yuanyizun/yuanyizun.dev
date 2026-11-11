@@ -79,6 +79,15 @@ export async function redirectIfSignedIn(): Promise<void> {
   redirect("/dashboard");
 }
 
+/** Page gate. A missing user goes to /login. Does not check permissions. */
+export async function requireUser(): Promise<CurrentUser> {
+  const user = await getCurrentUser();
+  if (!user) {
+    redirect("/login");
+  }
+  return user;
+}
+
 export async function registerWithPassword(
   input: RegisterInput,
 ): Promise<AuthFormState> {

@@ -5,19 +5,15 @@ import { AuthFormSkeleton } from "@/components/composite/auth-form/auth-form-ske
 import { AuthStage } from "@/components/composite/auth-form/auth-stage";
 import { UsernameForm } from "@/components/composite/auth-form/username-form";
 import { PageFrame } from "@/components/composite/page-frame/page-frame";
-import { getCurrentUser } from "@/data/users";
 import { setUsernameAction } from "@/services/actions/auth-actions";
+import { requireUser } from "@/services/domain/auth";
 
 export const metadata: Metadata = {
   title: "Choose a username",
 };
 
 async function UsernameSection() {
-  const user = await getCurrentUser();
-
-  if (!user) {
-    redirect("/login");
-  }
+  const user = await requireUser();
 
   if (user.username) {
     redirect("/dashboard");

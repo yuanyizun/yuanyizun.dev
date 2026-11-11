@@ -1,14 +1,14 @@
 import "server-only";
 
 import { redirect } from "next/navigation";
-import { hasPermission } from "@/authorization/permissions";
+import { access } from "@/authorization/access";
 import {
   listRegisteredUsers,
   type RegisteredUser,
 } from "@/data/registered-users";
 import { listRoleOptions, listRoles, type AppRole } from "@/data/roles";
 import type { CurrentUser } from "@/data/users";
-import { requirePermission } from "@/services/domain/access";
+import { requireUser } from "@/services/domain/auth";
 import {
   parseRegisteredUsersQuery,
   type RegisteredUsersSelection,
@@ -36,13 +36,13 @@ export type DashboardPageData = {
 export async function getDashboardPage(
   raw: Record<string, string | string[] | undefined>,
 ): Promise<DashboardPageData> {
-  const user = await requirePermission("basic");
+  const user = await requireUser();
   if (!user.username) {
     redirect("/register/username");
   }
 
-  const canViewUsers = hasPermission("user_view", user);
-  const canViewRoles = hasPermission("role_view", user);
+  const canViewUsers = access.has("user_view", user);
+  const canViewRoles = access.has("role_view", user);
   const roles = canViewRoles ? await listRoles() : null;
   const roleOptions = roles
     ? roles.map(({ key, label }) => ({ key, label }))

@@ -23,6 +23,7 @@
     "lucide-react": "^1.66.0",
     "next": "16.4.3",
     "radix-ui": "^1.8.1",
+    "rbac": "github:yuanyizun/next-rbac",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "react-markdown": "^10.1.0",

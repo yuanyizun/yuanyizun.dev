@@ -4,7 +4,7 @@ import remarkGfm from "remark-gfm";
 import type { HeadingLink } from "./headings";
 import { remarkHeadingIds } from "./headings";
 import { fenceIndexFromToken, stampFences } from "./highlight";
-import styles from "./markdown.module.css";
+import "./markdown.module.css";
 
 function nodeText(node: ReactNode): string {
   if (typeof node === "string" || typeof node === "number") {
@@ -30,7 +30,7 @@ export function Markdown({
   highlighted: string[];
 }) {
   return (
-    <div className={styles.articleProse}>
+    <div className="articleProse">
       <ReactMarkdown
         remarkPlugins={[remarkGfm, remarkHeadingIds(headings)]}
         components={{

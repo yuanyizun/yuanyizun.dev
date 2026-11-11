@@ -7,6 +7,7 @@ const projectRoot = path.dirname(fileURLToPath(import.meta.url));
 const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
+  reactCompiler: true,
   images: {
     localPatterns: [
       { pathname: "/images/**", search: "" },
@@ -28,6 +29,14 @@ const nextConfig: NextConfig = {
         as: "*.css",
       },
     },
+  },
+  async rewrites() {
+    return [
+      {
+        source: "/gtag/js",
+        destination: "https://www.googletagmanager.com/gtag/js",
+      },
+    ];
   },
   webpack: (config) => {
     config.watchOptions = {

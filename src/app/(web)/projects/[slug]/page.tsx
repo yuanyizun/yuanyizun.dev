@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { ProjectArticleSection } from "@/components/composite/project-article/project-article-section";
 import { ProjectArticleSkeleton } from "@/components/composite/project-article/project-article-skeleton";
-import { getProject, getProjects } from "@/data/projects";
+import { getProject, getProjectParams } from "@/data/projects";
 
 export async function generateStaticParams() {
-  const projects = await getProjects();
-  return projects.map((project) => ({ slug: project.slug }));
+  return getProjectParams();
 }
 
 export async function generateMetadata({
@@ -15,11 +15,26 @@ export async function generateMetadata({
   const { slug } = await params;
   const project = await getProject(slug);
   if (!project) {
-    return { title: "Projects" };
+    notFound();
   }
+  const path = `/projects/${project.slug}`;
   return {
     title: project.title,
     description: project.summary,
+    alternates: { canonical: path },
+    openGraph: {
+      type: "article",
+      title: project.title,
+      description: project.summary,
+      url: path,
+      publishedTime: project.date,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: project.title,
+      description: project.summary,
+    },
+    ...(project.archived ? { robots: { index: false, follow: false } } : {}),
   };
 }
 

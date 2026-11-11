@@ -1,5 +1,5 @@
 import "server-only";
-import { getPosts } from "@/data/posts";
+import { getPostArchive } from "@/data/posts";
 import { firstSearchParam } from "@/utils/search-params";
 import { PostArchive } from "./post-archive";
 
@@ -11,6 +11,6 @@ export async function PostArchiveSection({
   const params = await searchParams;
   const query = firstSearchParam(params.q) ?? "";
   const page = Number(firstSearchParam(params.page) ?? "1") || 1;
-  const posts = await getPosts();
+  const posts = await getPostArchive();
   return <PostArchive posts={posts} query={query} page={page} />;
 }

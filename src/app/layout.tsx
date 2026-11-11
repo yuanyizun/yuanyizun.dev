@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Caveat, Geist, Geist_Mono, Newsreader } from "next/font/google";
 import { GoogleAnalytics } from "@/components/composite/google-analytics/google-analytics";
 import { SiteShell } from "@/components/composite/site-shell/site-shell";
+import { siteDescription, siteName, siteUrl } from "@/utils/site-url";
 import "./globals.css";
 
 const geist = Geist({
@@ -34,12 +35,24 @@ const caveat = Caveat({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl()),
   title: {
-    default: "Yizun Yuan",
-    template: "%s · Yizun Yuan",
+    default: siteName,
+    template: `%s · ${siteName}`,
   },
-  description:
-    "Senior full stack and platform engineer in Sydney. Production systems for a digital media business.",
+  description: siteDescription,
+  openGraph: {
+    type: "website",
+    title: siteName,
+    description: siteDescription,
+    siteName,
+    url: "/",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteName,
+    description: siteDescription,
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

@@ -1,7 +1,7 @@
 import "server-only";
-import { getProject, getProjects, type Project } from "@/data/projects";
+import { getProject, getProjects, type Project, type ProjectSummary } from "@/data/projects";
 
-function relatedProjects(projects: Project[], current: Project) {
+function relatedProjects(projects: ProjectSummary[], current: Project) {
   const others = projects.filter((project) => project.slug !== current.slug);
   const sameKind = others.filter(
     (project) => project.kind && project.kind === current.kind,

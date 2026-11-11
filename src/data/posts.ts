@@ -4,12 +4,18 @@ import path from "node:path";
 import { cacheLife, cacheTag } from "next/cache";
 import {
   byDateDescending,
-  formatFrontmatterDate,
   readPublishedEntries,
+  readRoutableEntries,
   requireText,
   type MarkdownEntry,
 } from "@/data/internal/markdown";
-import type { ContentRecord } from "@/data/internal/types";
+import type { ContentRecord, ContentSummary } from "@/data/internal/types";
+
+export type PostSummary = ContentSummary & {
+  image: string;
+  alt: string;
+  credit?: string;
+};
 
 export type Post = ContentRecord & {
   image: string;
@@ -69,26 +75,41 @@ function requireImage(data: Record<string, unknown>, slug: string) {
 }
 
 function toPost(entry: MarkdownEntry): Post {
-  const date = formatFrontmatterDate(entry.data.date);
-  if (!date) {
-    throw new Error(`${entry.slug}.md is missing frontmatter field "date"`);
-  }
-
   const { image, alt, credit } = requireImage(entry.data, entry.slug);
 
   return {
     slug: entry.slug,
-    title: requireText(entry.data, "title", entry.slug),
-    date,
-    summary: requireText(entry.data, "summary", entry.slug),
+    title: entry.title,
+    date: entry.date,
+    summary: entry.summary,
     content: entry.content,
+    archived: entry.archived,
     image,
     alt,
     ...(credit ? { credit } : {}),
   };
 }
 
-export async function getPosts(): Promise<Post[]> {
+function toSummary(post: Post): PostSummary {
+  return {
+    slug: post.slug,
+    title: post.title,
+    date: post.date,
+    summary: post.summary,
+    image: post.image,
+    alt: post.alt,
+    ...(post.credit ? { credit: post.credit } : {}),
+  };
+}
+
+export async function getPosts(): Promise<PostSummary[]> {
+  "use cache";
+  cacheLife("days");
+  cacheTag("posts");
+  return readPublishedEntries(postsDirectory).map(toPost).sort(byDateDescending).map(toSummary);
+}
+
+export async function getPostArchive(): Promise<Post[]> {
   "use cache";
   cacheLife("days");
   cacheTag("posts");
@@ -99,6 +120,13 @@ export async function getPost(slug: string): Promise<Post | null> {
   "use cache";
   cacheLife("days");
   cacheTag("posts", `post:${slug}`);
-  const posts = readPublishedEntries(postsDirectory).map(toPost);
+  const posts = readRoutableEntries(postsDirectory).map(toPost);
   return posts.find((post) => post.slug === slug) ?? null;
+}
+
+export async function getPostParams(): Promise<{ slug: string }[]> {
+  "use cache";
+  cacheLife("days");
+  cacheTag("posts");
+  return readRoutableEntries(postsDirectory).map((entry) => ({ slug: entry.slug }));
 }

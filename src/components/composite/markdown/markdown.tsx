@@ -1,8 +1,10 @@
 import type { ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { slugifyHeading } from "@/utils/markdown";
-import "./markdown.module.css";
+import type { HeadingLink } from "./headings";
+import { remarkHeadingIds } from "./headings";
+import { fenceIndexFromToken, stampFences } from "./highlight";
+import styles from "./markdown.module.css";
 
 function nodeText(node: ReactNode): string {
   if (typeof node === "string" || typeof node === "number") {
@@ -18,22 +20,33 @@ function nodeText(node: ReactNode): string {
   return "";
 }
 
-export function Markdown({ children }: { children: string }) {
-  const seen = new Map<string, number>();
-
+export function Markdown({
+  children,
+  headings,
+  highlighted,
+}: {
+  children: string;
+  headings: HeadingLink[];
+  highlighted: string[];
+}) {
   return (
-    <div className="articleProse">
+    <div className={styles.articleProse}>
       <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
+        remarkPlugins={[remarkGfm, remarkHeadingIds(headings)]}
         components={{
           h1: ({ children: nodes }) => <h2>{nodes}</h2>,
-          h2: ({ children: nodes }) => {
-            const title = nodeText(nodes);
-            const base = slugifyHeading(title);
-            const count = seen.get(base) ?? 0;
-            seen.set(base, count + 1);
-            const id = count === 0 ? base : `${base}-${count + 1}`;
-            return <h2 id={id}>{nodes}</h2>;
+          p: ({ children: nodes }) => {
+            const fenceIndex = fenceIndexFromToken(nodeText(nodes));
+            const html = fenceIndex === null ? undefined : highlighted[fenceIndex];
+            if (html) {
+              return (
+                <div
+                  className="[&_code]:font-mono [&_pre]:m-0 [&_pre]:overflow-x-auto [&_pre]:rounded-xl [&_pre]:bg-inverse! [&_pre]:p-4 [&_pre]:font-mono [&_pre]:text-sm [&_pre]:leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: html }}
+                />
+              );
+            }
+            return <p>{nodes}</p>;
           },
           a: ({ href, children: nodes }) => (
             <a href={href} className="underline underline-offset-4">
@@ -52,7 +65,7 @@ export function Markdown({ children }: { children: string }) {
           ),
         }}
       >
-        {children}
+        {stampFences(children)}
       </ReactMarkdown>
     </div>
   );

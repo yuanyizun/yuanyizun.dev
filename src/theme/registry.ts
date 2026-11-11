@@ -24,8 +24,8 @@ import { SectionNav } from "@/components/composite/section-nav/section-nav";
 import { SiteFooter } from "@/components/composite/site-footer/site-footer";
 import { HeaderAccountSection } from "@/components/composite/site-header/header-account";
 import { SiteHeader, type NavKey } from "@/components/composite/site-header/site-header";
+import type { HeadingLink } from "@/components/composite/markdown/headings";
 import type { AllowedPositions, PositionName } from "@/theme/contracts";
-import type { HeadingLink } from "@/utils/markdown";
 
 type PlacedComponent = ComponentType<Record<string, unknown>>;
 

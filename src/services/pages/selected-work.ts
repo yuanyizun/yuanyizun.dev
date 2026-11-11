@@ -1,6 +1,6 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
-import { getProjects, type Project } from "@/data/projects";
+import { getProjects, type ProjectSummary } from "@/data/projects";
 import {
   parseSelectedWorkQuery,
   type SelectedWorkFacets,
@@ -35,7 +35,7 @@ function byDateDescending(left: { date: string }, right: { date: string }) {
   return left.date < right.date ? 1 : -1;
 }
 
-function toSelectedProject(project: Project): SelectedProject {
+function toSelectedProject(project: ProjectSummary): SelectedProject {
   return {
     slug: project.slug,
     title: project.title,
@@ -56,7 +56,7 @@ async function loadSelectedProjects(): Promise<SelectedProject[]> {
 
   return selectedSlugs
     .map((slug) => bySlug.get(slug))
-    .filter((project): project is Project => Boolean(project))
+    .filter((project): project is ProjectSummary => Boolean(project))
     .filter((project) => project.group !== "personal")
     .map(toSelectedProject)
     .sort(byDateDescending);

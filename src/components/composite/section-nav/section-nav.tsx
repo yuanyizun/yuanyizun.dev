@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useState } from "react";
-import type { HeadingLink } from "@/utils/markdown";
+import type { HeadingLink } from "@/components/composite/markdown/headings";
 import { cn } from "@/utils/class-names";
 
 export function SectionNav({

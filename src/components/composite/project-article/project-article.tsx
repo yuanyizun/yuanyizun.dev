@@ -1,7 +1,7 @@
 import { Markdown } from "@/components/composite/markdown/markdown";
+import { extractHeadings, showContents } from "@/components/composite/markdown/headings";
 import { PageFrame } from "@/components/composite/page-frame/page-frame";
 import type { Placement } from "@/theme/contracts";
-import { extractHeadings } from "@/utils/markdown";
 
 type ProjectBody = {
   title: string;
@@ -25,13 +25,16 @@ type RelatedLink = {
 export function ProjectArticle({
   project,
   related,
+  highlighted,
 }: {
   project: ProjectBody;
   related: RelatedLink[];
+  highlighted: string[];
 }) {
   const headings = extractHeadings(project.content);
+  const contents = showContents(headings);
   const positions: Placement = {};
-  if (headings.length === 0) {
+  if (!contents) {
     positions.sidebar = [];
   }
   if (!project.stages?.length) {
@@ -66,7 +69,7 @@ export function ProjectArticle({
           stages: project.stages ?? [],
           title: project.title,
         },
-        SectionNav: { headings, label: "On this page" },
+        ...(contents ? { SectionNav: { headings, label: "On this page" } } : {}),
         RelatedList: { title: "Related work", items: related },
       }}
     >
@@ -77,7 +80,9 @@ export function ProjectArticle({
           </p>
         ) : null}
         <article id="article-body">
-          <Markdown>{project.content}</Markdown>
+          <Markdown headings={headings} highlighted={highlighted}>
+            {project.content}
+          </Markdown>
         </article>
       </div>
     </PageFrame>

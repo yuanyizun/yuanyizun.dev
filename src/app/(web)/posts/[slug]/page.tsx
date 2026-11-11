@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { PostArticleSection } from "@/components/composite/post-article/post-article-section";
 import { PostArticleSkeleton } from "@/components/composite/post-article/post-article-skeleton";
-import { getPost, getPosts } from "@/data/posts";
+import { getPost, getPostParams } from "@/data/posts";
 
 export async function generateStaticParams() {
-  const posts = await getPosts();
-  return posts.map((post) => ({ slug: post.slug }));
+  return getPostParams();
 }
 
 export async function generateMetadata({
@@ -15,11 +15,26 @@ export async function generateMetadata({
   const { slug } = await params;
   const post = await getPost(slug);
   if (!post) {
-    return { title: "Posts" };
+    notFound();
   }
+  const path = `/posts/${post.slug}`;
   return {
     title: post.title,
     description: post.summary,
+    alternates: { canonical: path },
+    openGraph: {
+      type: "article",
+      title: post.title,
+      description: post.summary,
+      url: path,
+      publishedTime: post.date,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.summary,
+    },
+    ...(post.archived ? { robots: { index: false, follow: false } } : {}),
   };
 }
 

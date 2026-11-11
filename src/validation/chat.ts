@@ -1,45 +1,55 @@
 import type { UIMessage } from "ai";
+import { z } from "zod";
 
 export const MAX_MESSAGES = 20;
 export const MAX_TEXT = 2000;
 
 type TextPart = { type: "text"; text: string };
 
+const chatEnvelopeSchema = z.object({
+  messages: z
+    .array(
+      z.object({
+        id: z.unknown().optional(),
+        role: z.unknown().optional(),
+        parts: z.unknown().optional(),
+      }),
+    )
+    .min(1)
+    .max(MAX_MESSAGES),
+});
+
+const textPartSchema = z.object({
+  type: z.literal("text"),
+  text: z.string().max(MAX_TEXT),
+});
+
 function textParts(value: unknown): TextPart[] | null {
-  if (!Array.isArray(value)) return null;
+  const list = z.array(z.unknown()).safeParse(value);
+  if (!list.success) return null;
 
   const parts: TextPart[] = [];
 
-  for (const part of value) {
+  for (const part of list.data) {
     if (!part || typeof part !== "object") return null;
-    const candidate = part as { type?: unknown; text?: unknown };
-    if (candidate.type !== "text") continue;
-    if (typeof candidate.text !== "string") return null;
-    if (candidate.text.length > MAX_TEXT) return null;
-    if (candidate.text.trim().length === 0) continue;
-    parts.push({ type: "text", text: candidate.text });
+    if ((part as { type?: unknown }).type !== "text") continue;
+
+    const parsed = textPartSchema.safeParse(part);
+    if (!parsed.success) return null;
+    if (parsed.data.text.trim().length === 0) continue;
+    parts.push({ type: "text", text: parsed.data.text });
   }
 
   return parts;
 }
 
 export function parseChatMessages(body: unknown): UIMessage[] | null {
-  if (!body || typeof body !== "object") return null;
-
-  const incoming = (body as { messages?: unknown }).messages;
-  if (
-    !Array.isArray(incoming) ||
-    incoming.length === 0 ||
-    incoming.length > MAX_MESSAGES
-  ) {
-    return null;
-  }
+  const envelope = chatEnvelopeSchema.safeParse(body);
+  if (!envelope.success) return null;
 
   const messages: UIMessage[] = [];
 
-  for (const item of incoming) {
-    if (!item || typeof item !== "object") return null;
-    const candidate = item as { id?: unknown; role?: unknown; parts?: unknown };
+  for (const candidate of envelope.data.messages) {
     if (candidate.role !== "user" && candidate.role !== "assistant") continue;
 
     const parts = textParts(candidate.parts);

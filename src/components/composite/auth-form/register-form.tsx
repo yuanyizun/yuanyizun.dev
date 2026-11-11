@@ -21,6 +21,7 @@ import {
 } from "@/components/primitive/card/card";
 import { Input } from "@/components/primitive/input/input";
 import {
+  PASSWORD_MIN,
   USERNAME_HINT,
   USERNAME_PATTERN_ATTR,
   type AuthFormState,
@@ -120,7 +121,7 @@ export function RegisterForm({
                 type="password"
                 autoComplete="new-password"
                 required
-                minLength={8}
+                minLength={PASSWORD_MIN}
                 aria-invalid={state.errors?.password ? true : undefined}
                 className="h-11 px-3 text-base md:text-base"
               />

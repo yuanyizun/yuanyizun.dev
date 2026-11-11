@@ -1,3 +1,6 @@
+import { z } from "zod";
+import { firstFieldErrors } from "@/validation/issues";
+
 export const ROLE_NAME_MAX = 64;
 export const ROLE_DESCRIPTION_MAX = 280;
 export const ROLE_KEY_MAX = 64;
@@ -44,44 +47,59 @@ export function slugifyRoleKey(name: string): string {
 /** Untrusted role keys from select / action args — slug format only. */
 const ROLE_KEY_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
+const roleKeySchema = z
+  .string()
+  .trim()
+  .toLowerCase()
+  .min(1)
+  .max(ROLE_KEY_MAX)
+  .regex(ROLE_KEY_RE);
+
+const createRoleSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(1, { error: "Name is required.", abort: true })
+    .max(ROLE_NAME_MAX, {
+      error: `Name must be at most ${ROLE_NAME_MAX} characters.`,
+    })
+    .regex(ROLE_NAME_PATTERN, { error: ROLE_NAME_HINT }),
+  description: z
+    .string()
+    .trim()
+    .max(ROLE_DESCRIPTION_MAX, {
+      error: `Description must be at most ${ROLE_DESCRIPTION_MAX} characters.`,
+    })
+    .transform((value) => (value.length > 0 ? value : null)),
+});
+
 export function parseRoleKey(key: unknown): string | null {
-  if (typeof key !== "string") {
-    return null;
-  }
-  const trimmed = key.trim().toLowerCase();
-  if (
-    !trimmed ||
-    trimmed.length > ROLE_KEY_MAX ||
-    !ROLE_KEY_RE.test(trimmed)
-  ) {
-    return null;
-  }
-  return trimmed;
+  const parsed = roleKeySchema.safeParse(key);
+  return parsed.success ? parsed.data : null;
+}
+
+function readFormString(formData: FormData, key: string): string {
+  const value = formData.get(key);
+  return typeof value === "string" ? value : "";
 }
 
 export function parseCreateRole(formData: FormData): ParseResult {
-  const rawName = String(formData.get("name") ?? "").trim();
-  const rawDescription = String(formData.get("description") ?? "").trim();
+  const parsed = createRoleSchema.safeParse({
+    name: readFormString(formData, "name"),
+    description: readFormString(formData, "description"),
+  });
 
-  const errors: RoleFieldErrors = {};
-
-  if (!rawName) {
-    errors.name = "Name is required.";
-  } else if (rawName.length > ROLE_NAME_MAX) {
-    errors.name = `Name must be at most ${ROLE_NAME_MAX} characters.`;
-  } else if (!ROLE_NAME_PATTERN.test(rawName)) {
-    errors.name = ROLE_NAME_HINT;
-  }
-
-  if (rawDescription.length > ROLE_DESCRIPTION_MAX) {
-    errors.description = `Description must be at most ${ROLE_DESCRIPTION_MAX} characters.`;
-  }
-
-  if (errors.name || errors.description) {
+  if (!parsed.success) {
+    const flat = firstFieldErrors(parsed.error);
+    const errors: RoleFieldErrors = {};
+    if (flat.name) errors.name = flat.name;
+    if (flat.description) errors.description = flat.description;
     return { ok: false, state: { errors } };
   }
 
-  const key = slugifyRoleKey(rawName);
+  const key = slugifyRoleKey(parsed.data.name);
+  // The name pattern already requires a letter or number, so this does not
+  // fire for names that schema accepts. It stays so an empty key is never stored.
   if (!key) {
     return {
       ok: false,
@@ -95,8 +113,8 @@ export function parseCreateRole(formData: FormData): ParseResult {
     ok: true,
     value: {
       key,
-      label: rawName,
-      description: rawDescription.length > 0 ? rawDescription : null,
+      label: parsed.data.name,
+      description: parsed.data.description,
     },
   };
 }

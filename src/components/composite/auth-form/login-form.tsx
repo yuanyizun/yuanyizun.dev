@@ -20,7 +20,7 @@ import {
   CardTitle,
 } from "@/components/primitive/card/card";
 import { Input } from "@/components/primitive/input/input";
-import type { AuthFormState } from "@/validation/auth";
+import { PASSWORD_MIN, type AuthFormState } from "@/validation/auth";
 
 const initialState: AuthFormState = {};
 
@@ -72,7 +72,7 @@ export function LoginForm({
                 type="password"
                 autoComplete="current-password"
                 required
-                minLength={8}
+                minLength={PASSWORD_MIN}
                 aria-invalid={state.errors?.password ? true : undefined}
                 className="h-11 px-3 text-base md:text-base"
               />

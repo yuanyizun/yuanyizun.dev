@@ -1,3 +1,6 @@
+import { z } from "zod";
+import { firstFieldErrors } from "@/validation/issues";
+
 export const USERNAME_PATTERN = /^[A-Za-z0-9_]{2,32}$/;
 export const USERNAME_PATTERN_ATTR = "[A-Za-z0-9_]{2,32}";
 export const USERNAME_HINT =
@@ -35,91 +38,99 @@ type ParseResult<T> =
   | { ok: true; value: T }
   | { ok: false; state: AuthFormState };
 
-function parseUsernameField(raw: FormDataEntryValue | null): {
-  value?: string;
-  error?: string;
-} {
-  const value = String(raw ?? "").trim();
-  if (!value) {
-    return { error: "Username is required." };
-  }
-  if (!USERNAME_PATTERN.test(value)) {
-    return { error: USERNAME_HINT };
-  }
-  return { value };
+const usernameSchema = z
+  .string()
+  .trim()
+  .min(1, { error: "Username is required.", abort: true })
+  .regex(USERNAME_PATTERN, { error: USERNAME_HINT });
+
+const emailSchema = z
+  .string()
+  .trim()
+  .min(1, { error: "Email is required.", abort: true })
+  .pipe(
+    z.email({
+      pattern: z.regexes.html5Email,
+      error: "Enter a valid email.",
+    }),
+  );
+
+const passwordSchema = z
+  .string()
+  .min(1, { error: "Password is required.", abort: true })
+  .min(PASSWORD_MIN, {
+    error: `Password must be at least ${PASSWORD_MIN} characters.`,
+  });
+
+const loginSchema = z.object({
+  email: emailSchema,
+  password: passwordSchema,
+});
+
+const registerSchema = z.object({
+  username: usernameSchema,
+  email: emailSchema,
+  password: passwordSchema,
+});
+
+const usernameFormSchema = z.object({
+  username: usernameSchema,
+});
+
+function readFormString(formData: FormData, key: string): string {
+  const value = formData.get(key);
+  return typeof value === "string" ? value : "";
 }
 
-function parseEmailField(raw: FormDataEntryValue | null): {
-  value?: string;
-  error?: string;
-} {
-  const value = String(raw ?? "").trim();
-  if (!value) {
-    return { error: "Email is required." };
+function parseAuth<T>(
+  schema: z.ZodType<T>,
+  value: unknown,
+  fields: Array<keyof AuthFieldErrors>,
+): ParseResult<T> {
+  const parsed = schema.safeParse(value);
+  if (!parsed.success) {
+    const flat = firstFieldErrors(parsed.error);
+    const errors: AuthFieldErrors = {};
+    for (const field of fields) {
+      const message = flat[field];
+      if (message) {
+        errors[field] = message;
+      }
+    }
+    return { ok: false, state: { errors } };
   }
-  const at = value.indexOf("@");
-  if (at <= 0 || at !== value.lastIndexOf("@") || at === value.length - 1) {
-    return { error: "Enter a valid email." };
-  }
-  return { value };
-}
-
-function parsePasswordField(raw: FormDataEntryValue | null): {
-  value?: string;
-  error?: string;
-} {
-  const value = String(raw ?? "");
-  if (!value) {
-    return { error: "Password is required." };
-  }
-  if (value.length < PASSWORD_MIN) {
-    return { error: `Password must be at least ${PASSWORD_MIN} characters.` };
-  }
-  return { value };
+  return { ok: true, value: parsed.data };
 }
 
 export function parseLogin(formData: FormData): ParseResult<LoginInput> {
-  const email = parseEmailField(formData.get("email"));
-  const password = parsePasswordField(formData.get("password"));
-  const errors: AuthFieldErrors = {};
-  if (email.error) errors.email = email.error;
-  if (password.error) errors.password = password.error;
-  if (Object.keys(errors).length > 0) {
-    return { ok: false, state: { errors } };
-  }
-  return {
-    ok: true,
-    value: { email: email.value!, password: password.value! },
-  };
+  return parseAuth(
+    loginSchema,
+    {
+      email: readFormString(formData, "email"),
+      password: readFormString(formData, "password"),
+    },
+    ["email", "password"],
+  );
 }
 
 export function parseRegister(formData: FormData): ParseResult<RegisterInput> {
-  const username = parseUsernameField(formData.get("username"));
-  const email = parseEmailField(formData.get("email"));
-  const password = parsePasswordField(formData.get("password"));
-  const errors: AuthFieldErrors = {};
-  if (username.error) errors.username = username.error;
-  if (email.error) errors.email = email.error;
-  if (password.error) errors.password = password.error;
-  if (Object.keys(errors).length > 0) {
-    return { ok: false, state: { errors } };
-  }
-  return {
-    ok: true,
-    value: {
-      username: username.value!,
-      email: email.value!,
-      password: password.value!,
+  return parseAuth(
+    registerSchema,
+    {
+      username: readFormString(formData, "username"),
+      email: readFormString(formData, "email"),
+      password: readFormString(formData, "password"),
     },
-  };
+    ["username", "email", "password"],
+  );
 }
 
 export function parseUsername(formData: FormData): ParseResult<UsernameInput> {
-  const username = parseUsernameField(formData.get("username"));
-  if (username.error) {
-    return { ok: false, state: { errors: { username: username.error } } };
-  }
-  return { ok: true, value: { username: username.value! } };
+  return parseAuth(
+    usernameFormSchema,
+    { username: readFormString(formData, "username") },
+    ["username"],
+  );
 }
 
 /** Dashboard profile edit — same username allowlist; ignore any posted ids/roles. */

@@ -40,6 +40,7 @@
     "dashboard": {
       "main-before": ["PageIntro"]
     },
+    "interview": {},
     "auth": {},
     "not-found": {}
   }

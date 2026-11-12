@@ -1,0 +1,335 @@
+.interviewLayout {
+  --interview-nav-w: 18.25rem;
+  --interview-paper: #fffdf8;
+  --interview-result: #1e3a2f;
+  --interview-result-bg: #eef6f0;
+  display: grid;
+  gap: 1rem;
+  align-items: start;
+}
+
+@media (min-width: 768px) {
+  .interviewLayout {
+    grid-template-columns: var(--interview-nav-w) minmax(0, 1fr);
+    gap: 1.25rem;
+  }
+}
+
+.interviewRail {
+  display: flex;
+  flex-direction: column;
+  background: var(--inverse);
+  color: var(--inverse-foreground);
+  border-radius: var(--radius);
+  position: sticky;
+  top: 0.75rem;
+  z-index: 1;
+}
+
+@media (min-width: 768px) {
+  .interviewRail {
+    max-height: calc(100vh - 1.5rem);
+  }
+}
+
+.interviewBrand {
+  padding: 1rem 1rem 0.75rem;
+  border-bottom: 1px solid color-mix(in oklab, var(--inverse-foreground) 14%, transparent);
+}
+
+.interviewBrand h1 {
+  margin: 0;
+  font-size: 0.9375rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-weight: 650;
+}
+
+.interviewBrand p {
+  margin: 0.375rem 0 0;
+  color: var(--inverse-muted);
+  font-size: 0.8125rem;
+  line-height: 1.35;
+}
+
+.interviewSearch {
+  padding: 0.75rem 0.75rem 0.25rem;
+}
+
+.interviewSearchInput {
+  width: 100%;
+  border: 1px solid color-mix(in oklab, var(--inverse-foreground) 18%, transparent);
+  background: color-mix(in oklab, var(--inverse-foreground) 8%, var(--inverse));
+  color: var(--inverse-foreground);
+  border-radius: 0.5rem;
+  padding: 0.5625rem 0.625rem;
+  font: inherit;
+  font-size: 0.875rem;
+}
+
+.interviewSearchInput::placeholder {
+  color: color-mix(in oklab, var(--inverse-muted) 80%, transparent);
+}
+
+.interviewSearchInput:focus {
+  outline: 2px solid color-mix(in oklab, var(--primary) 70%, white);
+  outline-offset: 1px;
+}
+
+.interviewNav {
+  overflow: auto;
+  padding: 0.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.interviewNavRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 1.125rem;
+  gap: 0.375rem;
+  align-items: start;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  color: var(--inverse-foreground);
+}
+
+.interviewNavRow:hover {
+  background: color-mix(in oklab, var(--inverse-foreground) 8%, var(--inverse));
+}
+
+.interviewNavRowCurrent {
+  background: color-mix(in oklab, var(--inverse-foreground) 14%, var(--inverse));
+  color: #fff;
+}
+
+.interviewNavRowDone {
+  color: color-mix(in oklab, var(--inverse-muted) 85%, transparent);
+}
+
+.interviewNavLink {
+  display: grid;
+  grid-template-columns: 1.75rem minmax(0, 1fr);
+  gap: 0.375rem;
+  align-items: start;
+  color: inherit;
+  text-decoration: none;
+  font-size: 0.84375rem;
+  line-height: 1.3;
+  min-width: 0;
+}
+
+.interviewNum {
+  color: color-mix(in oklab, var(--primary) 70%, white);
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+}
+
+.interviewNavRowDone .interviewNum {
+  color: inherit;
+}
+
+.interviewMark {
+  width: 0.875rem;
+  height: 0.875rem;
+  margin-top: 0.125rem;
+  border: 1.5px solid color-mix(in oklab, var(--inverse-muted) 70%, transparent);
+  border-radius: 50%;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.interviewMark[aria-pressed="true"] {
+  background: #6f8f72;
+  border-color: #6f8f72;
+}
+
+.interviewKeys {
+  padding: 0.625rem 0.875rem 0.875rem;
+  color: var(--inverse-muted);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  border-top: 1px solid color-mix(in oklab, var(--inverse-foreground) 14%, transparent);
+}
+
+.interviewKeys kbd {
+  font-family: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  border: 1px solid color-mix(in oklab, var(--inverse-foreground) 22%, transparent);
+  border-radius: 0.25rem;
+  padding: 0 0.25rem;
+  color: color-mix(in oklab, var(--inverse-foreground) 90%, transparent);
+}
+
+.interviewMain {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 61.25rem;
+}
+
+.interviewEmpty {
+  margin: 0;
+  color: var(--muted-foreground);
+}
+
+.interviewCard {
+  background: var(--interview-paper);
+  border: 1px solid var(--border);
+  border-radius: 0.875rem;
+  padding: 1.375rem 1.625rem 1.125rem;
+  scroll-margin-top: 1rem;
+}
+
+.interviewCardHeader {
+  display: flex;
+  gap: 0.75rem;
+  align-items: baseline;
+  margin-bottom: 0.75rem;
+}
+
+.interviewCardNum {
+  flex: none;
+  color: var(--primary);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.875rem;
+}
+
+.interviewCardTitle {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 1.625rem;
+  line-height: 1.2;
+  letter-spacing: var(--tracking-heading);
+  font-weight: 500;
+}
+
+.interviewAnswer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.interviewAnswer :is(p) {
+  margin: 0;
+}
+
+.interviewAnswer :is(ul, ol) {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.interviewAnswer :is(li) {
+  margin: 0 0 0.375rem;
+}
+
+.interviewAnswer :is(li:last-child) {
+  margin-bottom: 0;
+}
+
+.interviewLead {
+  font-size: 1.1875rem;
+  line-height: 1.45;
+}
+
+.interviewBlock {
+  border-left: 3px solid var(--border);
+  padding: 0.125rem 0 0.125rem 0.875rem;
+}
+
+.interviewBlockResult {
+  background: var(--interview-result-bg);
+  border-left-color: #2f6b4f;
+  border-radius: 0 0.625rem 0.625rem 0;
+  padding: 0.625rem 0.875rem;
+}
+
+.interviewKicker {
+  margin: 0 0 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+.interviewKickerResult {
+  color: var(--interview-result);
+}
+
+.interviewAskList :is(li) {
+  margin-bottom: 0.625rem;
+}
+
+@media (max-width: 767px) {
+  .interviewRail {
+    top: 0;
+    border-radius: 0.75rem;
+  }
+
+  .interviewBrand {
+    padding: 0.625rem 0.75rem 0.375rem;
+  }
+
+  .interviewBrand p,
+  .interviewKeys,
+  .interviewMark {
+    display: none;
+  }
+
+  .interviewSearch {
+    padding: 0 0.75rem 0.5rem;
+  }
+
+  .interviewNav {
+    display: flex;
+    flex-direction: row;
+    flex: none;
+    gap: 0.375rem;
+    overflow-x: auto;
+    padding: 0 0.75rem 0.625rem;
+  }
+
+  .interviewNavRow {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 0.375rem;
+    white-space: nowrap;
+    background: color-mix(in oklab, var(--inverse-foreground) 8%, var(--inverse));
+    grid-template-columns: none;
+  }
+
+  .interviewNavLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  .interviewCard {
+    padding: 1rem;
+    scroll-margin-top: 8.5rem;
+  }
+
+  .interviewCardTitle {
+    font-size: 1.375rem;
+  }
+}
+
+@media print {
+  .interviewRail {
+    display: none;
+  }
+
+  .interviewLayout {
+    display: block;
+  }
+
+  .interviewCard {
+    break-inside: avoid;
+    box-shadow: none;
+  }
+}

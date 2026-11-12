@@ -26,6 +26,7 @@ const links = [
   { href: "/about", label: "About", key: "about" },
   { href: "/posts", label: "Posts", key: "posts" },
   { href: "/projects", label: "Projects", key: "projects" },
+  { href: "/interview", label: "Interview", key: "interview" },
   { href: "/contact", label: "Contact", key: "contact" },
   { href: "/dashboard", label: "Dashboard", key: "dashboard" },
 ] as const;
@@ -119,6 +120,7 @@ export type NavKey =
   | "about"
   | "posts"
   | "projects"
+  | "interview"
   | "contact"
   | "dashboard";
 

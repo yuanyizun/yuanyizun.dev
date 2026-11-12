@@ -1,30 +1,15 @@
 "use client";
 
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import type { QuestionNote } from "@/data/questions";
 import { cn } from "@/utils/class-names";
+import { InterviewMarkdown } from "./interview-markdown";
 import "./interview-sheet.module.css";
 
 const storeKey = "interview-covered";
 
 function padIndex(index: number) {
   return String(index + 1).padStart(2, "0");
-}
-
-function AnswerMarkdown({
-  children,
-  className,
-}: {
-  children: string;
-  className?: string;
-}) {
-  return (
-    <div className={className}>
-      <ReactMarkdown remarkPlugins={[remarkGfm]}>{children}</ReactMarkdown>
-    </div>
-  );
 }
 
 export function InterviewSheet({ notes }: { notes: QuestionNote[] }) {
@@ -169,6 +154,18 @@ export function InterviewSheet({ notes }: { notes: QuestionNote[] }) {
         <div className="interviewBrand">
           <h1>Interview quick peek</h1>
           <p>Every note from the crib sheet. Nothing is collapsed.</p>
+          <a
+            className="interviewPhoneLink interviewPhoneLinkDesktop"
+            href={`/interview/app#${current || notes[0]?.slug || ""}`}
+          >
+            Phone page
+          </a>
+          <a
+            className="interviewPhoneLink interviewPhoneLinkMobile"
+            href={`/interview/app#${current || notes[0]?.slug || ""}`}
+          >
+            Open the phone page
+          </a>
         </div>
         <div className="interviewSearch">
           <input
@@ -244,12 +241,12 @@ export function InterviewSheet({ notes }: { notes: QuestionNote[] }) {
               </header>
               <div className="interviewAnswer">
                 {note.lead ? (
-                  <AnswerMarkdown className="interviewLead">{note.lead}</AnswerMarkdown>
+                  <InterviewMarkdown className="interviewLead">{note.lead}</InterviewMarkdown>
                 ) : null}
                 {note.intro ? (
-                  <AnswerMarkdown className={isAsk ? "interviewAskList" : undefined}>
+                  <InterviewMarkdown className={isAsk ? "interviewAskList" : undefined}>
                     {note.intro}
-                  </AnswerMarkdown>
+                  </InterviewMarkdown>
                 ) : null}
                 {note.blocks.map((block) => (
                   <div
@@ -267,7 +264,7 @@ export function InterviewSheet({ notes }: { notes: QuestionNote[] }) {
                     >
                       {block.heading}
                     </p>
-                    <AnswerMarkdown>{block.markdown}</AnswerMarkdown>
+                    <InterviewMarkdown>{block.markdown}</InterviewMarkdown>
                   </div>
                 ))}
               </div>

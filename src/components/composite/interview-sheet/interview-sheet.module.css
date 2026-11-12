@@ -52,6 +52,33 @@
   line-height: 1.35;
 }
 
+.interviewPhoneLink {
+  display: inline-block;
+  margin-top: 0.5rem;
+  color: color-mix(in oklab, var(--primary) 75%, white);
+  font-size: 0.8125rem;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.interviewPhoneLinkDesktop {
+  display: none;
+}
+
+.interviewPhoneLinkMobile {
+  display: inline-block;
+}
+
+@media (min-width: 768px) {
+  .interviewPhoneLinkDesktop {
+    display: inline-block;
+  }
+
+  .interviewPhoneLinkMobile {
+    display: none;
+  }
+}
+
 .interviewSearch {
   padding: 0.75rem 0.75rem 0.25rem;
 }

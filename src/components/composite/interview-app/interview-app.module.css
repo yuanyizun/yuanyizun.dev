@@ -12,7 +12,7 @@
 
 .interviewAppTop {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   gap: 0.5rem;
   align-items: center;
   padding: max(0.625rem, env(safe-area-inset-top)) 0.875rem 0.625rem;
@@ -21,26 +21,43 @@
 }
 
 .interviewAppCount {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  margin: 0;
-  padding: 0 0.25rem;
-  border: 0;
-  background: transparent;
-  font: inherit;
   font-variant-numeric: tabular-nums;
   font-size: 0.8125rem;
   font-weight: 650;
   color: var(--primary);
   white-space: nowrap;
-  cursor: pointer;
 }
 
-.interviewAppCount:focus-visible {
+.interviewAppIndexFab {
+  position: fixed;
+  z-index: 15;
+  right: max(1rem, env(safe-area-inset-right));
+  bottom: calc(4.75rem + env(safe-area-inset-bottom));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 4.5rem;
+  min-height: 3.25rem;
+  padding: 0 1.1rem;
+  border: 1px solid color-mix(in oklab, var(--border) 55%, transparent);
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--inverse) 55%, transparent);
+  color: var(--inverse-foreground);
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  box-shadow: 0 8px 24px color-mix(in oklab, var(--inverse) 18%, transparent);
+}
+
+.interviewAppIndexFab:focus-visible {
   outline: 2px solid color-mix(in oklab, var(--primary) 70%, white);
-  outline-offset: 2px;
-  border-radius: 0.5rem;
+  outline-offset: 3px;
+}
+
+.interviewAppIndexFab:active {
+  transform: translateY(1px);
 }
 
 .interviewAppLabel {
@@ -244,21 +261,10 @@
   border-bottom: 1px solid color-mix(in oklab, var(--border) 80%, transparent);
 }
 
-.interviewAppSearchInput {
-  width: 100%;
-  min-height: 44px;
-  border: 1px solid var(--border);
-  border-radius: 0.75rem;
-  background: var(--interview-paper);
-  color: var(--foreground);
-  padding: 0.625rem 0.75rem;
-  font: inherit;
+.interviewAppSearchHeading {
+  margin: 0;
   font-size: 1rem;
-}
-
-.interviewAppSearchInput:focus {
-  outline: 2px solid color-mix(in oklab, var(--primary) 70%, white);
-  outline-offset: 1px;
+  font-weight: 650;
 }
 
 .interviewAppSearchClose {
@@ -280,11 +286,6 @@
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-}
-
-.interviewAppSearchEmpty {
-  margin: 1rem 0.25rem;
-  color: var(--muted-foreground);
 }
 
 .interviewAppSearchRow {

@@ -211,11 +211,13 @@ export function SiteHeader({
               </Dialog.Description>
               <nav className="flex flex-col gap-2 text-2xl">
                 {links.map((link) => {
+                  const href =
+                    link.key === "interview" ? "/interview/app" : link.href;
                   const current = isActive(pathname, link.href);
                   return (
                     <Link
                       key={link.href}
-                      href={link.href}
+                      href={href}
                       prefetch={link.href === "/" ? false : undefined}
                       aria-current={current ? "page" : undefined}
                       className={cn(

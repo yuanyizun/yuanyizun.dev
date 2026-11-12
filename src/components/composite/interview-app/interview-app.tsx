@@ -68,7 +68,12 @@ export function InterviewApp({ notes }: { notes: PublicQuestionNote[] }) {
   const matches = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return notes;
-    return notes.filter((item) => noteSearchText(item).includes(q));
+    return notes.filter((item, itemIndex) => {
+      if (noteSearchText(item).includes(q)) return true;
+      const num = String(itemIndex + 1);
+      const padded = padIndex(itemIndex);
+      return num === q || padded === q || padded.startsWith(q);
+    });
   }, [notes, query]);
 
   useEffect(() => {
@@ -250,17 +255,22 @@ export function InterviewApp({ notes }: { notes: PublicQuestionNote[] }) {
       ) : null}
 
       <header className="interviewAppTop">
-        <span className="interviewAppCount">
+        <button
+          type="button"
+          className="interviewAppCount"
+          aria-label="Open question index"
+          onClick={() => setSearchOpen(true)}
+        >
           {padIndex(index)} / {String(total).padStart(2, "0")}
-        </span>
+        </button>
         <p className="interviewAppLabel">{note.label}</p>
         <button
           type="button"
           className="interviewAppIconButton"
-          aria-label="Search notes"
+          aria-label="Open question index"
           onClick={() => setSearchOpen(true)}
         >
-          Find
+          Index
         </button>
         <button
           type="button"
@@ -333,49 +343,72 @@ export function InterviewApp({ notes }: { notes: PublicQuestionNote[] }) {
       </footer>
 
       {searchOpen ? (
-        <div className="interviewAppSearch" role="dialog" aria-modal="true" aria-label="Search notes">
-          <div className="interviewAppSearchHeader">
-            <input
-              ref={searchRef}
-              id={searchId}
-              className="interviewAppSearchInput"
-              type="search"
-              placeholder="Search notes"
-              autoComplete="off"
-              aria-label="Search questions and answers"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-            />
-            <button
-              type="button"
-              className="interviewAppSearchClose"
-              onClick={() => {
-                setSearchOpen(false);
-                setQuery("");
-              }}
-            >
-              Close
-            </button>
-          </div>
-          <div className="interviewAppSearchList">
-            {matches.length === 0 ? (
-              <p className="interviewAppSearchEmpty">No note matches that search.</p>
-            ) : (
-              matches.map((item) => {
-                const itemIndex = notes.findIndex((entry) => entry.slug === item.slug);
-                return (
-                  <button
-                    key={item.slug}
-                    type="button"
-                    className="interviewAppSearchRow"
-                    onClick={() => openNote(item.slug)}
-                  >
-                    <span className="interviewAppSearchNum">{padIndex(itemIndex)}</span>
-                    <span>{item.label}</span>
-                  </button>
-                );
-              })
-            )}
+        <div
+          className="interviewAppSearch"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Question index"
+          onClick={(event) => {
+            if (event.target === event.currentTarget) {
+              setSearchOpen(false);
+              setQuery("");
+            }
+          }}
+        >
+          <div className="interviewAppSearchPanel">
+            <div className="interviewAppSearchHeader">
+              <input
+                ref={searchRef}
+                id={searchId}
+                className="interviewAppSearchInput"
+                type="search"
+                placeholder="Filter by number or title"
+                autoComplete="off"
+                aria-label="Filter questions"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+              />
+              <button
+                type="button"
+                className="interviewAppSearchClose"
+                onClick={() => {
+                  setSearchOpen(false);
+                  setQuery("");
+                }}
+              >
+                Close
+              </button>
+            </div>
+            <div className="interviewAppSearchList">
+              {matches.length === 0 ? (
+                <p className="interviewAppSearchEmpty">No note matches that search.</p>
+              ) : (
+                matches.map((item) => {
+                  const itemIndex = notes.findIndex((entry) => entry.slug === item.slug);
+                  const current = item.slug === note.slug;
+                  return (
+                    <button
+                      key={item.slug}
+                      type="button"
+                      className={cn(
+                        "interviewAppSearchRow",
+                        current && "interviewAppSearchRowCurrent",
+                      )}
+                      aria-current={current ? "true" : undefined}
+                      onClick={() => openNote(item.slug)}
+                    >
+                      <span className="interviewAppSearchNum">{padIndex(itemIndex)}</span>
+                      <span className="interviewAppSearchCopy">
+                        <span className="interviewAppSearchTitle">{item.question}</span>
+                        {item.label && item.label !== item.question ? (
+                          <span className="interviewAppSearchMeta">{item.label}</span>
+                        ) : null}
+                      </span>
+                    </button>
+                  );
+                })
+              )}
+            </div>
           </div>
         </div>
       ) : null}
